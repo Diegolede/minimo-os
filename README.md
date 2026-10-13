@@ -65,6 +65,14 @@ git clone https://github.com/Diegolede/minimo-os.git ~/Proyectos/minimo-os
 
 - `--dry-run` muestra cada paso sin cambiar nada.
 - `--yes` no hace preguntas.
+- `--no-greeter` conserva tu gestor de sesión actual (GDM, SDDM…) en vez de la pantalla de inicio de Minimo.
+
+Incluye todo Minimo OS: Hyprland + minimo-shell, el navegador Helium (`helium-browser-bin`, AUR),
+Ghostty con su configuración y el saludo de Minimo en la terminal, y la **pantalla de inicio**
+(greetd + cage + Quickshell) con el llavero de GNOME desbloqueado al entrar. La pantalla de inicio
+respalda `/etc/greetd/config.toml`, desactiva el gestor actual **sin detenerlo** y se ve al reiniciar.
+Si no arranca: `Ctrl+Alt+F3`, entrá con tu usuario y
+`sudo systemctl disable greetd && sudo systemctl enable gdm && sudo reboot`.
 
 El instalador es idempotente. Instala los paquetes, respalda `~/.config/hypr` en
 `~/.config/hypr.bak-<fecha>`, enlaza la configuración del repositorio (un `git pull` la

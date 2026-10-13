@@ -63,6 +63,7 @@ if pacman -Q gnome-keyring >/dev/null 2>&1 && [ -f "$PAMF" ]; then
     grep -Eq '^\s*auth\s+optional\s+pam_gnome_keyring\.so' "$PAMF" || { [ "$DRY" = 1 ] && run "añadir 'auth optional pam_gnome_keyring.so' a $PAMF" || { echo 'auth       optional     pam_gnome_keyring.so' | sudo tee -a "$PAMF" >/dev/null; ok "PAM: auth pam_gnome_keyring"; }; }
     grep -Eq '^\s*session\s+optional\s+pam_gnome_keyring\.so' "$PAMF" || { [ "$DRY" = 1 ] && run "añadir 'session optional pam_gnome_keyring.so auto_start' a $PAMF" || { echo 'session    optional     pam_gnome_keyring.so auto_start' | sudo tee -a "$PAMF" >/dev/null; ok "PAM: session pam_gnome_keyring"; }; }
     ok "Llavero de GNOME: se desbloquea al iniciar sesión"
+elif [ "$DRY" = 1 ]; then run "añadir pam_gnome_keyring.so (auth + session auto_start) a $PAMF si falta"
 else ok "Llavero de GNOME no instalado (se omite PAM)"; fi
 
 # 4. Gestor de sesión: desactivar el actual SIN detenerlo; activar greetd

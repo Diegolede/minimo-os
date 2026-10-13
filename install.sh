@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2026 Diego Ledesma (TRN1) — Minimo OS
 # Instalador de Minimo OS (Hyprland + minimo-shell) para Arch Linux.
-# Uso:  ./install.sh [--dry-run] [--yes] [--preview] [--greeter|--no-greeter]
+# Uso:  ./install.sh [--dry-run] [--yes] [--preview] [--no-greeter]
 #   o:  curl -fsSL https://raw.githubusercontent.com/Diegolede/minimo-os/main/install.sh | bash
 #       (con opciones: ... | bash -s -- --dry-run)
 # Si no se ejecuta desde una copia del repo, lo clona en ~/Proyectos/minimo-os y se
@@ -15,13 +15,13 @@ REPO_URL="https://github.com/$REPO_SLUG.git"
 DEST="$HOME/Proyectos/minimo-os"
 TS=$(date +%Y%m%d-%H%M%S)
 
-DRY=0; YES=0; PREVIEW=0; GREETER=ask
+DRY=0; YES=0; PREVIEW=0; GREETER=1
 for a in "$@"; do
     case "$a" in
         --dry-run|-n) DRY=1 ;;
         --yes|-y) YES=1 ;;
-        --greeter) GREETER=1 ;;          # pantalla de inicio de Minimo (greetd)
-        --no-greeter) GREETER=0 ;;
+        --greeter) GREETER=1 ;;          # pantalla de inicio de Minimo (greetd, por defecto)
+        --no-greeter) GREETER=0 ;;       # conservar el gestor de sesión actual (GDM, SDDM...)
         --preview) PREVIEW=1; DRY=1 ;;   # muestra la interfaz sin comprobar ni cambiar nada
         -h|--help) sed -n '2,5p' "$0" 2>/dev/null || true; exit 0 ;;
         *) echo "Opción desconocida: $a" >&2; exit 2 ;;
@@ -153,6 +153,7 @@ PKGS=(
     ghostty grim slurp wf-recorder zenity                      # terminal, capturas, grabación, selector de fondo
     adwaita-fonts                                              # tipografía Adwaita Sans
     networkmanager                                             # Wi-Fi en la isla (nmcli)
+    gnome-keyring                                              # llavero (se desbloquea al iniciar sesión)
     python                                                     # scripts de la shell (cursor, estado, escritorios)
     git
 )
@@ -275,9 +276,10 @@ elif confirm "¿Instalar Helium ($HELIUM, AUR)?"; then
     fi
 else warn "Helium omitido"; fi
 
-step "Pantalla de inicio (opcional)"
-if [ "$GREETER" = ask ]; then confirm_no "¿Usar la pantalla de inicio de Minimo (greetd)? Reemplaza al gestor actual" && GREETER=1 || GREETER=0; fi
-if [ "$GREETER" != 1 ]; then ok "Se mantiene el inicio de sesión actual (activar: ./install.sh --greeter)"
+step "Pantalla de inicio"
+# Por defecto: respalda la config de greetd, desactiva el gestor actual SIN detenerlo (tu
+# sesión sigue) y activa greetd; se ve al reiniciar. Omitir: --no-greeter.
+if [ "$GREETER" != 1 ]; then ok "Se mantiene el inicio de sesión actual (--no-greeter)"
 else
     if [ "$DRY" = 1 ]; then bash "$REPO/greeter/install-greeter.sh" --dry-run | sed "s/^/   /"
     else bash "$REPO/greeter/install-greeter.sh" || warn "La pantalla de inicio no se instaló; tu inicio actual sigue igual."; fi
