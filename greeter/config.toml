@@ -1,4 +1,4 @@
-# /etc/greetd/config.toml — Minimo OS (lo instala install.sh --greeter)
+# /etc/greetd/config.toml — Minimo OS (lo instala greeter/install-greeter.sh)
 [terminal]
 vt = 1
 
@@ -6,6 +6,7 @@ vt = 1
 command = "/usr/local/bin/minimo-greeter"
 user = "greeter"
 
-# Alternativa en texto si la gráfica falla (cambiá la línea command de arriba):
-# command = "tuigreet --time --remember --cmd Hyprland"
-# command = "agreety --cmd Hyprland"
+# Recuperación: si la pantalla de Minimo no arranca, cambiá a una consola (Ctrl+Alt+F3),
+# entrá con tu usuario y reemplazá la línea `command` de arriba por:
+# command = "tuigreet --time --remember --asterisks --cmd start-hyprland"
+# o volvé a GDM:  sudo systemctl disable greetd && sudo systemctl enable gdm && reboot

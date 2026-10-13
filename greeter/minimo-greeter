@@ -1,10 +1,17 @@
 #!/bin/sh
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2026 Diego Ledesma (TRN1) — Minimo OS
-# Lo ejecuta greetd (usuario "greeter"): un compositor kiosco mínimo (cage) con la
-# pantalla de inicio de Quickshell. Si falla, greetd vuelve a lanzarlo; ver README.
+# Lo ejecuta greetd como usuario "greeter": compositor kiosco mínimo (cage) con la pantalla
+# de inicio de Quickshell. Todo vive en /usr/share (sin acceso a ningún ~ de usuario).
 DIR=/usr/share/minimo-os/greeter
 [ -r /etc/minimo-os/greeter.env ] && . /etc/minimo-os/greeter.env
 export MINIMO_USER MINIMO_SESSION MINIMO_DARK
-export XCURSOR_SIZE=${XCURSOR_SIZE:-24} QT_QPA_PLATFORM=wayland
-exec cage -s -d -- qs -p "$DIR"
+# El usuario greeter puede no tener un HOME escribible: caché y estado en el runtime dir.
+RUN=${XDG_RUNTIME_DIR:-/tmp}/minimo-greeter
+mkdir -p "$RUN" 2>/dev/null
+[ -w "${HOME:-/nonexistent}" ] || export HOME="$RUN"
+export XDG_CACHE_HOME="$RUN/cache" XDG_STATE_HOME="$RUN/state" XDG_CONFIG_HOME="$RUN/config"
+export XCURSOR_THEME=${XCURSOR_THEME:-Adwaita} XCURSOR_SIZE=${XCURSOR_SIZE:-24}
+export QT_QPA_PLATFORM=wayland QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+# -s: permite cambiar de consola (Ctrl+Alt+F3) para recuperar el sistema. -d: sin decoraciones.
+exec cage -s -d -- qs -p "$DIR" >"$RUN/greeter.log" 2>&1

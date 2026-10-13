@@ -14,8 +14,16 @@ Rectangle {
     property bool busy: false
     property alias password: field.text
     property alias character: minimo
+    property string prompt: ""          // pedido extra de PAM (si lo hay) en lugar de "Contraseña"
+    property bool secret: true
+    function focusField() { field.forceActiveFocus() }
+    // Foco en la contraseña apenas aparece la ventana (cage la activa al mapearla)
+    Component.onCompleted: focusTimer.start()
+    Timer { id: focusTimer; interval: 50; onTriggered: field.forceActiveFocus() }
+    Connections { target: root.Window.window; ignoreUnknownSignals: true
+        function onActiveChanged() { if (root.Window.window.active) field.forceActiveFocus() } }
     signal submit(string password)
-    function shake() { shakeAnim.restart(); field.text = ""; CharacterBus.react("startled") }
+    function shake() { shakeAnim.restart(); field.text = ""; CharacterBus.react("startled"); field.forceActiveFocus() }
 
     color: Theme.pick("#FFFFFF", "#0A0A0B")
     Behavior on color { ColorAnimation { duration: 250 } }
@@ -86,7 +94,7 @@ Rectangle {
                 visible: field.text.length === 0
                 font.family: Theme.font; font.pixelSize: 15
                 color: Theme.textSecondary
-                text: root.busy ? "Entrando…" : "Contraseña"
+                text: root.busy ? "Entrando…" : (root.prompt || "Contraseña")
             }
             TextInput {
                 id: field
@@ -94,7 +102,7 @@ Rectangle {
                 anchors.leftMargin: 20; anchors.rightMargin: 48
                 verticalAlignment: TextInput.AlignVCenter
                 horizontalAlignment: TextInput.AlignHCenter
-                echoMode: TextInput.Password
+                echoMode: root.secret ? TextInput.Password : TextInput.Normal
                 passwordCharacter: "•"
                 font.family: Theme.font; font.pixelSize: 17; font.letterSpacing: 2
                 color: Theme.textPrimary

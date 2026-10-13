@@ -279,27 +279,8 @@ step "Pantalla de inicio (opcional)"
 if [ "$GREETER" = ask ]; then confirm_no "¿Usar la pantalla de inicio de Minimo (greetd)? Reemplaza al gestor actual" && GREETER=1 || GREETER=0; fi
 if [ "$GREETER" != 1 ]; then ok "Se mantiene el inicio de sesión actual (activar: ./install.sh --greeter)"
 else
-    { [ "$PREVIEW" = 0 ] && pacman -Q greetd cage greetd-tuigreet >/dev/null 2>&1; } || run sudo pacman -S --needed --noconfirm greetd cage greetd-tuigreet
-    run sudo rm -rf /usr/share/minimo-os/greeter
-    run sudo install -d /usr/share/minimo-os /etc/minimo-os
-    run sudo cp -rL "$REPO/greeter" /usr/share/minimo-os/greeter      # -L: copia el personaje real
-    run sudo install -Dm755 "$REPO/greeter/minimo-greeter" /usr/local/bin/minimo-greeter
-    if [ -f /etc/minimo-os/greeter.env ]; then ok "/etc/minimo-os/greeter.env (se conserva)"
-    elif [ "$DRY" = 1 ]; then printf '        %s○ crear /etc/minimo-os/greeter.env (MINIMO_USER=%s)%s\n' "$D" "${USER:-}" "$N"
-    else printf 'MINIMO_USER=%s\nMINIMO_SESSION=Hyprland\nMINIMO_DARK=0\n' "$USER" | sudo tee /etc/minimo-os/greeter.env >/dev/null; ok "/etc/minimo-os/greeter.env"; fi
-    if [ -f /etc/greetd/config.toml ] && ! cmp -s /etc/greetd/config.toml "$REPO/greeter/config.toml"; then
-        run sudo cp -a /etc/greetd/config.toml "/etc/greetd/config.toml.bak-$TS"
-        ok "Respaldo: /etc/greetd/config.toml.bak-$TS"
-    fi
-    run sudo install -Dm644 "$REPO/greeter/config.toml" /etc/greetd/config.toml
-    # Gestor actual: se desactiva (no se detiene: tu sesión sigue abierta hasta reiniciar)
-    DM=$(basename "$(readlink -f /etc/systemd/system/display-manager.service 2>/dev/null)" .service 2>/dev/null || true)
-    if [ -n "$DM" ] && [ "$DM" != display-manager ] && [ "$DM" != greetd ]; then
-        warn "Se desactiva $DM (volver: sudo systemctl disable greetd && sudo systemctl enable $DM)"
-        run sudo systemctl disable "$DM.service"
-    fi
-    run sudo systemctl enable greetd.service
-    ok "Pantalla de inicio lista: se verá al reiniciar (texto de respaldo: tuigreet)"
+    if [ "$DRY" = 1 ]; then bash "$REPO/greeter/install-greeter.sh" --dry-run | sed "s/^/   /"
+    else bash "$REPO/greeter/install-greeter.sh" || warn "La pantalla de inicio no se instaló; tu inicio actual sigue igual."; fi
 fi
 
 step "Servicio de la shell (systemd --user)"
