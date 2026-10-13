@@ -6,6 +6,7 @@
 //            MINIMO_DARK=1 (modo oscuro), MINIMO_GREETER_TEST=1 (login de mentira, clave "minimo").
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import Quickshell.Services.Greetd
 import "Common"
 
@@ -37,6 +38,11 @@ ShellRoot {
             id: login
             anchors.fill: parent
             user: Quickshell.env("MINIMO_USER") || "usuario"
+            onOutroDone: shell.test ? Qt.quit() : shell.launchSession()
+            onCancelled: if (shell.awaiting && !shell.test) { Greetd.cancelSession(); shell.awaiting = false; login.prompt = ""; login.secret = true }
+            // logind permite apagar/reiniciar a la sesión activa del asiento (la del greeter)
+            onPowerOff: if (!shell.test) { powerProc.command = ["systemctl", "poweroff"]; powerProc.running = true }
+            onReboot: if (!shell.test) { powerProc.command = ["systemctl", "reboot"]; powerProc.running = true }
             onSubmit: pw => {
                 login.busy = true; login.error = ""
                 if (shell.test) { fake.restart(); return }
@@ -52,7 +58,8 @@ ShellRoot {
             }
         }
     }
-    Timer { id: fake; interval: 700; onTriggered: login.password === "minimo" ? Qt.quit() : shell.fail("Contraseña incorrecta (prueba: minimo)") }
+    Process { id: powerProc }
+    Timer { id: fake; interval: 900; onTriggered: login.password === "minimo" ? login.succeed() : shell.fail("Contraseña incorrecta (prueba: minimo)") }
 
     Connections {
         target: Greetd
@@ -69,11 +76,16 @@ ShellRoot {
             } else if (error) login.error = message
             // los mensajes informativos de PAM no necesitan respuesta (Quickshell la envía solo)
         }
-        function onReadyToLaunch() {
-            shell.pending = ""
+        // Autenticado: primero la salida suave (guiño + fundido), después se lanza la sesión.
+        function onReadyToLaunch() { shell.pending = ""; login.succeed() }
+    }
+    function launchSession() {
             Greetd.launch(shell.session.split(" ").filter(s => s.length),
                           ["XDG_SESSION_TYPE=wayland", "XDG_SESSION_DESKTOP=Hyprland", "XDG_CURRENT_DESKTOP=Hyprland"])
-        }
+    }
+    Connections {
+        target: Greetd
+        enabled: !shell.test
         // Quickshell ya cancela la sesión en ambos casos: basta con permitir reintentar.
         function onAuthFailure(message) { shell.fail("Contraseña incorrecta") }
         // Tras un fallo, Quickshell cancela la sesión y greetd responde con un error de

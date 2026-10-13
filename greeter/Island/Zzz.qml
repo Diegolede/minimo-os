@@ -1,0 +1,1 @@
+../../minimo-shell/Island/Zzz.qml

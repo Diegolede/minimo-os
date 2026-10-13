@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Diego Ledesma (TRN1) — Minimo OS
+pragma ComponentBehavior: Bound
 import QtQuick
 import "Common"
 import "Character"
+import "Island"
 
 // Pantalla de inicio de Minimo OS: blanca, Minimo (el personaje real de la shell), hora,
 // usuario y una píldora para la contraseña. Sin lógica de greetd: la pone quien la usa
@@ -23,6 +25,36 @@ Rectangle {
     Connections { target: root.Window.window; ignoreUnknownSignals: true
         function onActiveChanged() { if (root.Window.window.active) field.forceActiveFocus() } }
     signal submit(string password)
+    signal cancelled()                  // Escape: borra y cancela un pedido extra de PAM
+    signal outroDone()                  // terminó la salida tras un login correcto
+    signal powerOff()
+    signal reboot()
+    property bool reveal: false         // mostrar la contraseña (ojo)
+    property bool caps: false           // Bloq Mayús (deducido de lo que se escribe)
+    property int idleMs: 60000          // Minimo se duerme tras 1 min sin actividad
+
+    // ===== Actividad y sueño =====
+    function activity() { idleTimer.restart(); if (IdleState.sleeping) IdleState.wake() }
+    Timer { id: idleTimer; interval: root.idleMs; running: true; onTriggered: if (!root.busy && field.text === "") IdleState.sleepNow() }
+
+    // ===== Entrada y salida suaves =====
+    // Entrada: el contenido aparece con un fundido y una escala mínima (sin saltos).
+    // Salida (login correcto): Minimo guiña, luego todo se desvanece a blanco y recién ahí
+    // se lanza la sesión, para que no haya un corte brusco.
+    function succeed() {
+        root.busy = true; idleTimer.stop(); IdleState.wake()
+        CharacterBus.react("wink")
+        outro.start()
+    }
+    SequentialAnimation {
+        id: outro
+        PauseAnimation { duration: 750 }
+        ParallelAnimation {
+            NumberAnimation { target: stage; property: "opacity"; to: 0; duration: 420; easing.type: Easing.InCubic }
+            NumberAnimation { target: stage; property: "scale"; to: 0.97; duration: 420; easing.type: Easing.InCubic }
+        }
+        ScriptAction { script: root.outroDone() }
+    }
     function shake() { shakeAnim.restart(); field.text = ""; CharacterBus.react("startled"); field.forceActiveFocus() }
 
     color: Theme.pick("#FFFFFF", "#0A0A0B")
@@ -33,7 +65,18 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         acceptedButtons: Qt.NoButton
-        onPositionChanged: m => Cursor.move(m.x, m.y)
+        onPositionChanged: m => { Cursor.move(m.x, m.y); root.activity() }
+    }
+
+    Item {
+    id: stage
+    anchors.fill: parent
+    opacity: 0; scale: 0.985
+    Component.onCompleted: intro.start()
+    ParallelAnimation {
+        id: intro
+        NumberAnimation { target: stage; property: "opacity"; to: 1; duration: 520; easing.type: Easing.OutCubic }
+        NumberAnimation { target: stage; property: "scale"; to: 1; duration: 620; easing.type: Easing.OutCubic }
     }
 
     Column {
@@ -62,6 +105,8 @@ Rectangle {
             id: minimo
             anchors.horizontalCenter: parent.horizontalCenter
             size: 112
+            // Z z z de la isla mientras duerme
+            Zzz { running: IdleState.sleeping; x: parent.width * 0.86; y: -parent.height * 0.28; scale: 1.6; transformOrigin: Item.BottomLeft }
         }
         Item { width: 1; height: 26 }
         Text {
@@ -91,19 +136,44 @@ Rectangle {
             MouseArea { anchors.fill: parent; cursorShape: Qt.IBeamCursor; onPressed: field.forceActiveFocus() }
             Text {
                 anchors.centerIn: parent
-                visible: field.text.length === 0
+                visible: field.text.length === 0 && !root.busy
                 font.family: Theme.font; font.pixelSize: 15
                 color: Theme.textSecondary
-                text: root.busy ? "Entrando…" : (root.prompt || "Contraseña")
+                text: root.prompt || "Contraseña"
+            }
+            // Cargando: tres puntos que respiran mientras greetd verifica
+            Row {
+                anchors.centerIn: parent
+                spacing: 7
+                visible: root.busy
+                Repeater {
+                    model: 3
+                    Rectangle {
+                        id: dot
+                        required property int index
+                        width: 7; height: 7; radius: 3.5
+                        color: Theme.textSecondary
+                        SequentialAnimation on opacity {
+                            running: root.busy; loops: Animation.Infinite
+                            PauseAnimation { duration: dot.index * 160 }
+                            NumberAnimation { to: 1; duration: 320; easing.type: Easing.OutSine }
+                            NumberAnimation { to: 0.25; duration: 420; easing.type: Easing.InSine }
+                            PauseAnimation { duration: (2 - dot.index) * 160 }
+                        }
+                    }
+                }
             }
             TextInput {
                 id: field
                 anchors.fill: parent
-                anchors.leftMargin: 20; anchors.rightMargin: 48
+                anchors.leftMargin: 76; anchors.rightMargin: 76
                 verticalAlignment: TextInput.AlignVCenter
                 horizontalAlignment: TextInput.AlignHCenter
-                echoMode: root.secret ? TextInput.Password : TextInput.Normal
+                echoMode: root.secret && !root.reveal ? TextInput.Password : TextInput.Normal
+                opacity: root.busy ? 0 : 1
+                Behavior on opacity { NumberAnimation { duration: 160 } }
                 passwordCharacter: "•"
+                cursorVisible: activeFocus && text.length > 0     // vacío: sólo el texto "Contraseña", sin cursor encima
                 font.family: Theme.font; font.pixelSize: 17; font.letterSpacing: 2
                 color: Theme.textPrimary
                 enabled: !root.busy
@@ -112,6 +182,30 @@ Rectangle {
                 onTextChanged: { root.error = ""; if (activeFocus) CharacterBus.typed() }
                 onActiveFocusChanged: if (!activeFocus) CharacterBus.typingStopped()
                 onAccepted: if (text.length && !root.busy) root.submit(text)
+                Keys.onPressed: e => {
+                    root.activity()
+                    if (e.key === Qt.Key_Escape) { text = ""; root.reveal = false; root.cancelled(); e.accepted = true; return }
+                    // Bloq Mayús: letra en mayúscula sin Shift (o al revés)
+                    const t = e.text
+                    if (t.length === 1 && t.toLowerCase() !== t.toUpperCase()) {
+                        const upper = t === t.toUpperCase(), shift = (e.modifiers & Qt.ShiftModifier) !== 0
+                        root.caps = upper !== shift
+                    }
+                    if (e.key === Qt.Key_CapsLock) root.caps = !root.caps
+                }
+            }
+            // Mostrar/ocultar contraseña: ojo dibujado (contorno almendrado + pupila; tachado si oculta)
+            Item {
+                id: eyeBtn
+                visible: root.secret && field.text.length > 0 && !root.busy
+                width: 32; height: 32
+                anchors.right: parent.right; anchors.rightMargin: 42; anchors.verticalCenter: parent.verticalCenter
+                opacity: eyeMa.containsMouse ? 1 : 0.7
+                Rectangle { anchors.centerIn: parent; width: 18; height: 11; radius: 5.5; color: "transparent"; border.width: 1.6; border.color: Theme.textSecondary; antialiasing: true }
+                Rectangle { anchors.centerIn: parent; width: 5; height: 5; radius: 2.5; color: Theme.textSecondary; antialiasing: true }
+                Rectangle { anchors.centerIn: parent; width: 21; height: 1.6; radius: 0.8; rotation: -35; color: Theme.textSecondary; visible: !root.reveal; antialiasing: true }
+                MouseArea { id: eyeMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
+                    onClicked: { root.reveal = !root.reveal; field.forceActiveFocus() } }
             }
             // Botón entrar: círculo con flecha (sin íconos externos)
             Rectangle {
@@ -133,10 +227,10 @@ Rectangle {
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             font.family: Theme.font; font.pixelSize: 13
-            color: Theme.danger
-            opacity: root.error ? 1 : 0
+            color: root.error ? Theme.danger : Theme.textSecondary
+            opacity: root.error || (root.caps && field.activeFocus) ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: 160 } }
-            text: root.error || " "
+            text: root.error || (root.caps ? "Bloq Mayús activado" : " ")
         }
     }
 
@@ -146,5 +240,63 @@ Rectangle {
         font.family: Theme.font; font.pixelSize: 12; font.letterSpacing: 3
         color: Theme.textSecondary
         text: "MINIMO OS"
+    }
+    }   // stage
+
+    // Apagar / reiniciar: discretos abajo a la derecha. Primer clic pide confirmación
+    // (la etiqueta aparece), el segundo dentro de 3 s ejecuta.
+    Row {
+        anchors.right: parent.right; anchors.bottom: parent.bottom
+        anchors.rightMargin: 24; anchors.bottomMargin: 20
+        spacing: 6
+        opacity: stage.opacity
+        property string armed: ""
+        id: power
+        Timer { id: disarm; interval: 3000; onTriggered: power.armed = "" }
+        Text {
+            anchors.verticalCenter: parent.verticalCenter
+            font.family: Theme.font; font.pixelSize: 12
+            color: Theme.textSecondary
+            opacity: power.armed ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 160 } }
+            text: power.armed === "reboot" ? "Reiniciar  " : power.armed === "off" ? "Apagar  " : ""
+        }
+        Repeater {
+            model: ["reboot", "off"]
+            Rectangle {
+                id: pb
+                required property string modelData
+                width: 34; height: 34; radius: 17
+                color: power.armed === pb.modelData ? Theme.fill : (ma.containsMouse ? Theme.field : "transparent")
+                Behavior on color { ColorAnimation { duration: 160 } }
+                readonly property color ink: power.armed === pb.modelData ? Theme.onAccent : Theme.textSecondary
+                onInkChanged: icon.requestPaint()
+                Canvas {
+                    id: icon
+                    anchors.centerIn: parent; width: 16; height: 16
+                    renderStrategy: Canvas.Cooperative
+                    onPaint: {
+                        const g = getContext("2d"); g.reset()
+                        g.strokeStyle = pb.ink; g.fillStyle = pb.ink; g.lineWidth = 1.7; g.lineCap = "round"
+                        g.beginPath()
+                        if (pb.modelData === "off") {
+                            g.arc(8, 9, 6, -Math.PI * 0.32, Math.PI * 1.32, false); g.stroke()
+                            g.beginPath(); g.moveTo(8, 1.5); g.lineTo(8, 8); g.stroke()
+                        } else {
+                            g.arc(8, 8.5, 6, -Math.PI * 0.15, Math.PI * 1.45, false); g.stroke()
+                            g.beginPath(); g.moveTo(14.6, 1.8); g.lineTo(14.2, 6.6); g.lineTo(9.6, 5.6); g.stroke()
+                        }
+                    }
+                }
+                MouseArea {
+                    id: ma; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        root.activity()
+                        if (power.armed === pb.modelData) { power.armed = ""; pb.modelData === "off" ? root.powerOff() : root.reboot() }
+                        else { power.armed = pb.modelData; disarm.restart() }
+                    }
+                }
+            }
+        }
     }
 }
