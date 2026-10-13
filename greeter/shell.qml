@@ -2,7 +2,7 @@
 // Copyright (c) 2026 Diego Ledesma (TRN1) — Minimo OS
 // Pantalla de inicio de Minimo OS para greetd (Quickshell ≥ 0.3). Se lanza dentro de `cage`:
 //   cage -s -d -- qs -p /usr/share/minimo-os/greeter
-// Variables: MINIMO_USER (usuario), MINIMO_SESSION (comando, por defecto start-hyprland),
+// Variables: MINIMO_USER (usuario), MINIMO_SESSION (comando, por defecto minimo-session),
 //            MINIMO_DARK=1 (modo oscuro), MINIMO_GREETER_TEST=1 (login de mentira, clave "minimo").
 import QtQuick
 import Quickshell
@@ -12,7 +12,7 @@ import "Common"
 ShellRoot {
     id: shell
     readonly property bool test: Quickshell.env("MINIMO_GREETER_TEST") === "1"
-    readonly property string session: Quickshell.env("MINIMO_SESSION") || "start-hyprland"
+    readonly property string session: Quickshell.env("MINIMO_SESSION") || "minimo-session"
     // Respuesta pendiente: la clave escrita se usa para el primer pedido secreto de PAM.
     // Si PAM pide algo más (p. ej. un segundo factor), la píldora muestra ese pedido y lo
     // que se escriba después va directo como respuesta.

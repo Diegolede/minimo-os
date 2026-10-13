@@ -22,6 +22,12 @@ printf '%s==>%s Terminal\n' "$C" "$N"
 [ -L "$HOME/.config/ghostty/config" ] && run rm -f "$HOME/.config/ghostty/config"
 printf '  %s!%s La línea de minimo-hello en ~/.bashrc queda inofensiva (comprueba que exista).\n' "$Y" "$N"
 
+printf '%s==>%s Pantalla de inicio\n' "$C" "$N"
+if [ -f /etc/greetd/config.toml ] && grep -q minimo-greeter /etc/greetd/config.toml 2>/dev/null; then
+    printf '  %s!%s Para volver a GDM: sudo systemctl disable greetd && sudo systemctl enable gdm (y reiniciar).\n' "$Y" "$N"
+    printf '  %s!%s Archivos: /usr/share/minimo-os/greeter, /usr/local/bin/minimo-greeter, /usr/local/bin/minimo-session (no se borran mientras greetd los use).\n' "$Y" "$N"
+fi
+
 printf '%s==>%s Hyprland\n' "$C" "$N"
 HYPR="$HOME/.config/hypr"
 last=$(ls -d "$HYPR".bak-* 2>/dev/null | sort | tail -1 || true)

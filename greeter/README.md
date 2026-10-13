@@ -9,6 +9,11 @@ versiones livianas de los singletons que el personaje necesita (sin Hyprland ni 
 - `shell.qml`: conexión con greetd (Quickshell ≥ 0.3); al autenticar lanza `start-hyprland`
   (lanzador recomendado desde Hyprland 0.53). Soporta pedidos extra de PAM y reintentos.
 - `preview.qml`: vista previa sin greetd ni Quickshell (`qml6 greeter/preview.qml`, clave: `minimo`).
+- `minimo-session`: sesión que abre greetd (`start-hyprland` sin texto de arranque en la consola;
+  si no existe, `Hyprland`). Para ver el texto de arranque al depurar: `MINIMO_SESSION=start-hyprland`.
+- Llavero: si está `gnome-keyring`, el instalador añade `pam_gnome_keyring.so` (auth y session
+  auto_start) a `/etc/pam.d/greetd` para desbloquearlo con la clave del inicio. Quitar esas dos
+  líneas lo desactiva.
 - Ajustes en `/etc/minimo-os/greeter.env`: `MINIMO_USER`, `MINIMO_SESSION`, `MINIMO_DARK=1`.
 
 Instalar: `greeter/install-greeter.sh` (o `./install.sh --greeter`). Idempotente; respalda

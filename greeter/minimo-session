@@ -1,0 +1,6 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Diego Ledesma (TRN1) — Minimo OS
+# Sesión que lanza greetd: Hyprland sin texto de arranque en la consola.
+if command -v start-hyprland >/dev/null 2>&1; then exec start-hyprland >/dev/null 2>&1; fi
+exec Hyprland >/dev/null 2>&1

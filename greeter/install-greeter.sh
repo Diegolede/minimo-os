@@ -25,7 +25,7 @@ printf '\n   %sPantalla de inicio de Minimo OS%s\n\n' "$B" "$N"
 [ -f "$SRC/shell.qml" ] && [ -f "$SRC/Character/Character.qml" ] || die "No encuentro los archivos en $SRC"
 getent passwd "$GUSER" >/dev/null || die "No existe el usuario $GUSER"
 command -v qs >/dev/null || [ "$DRY" = 1 ] || die "Falta quickshell (lo instala install.sh)"
-command -v start-hyprland >/dev/null && SESSION=start-hyprland || SESSION=Hyprland
+SESSION=minimo-session
 
 # 1. Paquetes
 missing=(); for p in greetd cage greetd-tuigreet; do pacman -Q "$p" >/dev/null 2>&1 || missing+=("$p"); done
@@ -40,7 +40,11 @@ run sudo chmod -R a+rX,go-w "$DEST.new"
 run sudo rm -rf "$DEST"
 run sudo mv "$DEST.new" "$DEST"
 run sudo install -Dm755 "$SRC/minimo-greeter" /usr/local/bin/minimo-greeter
-if [ -f /etc/minimo-os/greeter.env ]; then ok "/etc/minimo-os/greeter.env (se conserva)"
+run sudo install -Dm755 "$SRC/minimo-session" /usr/local/bin/minimo-session
+if [ -f /etc/minimo-os/greeter.env ] && grep -Eq '^MINIMO_SESSION=(start-hyprland|Hyprland)$' /etc/minimo-os/greeter.env; then
+    run sudo sed -i -E 's/^MINIMO_SESSION=(start-hyprland|Hyprland)$/MINIMO_SESSION=minimo-session/' /etc/minimo-os/greeter.env
+    ok "/etc/minimo-os/greeter.env: sesión → minimo-session (sin texto de arranque)"
+elif [ -f /etc/minimo-os/greeter.env ]; then ok "/etc/minimo-os/greeter.env (se conserva)"
 elif [ "$DRY" = 1 ]; then printf '   %s○ crear /etc/minimo-os/greeter.env (MINIMO_USER=%s, MINIMO_SESSION=%s)%s\n' "$D" "$GUSER" "$SESSION" "$N"
 else printf 'MINIMO_USER=%s\nMINIMO_SESSION=%s\nMINIMO_DARK=0\n' "$GUSER" "$SESSION" | sudo tee /etc/minimo-os/greeter.env >/dev/null; ok "/etc/minimo-os/greeter.env"; fi
 
@@ -52,6 +56,14 @@ run sudo install -Dm644 "$SRC/config.toml" /etc/greetd/config.toml
 getent passwd greeter >/dev/null || [ "$DRY" = 1 ] || die "El paquete greetd no creó el usuario greeter"
 # el greeter necesita la GPU y el teclado/mouse (seat): grupos video e input
 [ "$DRY" = 1 ] || id -nG greeter | grep -qw video || run sudo usermod -aG video,input greeter
+
+# 3b. Llavero de GNOME: se desbloquea con la clave del inicio (sólo si está instalado)
+PAMF=/etc/pam.d/greetd
+if pacman -Q gnome-keyring >/dev/null 2>&1 && [ -f "$PAMF" ]; then
+    grep -Eq '^\s*auth\s+optional\s+pam_gnome_keyring\.so' "$PAMF" || { [ "$DRY" = 1 ] && run "añadir 'auth optional pam_gnome_keyring.so' a $PAMF" || { echo 'auth       optional     pam_gnome_keyring.so' | sudo tee -a "$PAMF" >/dev/null; ok "PAM: auth pam_gnome_keyring"; }; }
+    grep -Eq '^\s*session\s+optional\s+pam_gnome_keyring\.so' "$PAMF" || { [ "$DRY" = 1 ] && run "añadir 'session optional pam_gnome_keyring.so auto_start' a $PAMF" || { echo 'session    optional     pam_gnome_keyring.so auto_start' | sudo tee -a "$PAMF" >/dev/null; ok "PAM: session pam_gnome_keyring"; }; }
+    ok "Llavero de GNOME: se desbloquea al iniciar sesión"
+else ok "Llavero de GNOME no instalado (se omite PAM)"; fi
 
 # 4. Gestor de sesión: desactivar el actual SIN detenerlo; activar greetd
 DM=$(basename "$(readlink -f /etc/systemd/system/display-manager.service 2>/dev/null)" .service 2>/dev/null || true)
