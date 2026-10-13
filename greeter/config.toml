@@ -1,0 +1,11 @@
+# /etc/greetd/config.toml — Minimo OS (lo instala install.sh --greeter)
+[terminal]
+vt = 1
+
+[default_session]
+command = "/usr/local/bin/minimo-greeter"
+user = "greeter"
+
+# Alternativa en texto si la gráfica falla (cambiá la línea command de arriba):
+# command = "tuigreet --time --remember --cmd Hyprland"
+# command = "agreety --cmd Hyprland"

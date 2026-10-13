@@ -1,0 +1,9 @@
+# Versiones livianas (QtQuick puro) de los singletons de minimo-shell que usa el
+# personaje: en la pantalla de inicio no hay Hyprland, música, grabación ni notificaciones.
+singleton Theme 1.0 Theme.qml
+singleton Cursor 1.0 Cursor.qml
+singleton CharacterBus 1.0 CharacterBus.qml
+singleton IdleState 1.0 IdleState.qml
+singleton Media 1.0 Media.qml
+singleton Recorder 1.0 Recorder.qml
+singleton Notifs 1.0 Notifs.qml

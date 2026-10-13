@@ -41,8 +41,8 @@ Item {
         if (idle) { lookX = idleX; lookY = idleY; return }
         const win = c.Window.window
         const p = c.mapToItem(null, width / 2, height / 2)
-        const sx = (win && win.screen) ? win.screen.x : 0
-        const sy = (win && win.screen) ? win.screen.y : 0
+        const sx = (win && win.screen && win.screen.x !== undefined) ? win.screen.x : 0
+        const sy = (win && win.screen && win.screen.y !== undefined) ? win.screen.y : 0      // QScreen (sin Quickshell) no tiene x/y
         const dx = Cursor.x - (sx + p.x), dy = Cursor.y - (sy + p.y)
         // Escala anisotrópica: la isla está pegada al borde superior, así que hacia
         // arriba hay poco recorrido; se normaliza con la distancia al borde.

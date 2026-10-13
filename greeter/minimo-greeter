@@ -1,0 +1,10 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Diego Ledesma (TRN1) — Minimo OS
+# Lo ejecuta greetd (usuario "greeter"): un compositor kiosco mínimo (cage) con la
+# pantalla de inicio de Quickshell. Si falla, greetd vuelve a lanzarlo; ver README.
+DIR=/usr/share/minimo-os/greeter
+[ -r /etc/minimo-os/greeter.env ] && . /etc/minimo-os/greeter.env
+export MINIMO_USER MINIMO_SESSION MINIMO_DARK
+export XCURSOR_SIZE=${XCURSOR_SIZE:-24} QT_QPA_PLATFORM=wayland
+exec cage -s -d -- qs -p "$DIR"

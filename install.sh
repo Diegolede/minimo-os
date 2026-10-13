@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2026 Diego Ledesma (TRN1) — Minimo OS
 # Instalador de Minimo OS (Hyprland + minimo-shell) para Arch Linux.
-# Uso:  ./install.sh [--dry-run] [--yes] [--preview]
+# Uso:  ./install.sh [--dry-run] [--yes] [--preview] [--greeter|--no-greeter]
 #   o:  curl -fsSL https://raw.githubusercontent.com/Diegolede/minimo-os/main/install.sh | bash
 #       (con opciones: ... | bash -s -- --dry-run)
 # Si no se ejecuta desde una copia del repo, lo clona en ~/Proyectos/minimo-os y se
@@ -15,11 +15,13 @@ REPO_URL="https://github.com/$REPO_SLUG.git"
 DEST="$HOME/Proyectos/minimo-os"
 TS=$(date +%Y%m%d-%H%M%S)
 
-DRY=0; YES=0; PREVIEW=0
+DRY=0; YES=0; PREVIEW=0; GREETER=ask
 for a in "$@"; do
     case "$a" in
         --dry-run|-n) DRY=1 ;;
         --yes|-y) YES=1 ;;
+        --greeter) GREETER=1 ;;          # pantalla de inicio de Minimo (greetd)
+        --no-greeter) GREETER=0 ;;
         --preview) PREVIEW=1; DRY=1 ;;   # muestra la interfaz sin comprobar ni cambiar nada
         -h|--help) sed -n '2,5p' "$0" 2>/dev/null || true; exit 0 ;;
         *) echo "Opción desconocida: $a" >&2; exit 2 ;;
@@ -30,7 +32,7 @@ done
 if [ -t 1 ] || [ "$PREVIEW" = 1 ]; then
     B=$'\e[1m'; G=$'\e[32m'; Y=$'\e[33m'; R=$'\e[31m'; C=$'\e[36m'; D=$'\e[2m'; N=$'\e[0m'
 else B=; G=; Y=; R=; C=; D=; N=; fi
-TOTAL=7; STEP=0; WARNS=0; T0=$SECONDS
+TOTAL=9; STEP=0; WARNS=0; T0=$SECONDS
 # Minimo y título con caracteres de densidad (el mismo algoritmo que terminal/minimo-hello)
 HDR_MINIMO=( "         ......"
              "     .:++%%%%%%++:."
@@ -83,6 +85,13 @@ spin() {
 run() {
     if [ "$DRY" = 1 ]; then printf '        %s○ %s%s\n' "$D" "$*" "$N"
     else printf '        %s› %s%s\n' "$D" "$*" "$N"; "$@"; fi
+}
+# confirm_no: pregunta con "no" por defecto (para cambios de sistema opcionales)
+confirm_no() {
+    [ "$DRY" = 1 ] && return 1
+    [ "$YES" = 1 ] && return 1
+    local r; read -r -p "        $1 [s/N] " r </dev/tty || r=n
+    case "${r,,}" in s|si|sí|y|yes) return 0 ;; *) return 1 ;; esac
 }
 confirm() {
     [ "$YES" = 1 ] && return 0
@@ -248,6 +257,50 @@ add_hello() {
 }
 add_hello "$HOME/.bashrc" bash
 add_hello "$HOME/.zshrc" zsh
+
+step "Navegador Helium"
+# helium-browser-bin (AUR). Usa yay/paru si hay; si no, makepkg directo (sin instalar otro ayudante).
+HELIUM=helium-browser-bin
+if [ "$PREVIEW" = 0 ] && pacman -Q "$HELIUM" >/dev/null 2>&1; then ok "$HELIUM instalado"
+elif confirm "¿Instalar Helium ($HELIUM, AUR)?"; then
+    if command -v yay >/dev/null; then run yay -S --needed --noconfirm "$HELIUM"
+    elif command -v paru >/dev/null; then run paru -S --needed --noconfirm "$HELIUM"
+    else
+        { [ "$PREVIEW" = 0 ] && pacman -Q base-devel >/dev/null 2>&1; } || run sudo pacman -S --needed --noconfirm base-devel
+        if [ "$DRY" = 1 ]; then AURD=/tmp/minimo-aur; else AURD=$(mktemp -d); fi
+        run git clone --depth 1 "https://aur.archlinux.org/$HELIUM.git" "$AURD/$HELIUM"
+        if [ "$DRY" = 1 ]; then run makepkg -si --noconfirm   # en $AURD/$HELIUM
+        else (cd "$AURD/$HELIUM" && makepkg -si --noconfirm) || warn "No se pudo instalar Helium; seguí sin él."; fi
+        [ "$DRY" = 1 ] || rm -rf "$AURD"
+    fi
+else warn "Helium omitido"; fi
+
+step "Pantalla de inicio (opcional)"
+if [ "$GREETER" = ask ]; then confirm_no "¿Usar la pantalla de inicio de Minimo (greetd)? Reemplaza al gestor actual" && GREETER=1 || GREETER=0; fi
+if [ "$GREETER" != 1 ]; then ok "Se mantiene el inicio de sesión actual (activar: ./install.sh --greeter)"
+else
+    { [ "$PREVIEW" = 0 ] && pacman -Q greetd cage greetd-tuigreet >/dev/null 2>&1; } || run sudo pacman -S --needed --noconfirm greetd cage greetd-tuigreet
+    run sudo rm -rf /usr/share/minimo-os/greeter
+    run sudo install -d /usr/share/minimo-os /etc/minimo-os
+    run sudo cp -rL "$REPO/greeter" /usr/share/minimo-os/greeter      # -L: copia el personaje real
+    run sudo install -Dm755 "$REPO/greeter/minimo-greeter" /usr/local/bin/minimo-greeter
+    if [ -f /etc/minimo-os/greeter.env ]; then ok "/etc/minimo-os/greeter.env (se conserva)"
+    elif [ "$DRY" = 1 ]; then printf '        %s○ crear /etc/minimo-os/greeter.env (MINIMO_USER=%s)%s\n' "$D" "${USER:-}" "$N"
+    else printf 'MINIMO_USER=%s\nMINIMO_SESSION=Hyprland\nMINIMO_DARK=0\n' "$USER" | sudo tee /etc/minimo-os/greeter.env >/dev/null; ok "/etc/minimo-os/greeter.env"; fi
+    if [ -f /etc/greetd/config.toml ] && ! cmp -s /etc/greetd/config.toml "$REPO/greeter/config.toml"; then
+        run sudo cp -a /etc/greetd/config.toml "/etc/greetd/config.toml.bak-$TS"
+        ok "Respaldo: /etc/greetd/config.toml.bak-$TS"
+    fi
+    run sudo install -Dm644 "$REPO/greeter/config.toml" /etc/greetd/config.toml
+    # Gestor actual: se desactiva (no se detiene: tu sesión sigue abierta hasta reiniciar)
+    DM=$(basename "$(readlink -f /etc/systemd/system/display-manager.service 2>/dev/null)" .service 2>/dev/null || true)
+    if [ -n "$DM" ] && [ "$DM" != display-manager ] && [ "$DM" != greetd ]; then
+        warn "Se desactiva $DM (volver: sudo systemctl disable greetd && sudo systemctl enable $DM)"
+        run sudo systemctl disable "$DM.service"
+    fi
+    run sudo systemctl enable greetd.service
+    ok "Pantalla de inicio lista: se verá al reiniciar (texto de respaldo: tuigreet)"
+fi
 
 step "Servicio de la shell (systemd --user)"
 UNITS="$HOME/.config/systemd/user"
