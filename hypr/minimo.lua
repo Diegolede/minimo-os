@@ -7,3 +7,6 @@ hl.bind("SUPER + B", hl.dsp.exec_cmd("qs -p " .. os.getenv("HOME") .. "/Proyecto
 
 -- Super+V: historial del portapapeles en la isla (fijados arriba).
 hl.bind("SUPER + V", hl.dsp.exec_cmd("qs -p " .. os.getenv("HOME") .. "/Proyectos/minimo-os/minimo-shell ipc call island clipboard"))
+
+-- Super+Tab: vista de ventanas (otra vez Tab: siguiente; soltar Super: ir a esa ventana).
+hl.bind("SUPER + Tab", hl.dsp.exec_cmd("qs -p " .. os.getenv("HOME") .. "/Proyectos/minimo-os/minimo-shell ipc call overview toggle"))
