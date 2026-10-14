@@ -1,23 +1,25 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Diego Ledesma (TRN1) — Minimo OS
+pragma ComponentBehavior: Bound
 import QtQuick
 import "../../Common"
 
 // Wi-Fi: fila con red actual, señal e interruptor; al tocarla se despliegan las redes
-// cercanas. Visible solo si hay Wi-Fi y no hay cable (Network.showWifi).
+// cercanas. Vive en el panel de estado (Internet); visible si hay placa Wi-Fi.
 Column {
     id: root
     property bool active: false            // menú abierto: consultar NetworkManager
     property bool expanded: false
     property string askFor: ""             // SSID que pide contraseña
+    property int radius: 18                // igual que las tarjetas del panel de estado
     spacing: 6
-    visible: Network.showWifi
+    visible: Network.hasNmcli && Network.hasWifi
     onActiveChanged: { active ? Network.acquire() : Network.release(); if (!active) { expanded = false; askFor = ""; Network.error = "" } }
     Component.onDestruction: if (active) Network.release()
 
     // Fila principal.
     Rectangle {
-        width: parent.width; height: 52; radius: 26
+        width: parent.width; height: 52; radius: root.radius
         color: rowMouse.containsMouse ? Theme.hover : Theme.field
         Behavior on color { ColorAnimation { duration: 140 } }
         Rectangle {
@@ -54,7 +56,7 @@ Column {
         width: parent.width
         visible: root.expanded && Network.wifiEnabled
         height: visible ? Math.min(listCol.implicitHeight + 12, 300) : 0
-        radius: 22
+        radius: root.radius
         color: Theme.field
         clip: true
         Flickable {
@@ -76,7 +78,7 @@ Column {
                         required property var modelData
                         width: listCol.width
                         Rectangle {
-                            width: parent.width; height: 38; radius: 19
+                            width: parent.width; height: 38; radius: 12
                             color: nm.containsMouse ? Theme.raised : "transparent"
                             Text {
                                 x: 14; anchors.verticalCenter: parent.verticalCenter

@@ -125,6 +125,26 @@ def gpu():
     if len(p) < 3: return None
     return {"name": p[0].replace("NVIDIA ", "").replace("GeForce ", ""), "util": num(p[1]), "temp": num(p[2])}
 
+def battery():
+    # Primera batería real (no la de un mouse/teclado: scope "Device"). None si no hay.
+    base = "/sys/class/power_supply"
+    for d in (sorted(os.listdir(base)) if os.path.isdir(base) else []):
+        p = f"{base}/{d}"
+        def rd(n):
+            try:
+                with open(f"{p}/{n}") as fh: return fh.read().strip()
+            except OSError: return ""
+        if rd("type") != "Battery" or rd("scope") == "Device": continue
+        pct = num(rd("capacity")); st = rd("status")       # Charging | Discharging | Full | Not charging
+        mins = None
+        now = num(rd("energy_now") or rd("charge_now")); rate = num(rd("power_now") or rd("current_now"))
+        full = num(rd("energy_full") or rd("charge_full"))
+        if rate > 0:
+            if st == "Discharging": mins = round(60 * now / rate)
+            elif st == "Charging" and full > now: mins = round(60 * (full - now) / rate)
+        return {"pct": pct, "status": st, "mins": mins}
+    return None
+
 def safe(fn, fallback):
     # Un sensor raro (p. ej. nvidia-smi "[N/A]") no debe dejar al panel sin datos.
     try:
@@ -136,6 +156,7 @@ def num(x):
     except (TypeError, ValueError): return 0
 mode = sys.argv[1] if len(sys.argv) > 1 else "full"
 res = {"res": safe(resources, None)}
+if res["res"] is not None: res["res"]["battery"] = safe(battery, None)
 if mode == "full":
     res["net"] = safe(network, None); res["dev"] = safe(devices, None); res["gpu"] = safe(gpu, None)
 print(json.dumps(res))

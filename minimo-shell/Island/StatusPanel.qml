@@ -3,6 +3,7 @@
 import QtQuick
 import "../Common"
 import "../Character"
+import "sections"
 
 // Panel de estado del sistema (se abre deslizando sobre la isla): Internet, Recursos, Dispositivos.
 // Consulta datos solo mientras está abierto.
@@ -27,6 +28,14 @@ Item {
     readonly property var r: SysStatus.res
     readonly property var n: SysStatus.net
     readonly property var d: SysStatus.dev
+    readonly property var bat: r ? r.battery : null
+    function batText(b) {
+        if (!b) return ""
+        const t = b.mins === null || b.mins === undefined ? "" : " · " + (b.mins >= 60 ? Math.floor(b.mins / 60) + " h " : "") + (b.mins % 60) + " min"
+        return b.pct + "%" + (b.status === "Charging" ? " · Cargando" + t
+                            : b.status === "Full" ? " · Cargada"
+                            : b.status === "Not charging" ? " · Enchufada" : t)
+    }
 
     component Title: Text {
         color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.DemiBold
@@ -59,11 +68,13 @@ Item {
     component Bar: Item {
         id: br
         property real frac: 0
+        property bool lowIsBad: false       // batería: rojo cuando queda poco
+        readonly property bool bad: lowIsBad ? frac < 0.15 : frac > 0.9
         width: parent ? parent.width - 28 : 0; x: 14; height: 10
         Rectangle {
             anchors.top: parent.top; width: parent.width; height: 4; radius: 2; color: Theme.track
             Rectangle {
-                height: parent.height; radius: 2; color: br.frac > 0.9 ? Theme.danger : Theme.fill
+                height: parent.height; radius: 2; color: br.bad ? Theme.danger : Theme.fill
                 width: parent.width * Math.max(0, Math.min(1, br.frac))
                 Behavior on width { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
             }
@@ -89,24 +100,24 @@ Item {
             }
         }
 
-        // Internet
+        // Internet: estado de la conexión y, si hay placa Wi-Fi, el control de Wi-Fi con la
+        // lista de redes (antes en el menú de la isla) justo debajo.
         Title { text: "Internet" }
+        // Con Wi-Fi y todo bien, la fila de Wi-Fi ya lo dice: la de estado solo aparece con
+        // cable, sin conexión o con un problema (sin internet, portal).
         Card {
+            visible: !(root.n && root.n.type === "wifi" && Network.hasWifi && SysStatus.online)
             Row2 {
                 icon: root.n && root.n.type === "wifi" ? "wifi" : "ethernet"
-                label: !root.n || !root.n.type ? "Sin conexión" : (root.n.type === "wifi" ? (root.n.name || "Wi-Fi") : "Ethernet")
+                label: !root.n || !root.n.type ? "Sin conexión" : (root.n.type === "wifi" ? "Internet" : "Ethernet")
                 value: !SysStatus.known ? "Comprobando…"
                      : SysStatus.online ? "Conectado"
                      : SysStatus.connectivity === "portal" ? "Requiere inicio de sesión"
                      : SysStatus.connectivity === "limited" ? "Sin internet (red limitada)" : "Sin internet"
                 valueColor: SysStatus.known && !SysStatus.online ? Theme.danger : Theme.textSecondary
             }
-            Row2 {
-                visible: !!(root.n && root.n.type === "wifi")
-                icon: "wifi"; label: "Señal"
-                value: root.n ? root.n.signal + "%" : ""
-            }
         }
+        WifiSection { width: parent.width; active: root.open }
 
         // Recursos
         Title { text: "Recursos"; topPadding: 4 }
@@ -117,6 +128,13 @@ Item {
             Bar { frac: root.r ? root.r.memUsed / root.r.memTotal : 0 }
             Row2 { icon: "folder"; label: "Disco"; value: root.r ? Math.round(100 * root.r.diskUsed / root.r.diskTotal) + "% · " + SysStatus.gib(root.r.diskTotal - root.r.diskUsed) + " GB libres" : "…" }
             Bar { frac: root.r ? root.r.diskUsed / root.r.diskTotal : 0 }
+            Row2 {
+                visible: !!root.bat
+                icon: "battery"; label: "Batería"
+                value: root.batText(root.bat)
+                valueColor: root.bat && root.bat.pct < 15 && root.bat.status === "Discharging" ? Theme.danger : Theme.textSecondary
+            }
+            Bar { visible: !!root.bat; frac: root.bat ? root.bat.pct / 100 : 0; lowIsBad: true }
             Row2 {
                 visible: !!SysStatus.gpu
                 icon: "display"; label: SysStatus.gpu ? SysStatus.gpu.name : "GPU"

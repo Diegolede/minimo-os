@@ -78,8 +78,6 @@ Item {
             SearchSection { id: search; width: parent.width; onLaunched: root.done() } }
         Reveal { step: 2; width: parent.width; height: media.implicitHeight; visible: media.player !== null
             MediaSection { id: media; width: parent.width } }
-        Reveal { step: 3; width: parent.width; height: wifi.implicitHeight; visible: wifi.visible
-            WifiSection { id: wifi; width: parent.width; active: root.open } }
         Reveal { step: 3; width: parent.width; height: sliders.implicitHeight
             Column { id: sliders; width: parent.width; spacing: 8
                 VolumeSection { width: parent.width }
