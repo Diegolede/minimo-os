@@ -19,7 +19,9 @@ PanelWindow {
     // hacia abajo = "pet" (Minimo como mascota).
     property string panelKind: "status"
     readonly property bool open: expanded || panel
-    readonly property bool hovered: hoverZone.containsMouse
+    // Mientras se arrastra el puntero puede salir de la zona: sigue contando como encima
+    // (si no, el auto-ocultar escondía la isla a mitad del gesto y lo cortaba).
+    readonly property bool hovered: hoverZone.containsMouse || hoverZone.pressed
     property bool shown: true
     // Ocultamiento inteligente: hay ventanas en el escritorio activo del monitor de ESTA isla.
     // Solo se evalúa con la opción activa; los escritorios especiales (id < 0) no cuentan.
@@ -142,34 +144,42 @@ PanelWindow {
         property bool pulling: false     // arrastre hacia abajo (mascota)
         property real dragDy: 0
         property real dragDx: 0
-        // Velocidad horizontal (px/ms, suavizada) para decidir con un gesto rápido y corto.
+        // Velocidad (px/ms, suavizada) para decidir con un gesto rápido y corto.
         property real vel: 0
+        property real velY: 0
+        property real lastY: 0
         property real lastX: 0
         property real lastT: 0
         // Coordenadas de ventana: la zona se mueve con la píldora mientras se arrastra.
-        onPressed: m => { const p = mapToItem(null, m.x, m.y); pressX = p.x; pressY = p.y; dragging = false; pulling = false; dragDx = 0; dragDy = 0; vel = 0; lastX = pressX; lastT = Date.now() }
+        onPressed: m => { const p = mapToItem(null, m.x, m.y); pressX = p.x; pressY = p.y; dragging = false; pulling = false; dragDx = 0; dragDy = 0; vel = 0; velY = 0; lastX = pressX; lastY = pressY; lastT = Date.now() }
         onPositionChanged: m => {
             if (!pressed || win.expanded) return
-            const px = mapToItem(null, m.x, m.y).x, now = Date.now()
-            if (now > lastT) { vel = vel * 0.6 + 0.4 * (px - lastX) / (now - lastT); lastX = px; lastT = now }
-            const dx = px - pressX, dy = mapToItem(null, m.x, m.y).y - pressY
-            // La dirección se decide una vez: horizontal → paneles; hacia abajo → mascota.
-            if (!dragging && !pulling) {
-                if (Math.abs(dx) > 8 && Math.abs(dx) >= Math.abs(dy)) dragging = true
-                else if (dy > 8 && dy > Math.abs(dx) && !win.panel) pulling = true
+            const p = mapToItem(null, m.x, m.y), now = Date.now()
+            if (now > lastT) {
+                vel = vel * 0.6 + 0.4 * (p.x - lastX) / (now - lastT)
+                velY = velY * 0.6 + 0.4 * (p.y - lastY) / (now - lastT)
+                lastX = p.x; lastY = p.y; lastT = now
+            }
+            const dx = p.x - pressX, dy = p.y - pressY
+            // La dirección se decide una sola vez, por el eje dominante, al pasar 6 px:
+            // horizontal → paneles; hacia abajo → mascota (hacia arriba no hace nada).
+            if (!dragging && !pulling && Math.hypot(dx, dy) > 6) {
+                if (Math.abs(dx) > Math.abs(dy)) dragging = true
+                else if (dy > 0 && !win.panel) pulling = true
             }
             if (dragging) dragDx = dx
             if (pulling) dragDy = Math.max(0, dy)
         }
         onReleased: m => {
             // Con una notificación: clic = abrir la app, clic derecho = descartar.
-            if (!dragging && !win.open && Notifs.current !== null) {
+            if (!dragging && !pulling && !win.open && Notifs.current !== null) {
                 if (m.button === Qt.RightButton) Notifs.dismiss(); else Notifs.activate()
                 dragging = false; dragDx = 0; return
             }
             if (m.button === Qt.RightButton) return
             if (pulling) {
-                if (dragDy > 28) { win.panelKind = "pet"; win.panel = true }
+                if (Date.now() - lastT > 80) velY = 0
+                if (dragDy > 24 || (velY > 0.5 && dragDy > 10)) { win.panelKind = "pet"; win.panel = true }
                 pulling = false; dragDy = 0; return
             }
             if (dragging) {
@@ -211,23 +221,25 @@ PanelWindow {
     Rectangle {
         id: pill
         // Elástico: mientras se arrastra, la píldora se estira y se corre un poco con el dedo.
+        readonly property real pull: hoverZone.pulling ? hoverZone.dragDy / (1 + hoverZone.dragDy / 70) : 0
         readonly property real rubber: hoverZone.dragging ? hoverZone.dragDx / (1 + Math.abs(hoverZone.dragDx) / 60) : 0
         width: win.expanded ? Theme.expandedW
              : win.panel ? Theme.expandedW
              : Math.max(Theme.compactW, compact.implicitWidth + Theme.compactPadX * 2) + Math.abs(rubber) * 1.2
         height: win.expanded ? Math.min(menu.implicitHeight, Theme.maxExpandedH)
               : win.panel ? Math.min(win.panelKind === "apps" ? apps.implicitHeight : win.panelKind === "pet" ? pet.implicitHeight : status.implicitHeight, Theme.maxExpandedH)
-              : Theme.compactH + hoverZone.dragDy / (1 + hoverZone.dragDy / 24)   // estira al tirar hacia abajo
+              : Theme.compactH + pull * 0.65   // al tirar hacia abajo: se estira y baja un poco
         x: (win.width - width) / 2 + rubber * 0.5
-        y: win.shown ? Theme.topMargin : -height - 64
+        y: win.shown ? Theme.topMargin + pull * 0.35 : -height - 64
         radius: Math.min(height / 2, Theme.radiusCard)
         color: Theme.card
         Behavior on color { ColorAnimation { duration: 250 } }
         clip: true
 
         Behavior on width { NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutBack; easing.overshoot: 0.9 } }
-        Behavior on height { NumberAnimation { duration: Theme.durNormal + 40; easing.type: Easing.OutBack; easing.overshoot: 0.7 } }
-        Behavior on y { NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutQuint } }
+        // Durante el tirón la píldora sigue al dedo sin retraso (la animación vuelve al soltar).
+        Behavior on height { enabled: !hoverZone.pulling; NumberAnimation { duration: Theme.durNormal + 40; easing.type: Easing.OutBack; easing.overshoot: 0.7 } }
+        Behavior on y { enabled: !hoverZone.pulling; NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutQuint } }
 
         focus: win.open
         Keys.onEscapePressed: win.collapse()

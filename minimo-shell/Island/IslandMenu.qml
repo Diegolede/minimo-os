@@ -80,8 +80,11 @@ Item {
             SearchSection { id: search; width: parent.width; onLaunched: root.done() } }
         Reveal { step: 2; width: parent.width; height: media.implicitHeight; visible: media.player !== null
             MediaSection { id: media; width: parent.width } }
-        Reveal { step: 3; width: parent.width; height: pinned.implicitHeight; visible: pinned.visible
-            PinnedSection { id: pinned; width: parent.width; visible: sliders.length + buttons.length > 0
+        // La visibilidad se decide con los datos, NO con `pinned.visible`: el `visible` de un hijo
+        // es false mientras el menú está oculto, y atarlo al padre lo dejaba en false para siempre.
+        Reveal { step: 3; width: parent.width; height: pinned.implicitHeight
+            visible: QuickItems.pinnedSliders.length + QuickItems.pinnedButtons.length > 0
+            PinnedSection { id: pinned; width: parent.width
                 onDone: root.done(); onDesktops: { desks.refresh(); root.page = "desks" }
                 onClipboard: root.showClipboard() } }
         Reveal { step: 4; width: parent.width; height: actions.implicitHeight
