@@ -22,6 +22,9 @@ Singleton {
     // Menú de la isla: elementos fijados (en orden) y accesos propios { id, label, cmd }.
     property var pins: ["volume", "brightness", "vibrance", "terminal", "record", "capture", "desktops"]
     property var customItems: []
+    // Fondo animado (video o GIF con mpvpaper). Vacío = fondo estático.
+    property string liveWallpaper: ""
+    property bool livePauseCovered: true    // pausar si hay ventanas encima
 
     function setWallpaper(path) {
         wallpaper = path
@@ -43,13 +46,16 @@ Singleton {
     function setTheme(v) { theme = v; save() }
     function setPins(list) { pins = list; save() }
     function setCustomItems(list) { customItems = list; save() }
+    function setLiveWallpaper(p) { liveWallpaper = p; save() }
+    function setLivePauseCovered(v) { livePauseCovered = v; save() }
     // Empuja el tema al singleton Theme (sin dependencia inversa: evita init cíclico).
     onThemeChanged: Theme.dark = theme === "dark"
     function save() {
         file.setText(JSON.stringify({ saturation: root.saturation, brightness: root.brightness, wallpaper: root.wallpaper, wallpaperHistory: root.wallpaperHistory,
                                      islandAutoHide: root.islandAutoHide, islandSmartHide: root.islandSmartHide, characterAnimated: root.characterAnimated,
                                      sleepMinutes: root.sleepMinutes, theme: root.theme,
-                                     pins: root.pins, customItems: root.customItems }, null, 2))
+                                     pins: root.pins, customItems: root.customItems,
+                                     liveWallpaper: root.liveWallpaper, livePauseCovered: root.livePauseCovered }, null, 2))
     }
 
     readonly property string stateDir: Quickshell.env("HOME") + "/.config/minimo-os"
@@ -91,6 +97,8 @@ Singleton {
                 root.sleepMinutes = s.sleepMinutes ?? 1
                 root.theme = s.theme === "dark" ? "dark" : "light"
                 if (Array.isArray(s.pins)) root.pins = s.pins.filter(p => typeof p === "string")
+                root.liveWallpaper = typeof s.liveWallpaper === "string" ? s.liveWallpaper : ""
+                root.livePauseCovered = s.livePauseCovered ?? true
                 if (Array.isArray(s.customItems)) root.customItems = s.customItems.filter(c => c && c.id && c.label && c.cmd)
                 root.set(s.saturation ?? 1.0, s.brightness ?? 1.0)
             } catch (e) {}

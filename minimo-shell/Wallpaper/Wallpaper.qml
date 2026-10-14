@@ -6,7 +6,7 @@ import Quickshell.Wayland
 import "../Common"
 
 // Fondo de pantalla propio: capa Background a pantalla completa, con fundido
-// de 400 ms al cambiar. Sin fondo elegido: gris claro neutro.
+// de 400 ms al cambiar. Sin fondo elegido: gris claro neutro. Con fondo animado se oculta.
 PanelWindow {
     id: win
     anchors { top: true; bottom: true; left: true; right: true }
@@ -16,6 +16,8 @@ PanelWindow {
     WlrLayershell.namespace: "minimo-wallpaper"
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
     mask: Region {}
+    // Con fondo animado (mpvpaper dibuja en su propia capa) esta capa se oculta y suelta la imagen.
+    visible: !LiveWallpaper.running
 
     readonly property string path: DisplayState.wallpaper
     property bool useA: true
@@ -28,7 +30,8 @@ PanelWindow {
     }
     // Tras el fundido, libera la imagen anterior (textura a pantalla completa).
     Timer { id: freeOld; interval: 500; onTriggered: (win.useA ? imgB : imgA).source = "" }
-    onPathChanged: show(path)
+    onPathChanged: if (visible) show(path)
+    onVisibleChanged: { if (!visible) { imgA.source = ""; imgB.source = "" } else if (path) show(path) }
     Component.onCompleted: if (path) show(path)
 
     component Layer: Image {

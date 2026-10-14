@@ -21,3 +21,4 @@ singleton QuickItems 1.0 QuickItems.qml
 singleton Clipboard 1.0 Clipboard.qml
 singleton Pet 1.0 Pet.qml
 singleton OverviewState 1.0 OverviewState.qml
+singleton LiveWallpaper 1.0 LiveWallpaper.qml

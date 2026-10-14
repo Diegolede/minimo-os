@@ -78,6 +78,8 @@ Column {
         PillButton { icon: "folder"; text: "Elegir imagen…"; onClicked: if (!picker.running) { root.pickerOpened(); picker.running = true } }
         PillButton { text: "Sin fondo"; outlined: true; onClicked: DisplayState.setWallpaper("") }
     }
+
+    LiveWallpaperCard { width: parent.width; onPickerOpened: root.pickerOpened() }
     Text { text: "Carpeta: ~/Imágenes/Fondos"; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 11 }
 
     SectionTitle { text: "Apariencia" }
