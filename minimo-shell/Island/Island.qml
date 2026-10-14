@@ -15,7 +15,8 @@ PanelWindow {
 
     property bool expanded: false
     property bool panel: false            // panel deslizable abierto
-    // Qué panel: izquierda→derecha = "status" (recursos), derecha→izquierda = "apps" (apps en segundo plano).
+    // Qué panel: izquierda→derecha = "status" (recursos), derecha→izquierda = "apps" (apps en segundo plano),
+    // hacia abajo = "pet" (Minimo como mascota).
     property string panelKind: "status"
     readonly property bool open: expanded || panel
     readonly property bool hovered: hoverZone.containsMouse
@@ -136,21 +137,29 @@ PanelWindow {
         // Clic → menú (al soltar). Arrastre horizontal (>8 px) → panel de estado del sistema;
         // con el panel abierto, deslizar de nuevo lo cierra. La píldora sigue al dedo (elástico).
         property real pressX: 0
+        property real pressY: 0
         property bool dragging: false
+        property bool pulling: false     // arrastre hacia abajo (mascota)
+        property real dragDy: 0
         property real dragDx: 0
         // Velocidad horizontal (px/ms, suavizada) para decidir con un gesto rápido y corto.
         property real vel: 0
         property real lastX: 0
         property real lastT: 0
         // Coordenadas de ventana: la zona se mueve con la píldora mientras se arrastra.
-        onPressed: m => { pressX = mapToItem(null, m.x, m.y).x; dragging = false; dragDx = 0; vel = 0; lastX = pressX; lastT = Date.now() }
+        onPressed: m => { const p = mapToItem(null, m.x, m.y); pressX = p.x; pressY = p.y; dragging = false; pulling = false; dragDx = 0; dragDy = 0; vel = 0; lastX = pressX; lastT = Date.now() }
         onPositionChanged: m => {
             if (!pressed || win.expanded) return
             const px = mapToItem(null, m.x, m.y).x, now = Date.now()
             if (now > lastT) { vel = vel * 0.6 + 0.4 * (px - lastX) / (now - lastT); lastX = px; lastT = now }
-            const dx = px - pressX
-            if (!dragging && Math.abs(dx) > 8) dragging = true
+            const dx = px - pressX, dy = mapToItem(null, m.x, m.y).y - pressY
+            // La dirección se decide una vez: horizontal → paneles; hacia abajo → mascota.
+            if (!dragging && !pulling) {
+                if (Math.abs(dx) > 8 && Math.abs(dx) >= Math.abs(dy)) dragging = true
+                else if (dy > 8 && dy > Math.abs(dx) && !win.panel) pulling = true
+            }
             if (dragging) dragDx = dx
+            if (pulling) dragDy = Math.max(0, dy)
         }
         onReleased: m => {
             // Con una notificación: clic = abrir la app, clic derecho = descartar.
@@ -159,6 +168,10 @@ PanelWindow {
                 dragging = false; dragDx = 0; return
             }
             if (m.button === Qt.RightButton) return
+            if (pulling) {
+                if (dragDy > 28) { win.panelKind = "pet"; win.panel = true }
+                pulling = false; dragDy = 0; return
+            }
             if (dragging) {
                 if (Date.now() - lastT > 80) vel = 0          // se detuvo antes de soltar: no es un "fling"
                 const fling = Math.abs(vel) > 0.6 && Math.abs(dragDx) > 16
@@ -169,7 +182,7 @@ PanelWindow {
             } else if (!win.open) win.expanded = true
             dragging = false; dragDx = 0
         }
-        onCanceled: { dragging = false; dragDx = 0 }
+        onCanceled: { dragging = false; dragDx = 0; pulling = false; dragDy = 0 }
         // Rueda sobre la isla compacta: escritorio anterior/siguiente.
         onWheel: w => { if (!win.open) Workspaces.wheel(w.angleDelta.y) }
     }
@@ -203,7 +216,8 @@ PanelWindow {
              : win.panel ? Theme.expandedW
              : Math.max(Theme.compactW, compact.implicitWidth + Theme.compactPadX * 2) + Math.abs(rubber) * 1.2
         height: win.expanded ? Math.min(menu.implicitHeight, Theme.maxExpandedH)
-              : win.panel ? Math.min(win.panelKind === "apps" ? apps.implicitHeight : status.implicitHeight, Theme.maxExpandedH) : Theme.compactH
+              : win.panel ? Math.min(win.panelKind === "apps" ? apps.implicitHeight : win.panelKind === "pet" ? pet.implicitHeight : status.implicitHeight, Theme.maxExpandedH)
+              : Theme.compactH + hoverZone.dragDy / (1 + hoverZone.dragDy / 24)   // estira al tirar hacia abajo
         x: (win.width - width) / 2 + rubber * 0.5
         y: win.shown ? Theme.topMargin : -height - 64
         radius: Math.min(height / 2, Theme.radiusCard)
@@ -260,6 +274,17 @@ PanelWindow {
             visible: opacity > 0
             Behavior on opacity { NumberAnimation { duration: Theme.durFast } }
         }
+        PetPanel {
+            id: pet
+            width: Theme.expandedW
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
+            open: win.panel && win.panelKind === "pet"
+            opacity: win.panel && win.panelKind === "pet" ? 1 : 0
+            visible: opacity > 0
+            Behavior on opacity { NumberAnimation { duration: Theme.durFast } }
+            onDone: win.collapse()
+        }
     }
 
     // Control externo (ipc "island"): show/hide/open/close.
@@ -275,7 +300,7 @@ PanelWindow {
                 else { win.panel = false; win.expanded = true; menu.showClipboard() }
             }
             else if (cmd === "close") win.collapse()
-            else if (cmd === "status" || cmd === "apps") {
+            else if (cmd === "status" || cmd === "apps" || cmd === "pet") {
                 // Si ya está abierto el otro panel, cambiar a este en vez de cerrar.
                 win.panel = !(win.panel && win.panelKind === cmd)
                 win.panelKind = cmd

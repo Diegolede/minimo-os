@@ -47,5 +47,6 @@ Singleton {
         function status(): void { root.islandCommand("status") }
         function apps(): void { root.islandCommand("apps") }
         function clipboard(): void { root.islandCommand("clipboard") }
+        function pet(): void { root.islandCommand("pet") }
     }
 }

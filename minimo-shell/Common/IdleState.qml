@@ -12,6 +12,7 @@ Singleton {
     id: root
     property bool forced: false
     readonly property bool sleeping: monitor.isIdle || forced
+    readonly property bool idle: monitor.isIdle          // inactividad real (pausa de la persona)
     // Nadie mira la pantalla (inactividad real, no sueño forzado): se pausan animaciones continuas.
     // Tras 10 min dormido pasa a "sueño profundo": recién ahí se congelan respiración y z.
     readonly property bool unattended: monitor.isIdle && deep.fired
