@@ -154,7 +154,7 @@ PKGS=(
     adwaita-fonts                                              # tipografía Adwaita Sans
     networkmanager                                             # Wi-Fi en la isla (nmcli)
     gnome-keyring                                              # llavero (se desbloquea al iniciar sesión)
-    python                                                     # scripts de la shell (cursor, estado, escritorios)
+    python lua                                                 # scripts de la shell (cursor, estado, escritorios, atajos)
     git
 )
 OPTIONAL=(fuzzel wl-clipboard github-cli)
