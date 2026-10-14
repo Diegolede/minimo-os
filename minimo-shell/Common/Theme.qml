@@ -52,9 +52,10 @@ Singleton {
     readonly property int durNormal: 360
     readonly property int hideDelay: 600
 
-    readonly property int compactW: 112
+    readonly property int compactW: 96
     readonly property int compactH: 36
     readonly property int expandedW: 400
     readonly property int maxExpandedH: 900
-    readonly property int topMargin: 8
+    readonly property int topMargin: 4          // separación de la isla con el borde superior
+    readonly property int compactPadX: 11       // margen lateral de la isla compacta
 }

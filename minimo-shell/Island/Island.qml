@@ -201,7 +201,7 @@ PanelWindow {
         readonly property real rubber: hoverZone.dragging ? hoverZone.dragDx / (1 + Math.abs(hoverZone.dragDx) / 60) : 0
         width: win.expanded ? Theme.expandedW
              : win.panel ? Theme.expandedW
-             : Math.max(Theme.compactW, compact.implicitWidth + 32) + Math.abs(rubber) * 1.2
+             : Math.max(Theme.compactW, compact.implicitWidth + Theme.compactPadX * 2) + Math.abs(rubber) * 1.2
         height: win.expanded ? Math.min(menu.implicitHeight, Theme.maxExpandedH)
               : win.panel ? Math.min(win.panelKind === "apps" ? apps.implicitHeight : status.implicitHeight, Theme.maxExpandedH) : Theme.compactH
         x: (win.width - width) / 2 + rubber * 0.5

@@ -14,7 +14,7 @@ Item {
     readonly property bool searchFocused: search.hasFocus
     property alias character: chr
     property string page: "menu"   // "menu" | "desks"
-    implicitHeight: (page === "desks" ? desks.implicitHeight : col.implicitHeight) + 48
+    implicitHeight: (page === "desks" ? desks.implicitHeight : col.implicitHeight) + 40
 
     // El buscador no se enfoca solo: se activa al hacerle clic.
     function opened() { search.reset() }
@@ -39,15 +39,15 @@ Item {
 
     Column {
         id: col
-        x: root.page === "menu" ? 24 : -root.width * 0.3
-        y: 24
+        x: root.page === "menu" ? 20 : -root.width * 0.3
+        y: 20
         opacity: root.page === "menu" ? 1 : 0
         visible: opacity > 0
         enabled: root.page === "menu"
         Behavior on x { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
         Behavior on opacity { NumberAnimation { duration: 220 } }
-        width: parent.width - 48
-        spacing: 24
+        width: parent.width - 40
+        spacing: 22
 
         Reveal {
             step: 0; width: parent.width; height: 48
@@ -91,9 +91,9 @@ Item {
 
     WorkspacesView {
         id: desks
-        x: root.page === "desks" ? 24 : root.width * 0.3
-        y: 24
-        width: root.width - 48
+        x: root.page === "desks" ? 20 : root.width * 0.3
+        y: 20
+        width: root.width - 40
         opacity: root.page === "desks" ? 1 : 0
         visible: opacity > 0
         enabled: root.page === "desks"
