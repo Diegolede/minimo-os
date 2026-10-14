@@ -13,8 +13,10 @@ Item {
     property bool open: false
     readonly property bool searchFocused: search.hasFocus
     property alias character: chr
-    property string page: "menu"   // "menu" | "desks"
-    implicitHeight: (page === "desks" ? desks.implicitHeight : col.implicitHeight) + 40
+    property string page: "menu"   // "menu" | "desks" | "clip"
+    implicitHeight: (page === "desks" ? desks.implicitHeight : page === "clip" ? clip.implicitHeight : col.implicitHeight) + 40
+
+    function showClipboard() { clip.refresh(); page = "clip" }
 
     // El buscador no se enfoca solo: se activa al hacerle clic.
     function opened() { search.reset() }
@@ -80,7 +82,8 @@ Item {
             MediaSection { id: media; width: parent.width } }
         Reveal { step: 3; width: parent.width; height: pinned.implicitHeight; visible: pinned.visible
             PinnedSection { id: pinned; width: parent.width; visible: sliders.length + buttons.length > 0
-                onDone: root.done(); onDesktops: { desks.refresh(); root.page = "desks" } } }
+                onDone: root.done(); onDesktops: { desks.refresh(); root.page = "desks" }
+                onClipboard: root.showClipboard() } }
         Reveal { step: 4; width: parent.width; height: actions.implicitHeight
             ActionsSection { id: actions; anchors.horizontalCenter: parent.horizontalCenter; onDone: root.done()
                 onSettings: { root.done(); SettingsState.show() } } }
@@ -94,6 +97,20 @@ Item {
         opacity: root.page === "desks" ? 1 : 0
         visible: opacity > 0
         enabled: root.page === "desks"
+        Behavior on x { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
+        Behavior on opacity { NumberAnimation { duration: 220 } }
+        onBack: root.page = "menu"
+        onPicked: root.done()
+    }
+
+    ClipboardView {
+        id: clip
+        x: root.page === "clip" ? 20 : root.width * 0.3
+        y: 20
+        width: root.width - 40
+        opacity: root.page === "clip" ? 1 : 0
+        visible: opacity > 0
+        enabled: root.page === "clip"
         Behavior on x { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
         Behavior on opacity { NumberAnimation { duration: 220 } }
         onBack: root.page = "menu"

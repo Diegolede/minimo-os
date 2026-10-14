@@ -2,9 +2,9 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2026 Diego Ledesma (TRN1) — Minimo OS
 # Lista de atajos para Ajustes, generada desde la configuración real de Hyprland
-# (hypr/minimo/atajos.lua). Ejecuta el archivo en Lua con un `hl` simulado que solo
+# (hypr/minimo/atajos.lua y hypr/minimo.lua). Ejecuta el archivo en Lua con un `hl` simulado que solo
 # anota cada bind() (no ejecuta nada) y agrupa el resultado. Imprime JSON y termina.
-#   atajos.py [ruta/atajos.lua]
+#   atajos.py [archivo.lua …]   (por defecto: minimo/atajos.lua y minimo.lua)
 import json, os, shutil, subprocess, sys
 
 MOCK = r'''
@@ -34,7 +34,7 @@ hl = setmetatable({
       clean(opts and opts.description or ""), "\n")
   end,
 }, { __index = function(_, k) return proxy(k) end })
-dofile(arg[1])
+for i = 1, #arg do dofile(arg[i]) end
 '''
 
 SPECIAL = {
@@ -76,13 +76,14 @@ def describe(key, act, arg, desc):
         c = arg
         if "settings toggle" in c: return "Ajustes", "Aplicaciones"
         if "island open" in c: return "Abrir la isla", "Aplicaciones"
+        if "island clipboard" in c: return "Portapapeles", "Aplicaciones"
+        if "launcher toggle" in c: return "Lanzador de Minimo", "Aplicaciones"
         if "recorder toggle" in c: return "Grabar pantalla", "Capturas"
         if "overview toggle" in c: return "Vista de ventanas", "Ventanas"
-        if "clipboard" in c: return "Historial del portapapeles", "Aplicaciones"
         if "slurp" in c and "grim" in c: return "Captura de una zona", "Capturas"
         if "grim" in c: return "Captura de pantalla completa", "Capturas"
         prog = c.split()[0] if c.split() else c
-        names = {"ghostty": "Terminal", "fuzzel": "Lanzador de apps"}
+        names = {"ghostty": "Terminal", "fuzzel": "Fuzzel (lanzador)"}
         return desc or names.get(prog, "Abrir " + prog), "Aplicaciones"
     if act == "window.drag": return "Mover con el mouse", "Ventanas"
     if act == "window.resize" and "mouse:" in key: return "Redimensionar con el mouse", "Ventanas"
@@ -120,15 +121,20 @@ def ws_label(base, ws):
     return "Escritorio " + rel if base.startswith("Ir") else base + " " + rel
 
 def main():
-    path = sys.argv[1] if len(sys.argv) > 1 else os.path.expanduser("~/.config/hypr/minimo/atajos.lua")
-    if not os.path.exists(path):
-        here = os.path.dirname(os.path.realpath(__file__))
-        path = os.path.join(here, "..", "..", "hypr", "minimo", "atajos.lua")
+    here = os.path.dirname(os.path.realpath(__file__))
+    repo = os.path.join(here, "..", "..", "hypr")
+    paths = sys.argv[1:]
+    if not paths:
+        # Los de la config activa (enlazados al repo por el instalador) y, si no están, los del repo.
+        for rel in ("minimo/atajos.lua", "minimo.lua"):
+            p = os.path.expanduser("~/.config/hypr/" + rel)
+            paths.append(p if os.path.exists(p) else os.path.join(repo, rel))
+    paths = [p for p in paths if os.path.exists(p)]
     lua = next((shutil.which(x) for x in ("lua", "lua5.4", "lua5.3", "luajit") if shutil.which(x)), None)
     if not lua:
         print(json.dumps({"error": "nolua", "groups": []})); return
     try:
-        out = subprocess.run([lua, "-", path], input=MOCK, capture_output=True, text=True, timeout=3).stdout
+        out = subprocess.run([lua, "-"] + paths, input=MOCK, capture_output=True, text=True, timeout=3).stdout
     except Exception:
         out = ""
     rows = {}

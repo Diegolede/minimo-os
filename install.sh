@@ -153,11 +153,12 @@ PKGS=(
     ghostty grim slurp wf-recorder zenity                      # terminal, capturas, grabación, selector de fondo
     adwaita-fonts                                              # tipografía Adwaita Sans
     networkmanager                                             # Wi-Fi en la isla (nmcli)
+    wl-clipboard cliphist                                      # historial del portapapeles
     gnome-keyring                                              # llavero (se desbloquea al iniciar sesión)
     python lua                                                 # scripts de la shell (cursor, estado, escritorios, atajos)
     git
 )
-OPTIONAL=(fuzzel wl-clipboard github-cli)
+OPTIONAL=(fuzzel github-cli)
 step "Paquetes"
 missing=()
 for p in "${PKGS[@]}"; do { [ "$PREVIEW" = 0 ] && pacman -Q "$p" >/dev/null 2>&1; } || missing+=("$p"); done
@@ -289,13 +290,14 @@ step "Servicio de la shell (systemd --user)"
 UNITS="$HOME/.config/systemd/user"
 link "$REPO/systemd/minimo-shell.service" "$UNITS/minimo-shell.service"
 link "$REPO/systemd/hyprland-session.target" "$UNITS/hyprland-session.target"
+link "$REPO/systemd/minimo-clipboard.service" "$UNITS/minimo-clipboard.service"
 if [ "$REPO" != "$DEST" ]; then
     warn "El repo no está en $DEST: la unidad y el atajo Super+B asumen esa ruta."
 fi
 run systemctl --user daemon-reload
-run systemctl --user enable minimo-shell.service
+run systemctl --user enable minimo-shell.service minimo-clipboard.service
 if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
-    run systemctl --user restart minimo-shell.service
+    run systemctl --user restart minimo-shell.service minimo-clipboard.service
     run hyprctl reload
 else
     ok "Se iniciará al entrar en Hyprland"

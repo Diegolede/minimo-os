@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: MIT
+# Copyright (c) 2026 Diego Ledesma (TRN1) — Minimo OS
+# Historial del portapapeles: wl-paste avisa cada copia (sin sondeo) y cliphist la guarda.
+[Unit]
+Description=Minimo OS: historial del portapapeles (cliphist)
+PartOf=graphical-session.target
+After=graphical-session.target
+Requisite=graphical-session.target
+
+[Service]
+ExecStart=/usr/bin/wl-paste --watch /usr/bin/cliphist -max-items 200 store
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target

@@ -11,6 +11,7 @@ Column {
     id: root
     signal done()
     signal desktops()
+    signal clipboard()
     spacing: 18
 
     readonly property var sliders: QuickItems.pinnedSliders
@@ -23,6 +24,7 @@ Column {
         else if (id === "record") { if (Recorder.recording) Recorder.stop(); else Recorder.start(400); root.done() }
         else if (id === "capture") { QuickItems.run("sleep 0.3; " + root.shotCmd); root.done() }
         else if (id === "desktops") root.desktops()
+        else if (id === "clipboard") root.clipboard()
         else { const c = QuickItems.custom(id); if (c) { QuickItems.run(c.cmd); root.done() } }
     }
 

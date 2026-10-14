@@ -19,7 +19,8 @@ Singleton {
         { id: "terminal", label: "Terminal", icon: "terminal", slider: false },
         { id: "record", label: "Grabar pantalla", icon: "record", slider: false },
         { id: "capture", label: "Captura", icon: "capture", slider: false },
-        { id: "desktops", label: "Escritorios", icon: "desktops", slider: false }
+        { id: "desktops", label: "Escritorios", icon: "desktops", slider: false },
+        { id: "clipboard", label: "Portapapeles", icon: "clipboard", slider: false }
     ]
 
     function isSlider(id) { return id === "volume" || id === "brightness" || id === "vibrance" }

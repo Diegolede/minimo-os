@@ -269,6 +269,11 @@ PanelWindow {
             if (cmd === "show") { win.shown = true; hideTimer.stop() }
             else if (cmd === "hide") { win.expanded = false; win.shown = false }
             else if (cmd === "open") win.expanded = true
+            else if (cmd === "clipboard") {
+                // Super+V: abre la isla en el portapapeles (o la cierra si ya está ahí).
+                if (win.expanded && menu.page === "clip") win.collapse()
+                else { win.panel = false; win.expanded = true; menu.showClipboard() }
+            }
             else if (cmd === "close") win.collapse()
             else if (cmd === "status" || cmd === "apps") {
                 // Si ya está abierto el otro panel, cambiar a este en vez de cerrar.

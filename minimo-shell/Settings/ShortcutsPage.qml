@@ -6,7 +6,7 @@ import Quickshell
 import Quickshell.Io
 import "../Common"
 
-// Atajos de teclado: se generan desde la configuración real (hypr/minimo/atajos.lua)
+// Atajos de teclado: se generan desde la configuración real (hypr/minimo/atajos.lua y hypr/minimo.lua)
 // con scripts/atajos.py. Se leen una vez al abrir la página (sin sondeos) y se
 // pueden filtrar escribiendo.
 Column {
