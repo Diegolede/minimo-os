@@ -178,4 +178,6 @@ Column {
             }
         }
     }
+
+    PinsEditor { width: parent.width }
 }

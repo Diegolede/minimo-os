@@ -78,12 +78,11 @@ Item {
             SearchSection { id: search; width: parent.width; onLaunched: root.done() } }
         Reveal { step: 2; width: parent.width; height: media.implicitHeight; visible: media.player !== null
             MediaSection { id: media; width: parent.width } }
-        Reveal { step: 3; width: parent.width; height: sliders.implicitHeight
-            Column { id: sliders; width: parent.width; spacing: 8
-                VolumeSection { width: parent.width }
-                DisplaySection { width: parent.width } } }
+        Reveal { step: 3; width: parent.width; height: pinned.implicitHeight; visible: pinned.visible
+            PinnedSection { id: pinned; width: parent.width; visible: sliders.length + buttons.length > 0
+                onDone: root.done(); onDesktops: { desks.refresh(); root.page = "desks" } } }
         Reveal { step: 4; width: parent.width; height: actions.implicitHeight
-            ActionsSection { id: actions; anchors.horizontalCenter: parent.horizontalCenter; onDone: root.done(); onDesktops: { desks.refresh(); root.page = "desks" }
+            ActionsSection { id: actions; anchors.horizontalCenter: parent.horizontalCenter; onDone: root.done()
                 onSettings: { root.done(); SettingsState.show() } } }
     }
 
