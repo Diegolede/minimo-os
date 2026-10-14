@@ -25,6 +25,12 @@ Singleton {
         if (path !== "") wallpaperHistory = [path].concat(wallpaperHistory.filter(p => p !== path)).slice(0, 24)
         save()
     }
+    // Quitar un fondo de la lista (y dejar de usarlo si era el actual).
+    function removeWallpaper(path) {
+        wallpaperHistory = wallpaperHistory.filter(p => p !== path)
+        if (wallpaper === path) wallpaper = ""
+        save()
+    }
     function forgetWallpapers(missing) { wallpaperHistory = wallpaperHistory.filter(p => missing.indexOf(p) < 0); save() }
     function setIslandAutoHide(v) { islandAutoHide = v; if (v) islandSmartHide = false; save() }
     // Excluyentes: activar uno apaga el otro.

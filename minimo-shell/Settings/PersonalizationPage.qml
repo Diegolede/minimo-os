@@ -36,6 +36,14 @@ Column {
             if (missing.some(p => DisplayState.wallpaperHistory.indexOf(p) >= 0)) DisplayState.forgetWallpapers(missing)
         }
     }
+    // Quitar un fondo: los de ~/Imágenes/Fondos van a la papelera (gio trash; si no está, se borran);
+    // los de otras carpetas solo salen de la lista. Si era el actual, queda sin fondo.
+    function remove(path, owned) {
+        DisplayState.removeWallpaper(path)
+        root.images = root.images.filter(p => p !== path)
+        if (owned) { trash.command = ["sh", "-c", 'gio trash -- "$1" 2>/dev/null || rm -f -- "$1"', "sh", path]; trash.running = true }
+    }
+    Process { id: trash; onExited: root.refresh() }
     Process {
         id: picker
         command: ["zenity", "--file-selection", "--title=Elegir fondo de pantalla",
@@ -56,49 +64,11 @@ Column {
 
         Repeater {
             model: root.images
-            delegate: Item {
-                required property string modelData
-                readonly property bool current: modelData === DisplayState.wallpaper
+            delegate: WallpaperTile {
                 width: grid.tileW; height: Math.round(grid.tileW * 10 / 16)
-
-                Image {
-                    id: thumb
-                    anchors.fill: parent; anchors.margins: 4
-                    source: "file://" + modelData
-                    sourceSize: Qt.size(400, 250)
-                    fillMode: Image.PreserveAspectCrop
-                    asynchronous: true
-                    visible: false
-                }
-                Item {
-                    id: mask
-                    anchors.fill: thumb
-                    visible: false
-                    layer.enabled: true
-                    layer.smooth: true
-                    Rectangle { anchors.fill: parent; radius: 14; antialiasing: true }
-                }
-                Rectangle { anchors.fill: thumb; radius: 14; color: Theme.field }
-                MultiEffect {
-                    anchors.fill: thumb
-                    source: thumb
-                    maskEnabled: true
-                    maskSource: mask
-                    maskThresholdMin: 0.5
-                    maskSpreadAtMin: 1.0
-                }
-                Rectangle {
-                    anchors.fill: parent; radius: 18
-                    color: "transparent"
-                    border.width: current ? 2.5 : (tm.containsMouse ? 1.5 : 0)
-                    border.color: current ? Theme.textPrimary : Theme.track
-                    antialiasing: true
-                }
-                MouseArea {
-                    id: tm
-                    anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
-                    onClicked: DisplayState.setWallpaper(modelData)
-                }
+                owned: path.startsWith(root.mainDir + "/")
+                onPicked: DisplayState.setWallpaper(path)
+                onRemoveRequested: root.remove(path, owned)
             }
         }
     }
