@@ -3,6 +3,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Widgets
 import "../Common"
 
 // Una ventana en la vista: captura (un solo cuadro, no en vivo) o, si no hay captura,
@@ -22,22 +23,25 @@ Item {
     readonly property real frameH: height - 30
     readonly property real frameW: Math.min(width, frameH * aspect)
 
-    Rectangle {
+    Item {
         id: frame
         anchors.horizontalCenter: parent.horizontalCenter
         width: tile.frameW; height: Math.min(tile.frameH, tile.frameW / tile.aspect)
         y: (tile.frameH - height) / 2
-        radius: 14
-        color: Theme.field
-        border.width: tile.selected ? 3 : 1
-        border.color: tile.selected ? Theme.fill : Theme.track
         scale: ma.pressed ? 0.98 : 1
         Behavior on scale { NumberAnimation { duration: 120 } }
-        Behavior on border.width { NumberAnimation { duration: 120 } }
+
+    // ClippingRectangle recorta el contenido a las esquinas redondeadas (shader propio de
+    // Quickshell, sin capa intermedia): la captura, el icono y la etiqueta quedan dentro.
+    ClippingRectangle {
+        id: clipBox
+        anchors.fill: parent
+        radius: 14
+        color: Theme.field
 
         ScreencopyView {
             id: shot
-            anchors.fill: parent; anchors.margins: 3
+            anchors.fill: parent
             visible: hasContent
             captureSource: tile.capture ? tile.source : null
             live: false
@@ -56,6 +60,16 @@ Item {
             width: bt.implicitWidth + 16; height: 22; radius: 11
             color: Theme.card
             Text { id: bt; anchors.centerIn: parent; text: tile.badge; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 11 }
+        }
+    }
+        // Borde y selección por encima del contenido recortado, con el mismo radio.
+        Rectangle {
+            anchors.fill: parent
+            radius: clipBox.radius
+            color: "transparent"
+            border.width: tile.selected ? 3 : 1
+            border.color: tile.selected ? Theme.fill : Theme.track
+            Behavior on border.width { NumberAnimation { duration: 120 } }
         }
     }
     // Título pegado a la captura (no al fondo de la celda): misma distancia en todas.
