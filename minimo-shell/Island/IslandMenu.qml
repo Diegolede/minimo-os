@@ -13,8 +13,8 @@ Item {
     property bool open: false
     readonly property bool searchFocused: search.hasFocus
     property alias character: chr
-    property string page: "menu"   // "menu" | "desks" | "clip" | "cal"
-    implicitHeight: (page === "desks" ? desks.implicitHeight : page === "clip" ? clip.implicitHeight : page === "cal" ? cal.implicitHeight : col.implicitHeight) + 40
+    property string page: "menu"   // "menu" | "desks" | "clip" | "cal" | "notes"
+    implicitHeight: (page === "desks" ? desks.implicitHeight : page === "clip" ? clip.implicitHeight : page === "cal" ? cal.implicitHeight : page === "notes" ? notes.implicitHeight : col.implicitHeight) + 40
 
     function showClipboard() { clip.refresh(); page = "clip" }
 
@@ -28,7 +28,7 @@ Item {
         running: root.open && root.stage < 6
         onTriggered: root.stage++
     }
-    onOpenChanged: if (!open) { stage = 0; page = "menu"; actions.reset() }
+    onOpenChanged: if (!open) { stage = 0; page = "menu"; actions.reset(); notes.reset() }
 
     SystemClock { id: clock; precision: SystemClock.Minutes }
 
@@ -89,7 +89,8 @@ Item {
             visible: QuickItems.pinnedSliders.length + QuickItems.pinnedButtons.length > 0
             PinnedSection { id: pinned; width: parent.width
                 onDone: root.done(); onDesktops: { desks.refresh(); root.page = "desks" }
-                onClipboard: root.showClipboard() } }
+                onClipboard: root.showClipboard()
+                onNotes: root.page = "notes" } }
         Reveal { step: 4; width: parent.width; height: actions.implicitHeight
             ActionsSection { id: actions; anchors.horizontalCenter: parent.horizontalCenter; onDone: root.done()
                 onSettings: { root.done(); SettingsState.show() } } }
@@ -133,6 +134,19 @@ Item {
         opacity: root.page === "cal" ? 1 : 0
         visible: opacity > 0
         enabled: root.page === "cal"
+        Behavior on x { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
+        Behavior on opacity { NumberAnimation { duration: 220 } }
+        onBack: root.page = "menu"
+    }
+
+    NotesView {
+        id: notes
+        x: root.page === "notes" ? 20 : root.width * 0.3
+        y: 20
+        width: root.width - 40
+        opacity: root.page === "notes" ? 1 : 0
+        visible: opacity > 0
+        enabled: root.page === "notes"
         Behavior on x { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
         Behavior on opacity { NumberAnimation { duration: 220 } }
         onBack: root.page = "menu"

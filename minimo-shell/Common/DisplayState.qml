@@ -20,7 +20,7 @@ Singleton {
     property string theme: "light"          // "light" | "dark"
     property int sleepMinutes: 1            // dormir tras inactividad (1, 2 o 5 min)
     // Menú de la isla: elementos fijados (en orden) y accesos propios { id, label, cmd }.
-    property var pins: ["volume", "brightness", "vibrance", "terminal", "record", "capture", "desktops"]
+    property var pins: ["volume", "brightness", "vibrance", "terminal", "record", "capture", "desktops", "notes", "browser", "files"]
     property var customItems: []
     property var pinOrder: []               // orden de todos los elementos del menú (fijados o no)
     // Fondo animado (video o GIF con mpvpaper). Vacío = fondo estático.

@@ -13,6 +13,7 @@ Column {
     signal done()
     signal desktops()
     signal clipboard()
+    signal notes()
     spacing: 18
 
     readonly property var sliders: QuickItems.pinnedSliders
@@ -26,6 +27,9 @@ Column {
         else if (id === "capture") { Quickshell.execDetached(["sh", "-c", 'sleep 0.3; exec "$0" area', root.shotScript]); root.done() }
         else if (id === "desktops") root.desktops()
         else if (id === "clipboard") root.clipboard()
+        else if (id === "notes") root.notes()
+        // Navegador / archivos: la isla se cierra solo si se lanzó; si no, aviso en línea.
+        else if (id === "browser" || id === "files") Launch.open(id)
         else { const c = QuickItems.custom(id); if (c) { QuickItems.run(c.cmd); root.done() } }
     }
 
@@ -71,5 +75,19 @@ Column {
                 onActivated: root.activate(b.modelData)
             }
         }
+    }
+
+    Connections {
+        target: Launch
+        function onLaunched() { root.done() }
+    }
+    // Error al abrir (no bloquea; desaparece solo).
+    Text {
+        width: parent.width
+        visible: Launch.error !== ""
+        horizontalAlignment: Text.AlignHCenter
+        wrapMode: Text.WordWrap
+        text: Launch.error
+        color: Theme.danger; font.family: Theme.font; font.pixelSize: 12
     }
 }
