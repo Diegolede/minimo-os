@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Diego Ledesma (TRN1) — Minimo OS
 import QtQuick
+import Quickshell.Widgets
 import Quickshell
 import "../Common"
 import "../Character"
@@ -76,10 +77,27 @@ Item {
             spacing: 8
             opacity: visible ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: Theme.durFast } }
+            // Con miniatura (captura): imagen apaisada de esquinas redondeadas; si no, icono de la app.
+            ClippingRectangle {
+                id: thumbBox
+                readonly property string thumb: Notifs.thumbOf(root.notif)
+                visible: thumb !== "" && th.status === Image.Ready
+                anchors.verticalCenter: parent.verticalCenter
+                width: 40; height: 26; radius: 6
+                color: Theme.field
+                Image {
+                    id: th
+                    anchors.fill: parent
+                    source: thumbBox.thumb
+                    sourceSize: Qt.size(120, 78)
+                    fillMode: Image.PreserveAspectCrop
+                    asynchronous: true; cache: false; smooth: true
+                }
+            }
             Image {
                 anchors.verticalCenter: parent.verticalCenter
                 width: 18; height: 18; sourceSize: Qt.size(36, 36)
-                source: Notifs.iconOf(root.notif)
+                source: Notifs.thumbOf(root.notif) === "" ? Notifs.iconOf(root.notif) : ""
                 visible: status === Image.Ready
                 asynchronous: true; smooth: true
             }

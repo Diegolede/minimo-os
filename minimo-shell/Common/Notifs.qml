@@ -37,6 +37,16 @@ Singleton {
         return e ? Quickshell.iconPath(e.icon, true) : ""
     }
 
+    // Miniatura (p. ej. una captura): la imagen de la notificación si es un archivo/imagen propia
+    // (hint image-path o image-data), no un icono de app.
+    function thumbOf(n) {
+        if (!n) return ""
+        const h = n.hints || {}
+        const p = h["image-path"] || h["image_path"] || ""
+        if (typeof p === "string" && (p.startsWith("file://") || p.startsWith("/"))) return p.startsWith("/") ? "file://" + p : p
+        return n.image && !n.appIcon && n.image !== "" ? n.image : ""
+    }
+
     // Saca una notificación concreta de la cola. Nunca "la primera a ciegas": invocar una
     // acción puede cerrar la notificación (closed → filtro) antes de que volvamos acá, y
     // quitar queue[0] después se llevaría la siguiente sin mostrarla.
@@ -51,7 +61,9 @@ Singleton {
         const n = current
         if (!n) return
         const def = Array.from(n.actions || []).find(a => a.identifier === "default")
-        if (def) def.invoke()
+        const open = n.hints ? n.hints["x-minimo-open"] : ""
+        if (typeof open === "string" && open.startsWith("/")) Quickshell.execDetached(["xdg-open", open])   // captura: abrirla
+        else if (def) def.invoke()
         else Quickshell.execDetached([Qt.resolvedUrl("../scripts/focus-app.py").toString().replace("file://", ""),
                                       n.desktopEntry || "", n.appName || ""])
         finish(n)
