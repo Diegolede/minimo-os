@@ -20,13 +20,13 @@ Column {
     // Fila principal.
     Rectangle {
         width: parent.width; height: 52; radius: root.radius
-        color: rowMouse.containsMouse ? Theme.hover : Theme.field
+        color: rowMouse.containsMouse ? Theme.hover : Theme.surface; border.width: 1; border.color: Theme.track
         Behavior on color { ColorAnimation { duration: 140 } }
         Rectangle {
             id: badge
             x: 8; anchors.verticalCenter: parent.verticalCenter
             width: 36; height: 36; radius: 18
-            color: Network.wifiEnabled ? Theme.fill : Theme.raised
+            color: Network.wifiEnabled ? Theme.fill : Theme.field
             Icon { anchors.centerIn: parent; name: "wifi"; size: 18; tone: Network.wifiEnabled ? "white" : "gray" }
         }
         Column {
@@ -57,7 +57,7 @@ Column {
         visible: root.expanded && Network.wifiEnabled
         height: visible ? Math.min(listCol.implicitHeight + 12, 300) : 0
         radius: root.radius
-        color: Theme.field
+        color: Theme.surface; border.width: 1; border.color: Theme.surfaceBorder
         clip: true
         Flickable {
             anchors.fill: parent; anchors.margins: 6
@@ -79,7 +79,7 @@ Column {
                         width: listCol.width
                         Rectangle {
                             width: parent.width; height: 38; radius: 12
-                            color: nm.containsMouse ? Theme.raised : "transparent"
+                            color: nm.containsMouse ? Theme.hover : "transparent"
                             Text {
                                 x: 14; anchors.verticalCenter: parent.verticalCenter
                                 width: parent.width - 100; elide: Text.ElideRight
@@ -109,7 +109,7 @@ Column {
                         Rectangle {
                             visible: root.askFor === net.modelData.ssid
                             width: parent.width; height: visible ? 40 : 0; radius: 20
-                            color: Theme.raised
+                            color: Theme.field
                             border.width: 1; border.color: Theme.track
                             TextInput {
                                 id: pass

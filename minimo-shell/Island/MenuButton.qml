@@ -21,7 +21,8 @@ Item {
         id: circle
         anchors.horizontalCenter: parent.horizontalCenter
         width: 52; height: 52; radius: 26
-        color: (btn.armed || btn.active) ? Theme.fill : (mouse.containsMouse ? Theme.hover : Theme.field)
+        color: (btn.armed || btn.active) ? Theme.fill : (mouse.containsMouse ? Theme.hover : Theme.surface)
+        border.width: (btn.armed || btn.active) ? 0 : 1; border.color: Theme.surfaceBorder
         scale: mouse.pressed ? 0.92 : 1
         Behavior on color { ColorAnimation { duration: Theme.durFast } }
         Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutQuad } }

@@ -119,7 +119,7 @@ Item {
                     required property var modelData
                     anchors.verticalCenter: parent.verticalCenter
                     width: at.implicitWidth + 20; height: 24; radius: 12
-                    color: am.containsMouse ? Theme.hover : Theme.field
+                    color: am.containsMouse ? Theme.hover : Theme.surface; border.width: 1; border.color: Theme.track
                     Behavior on color { ColorAnimation { duration: 120 } }
                     Text { id: at; anchors.centerIn: parent; text: modelData.text; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.Medium }
                     MouseArea { id: am; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: Notifs.invoke(modelData) }

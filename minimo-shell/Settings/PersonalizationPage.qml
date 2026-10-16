@@ -87,7 +87,7 @@ Column {
         width: parent.width
         height: ap.implicitHeight
         radius: 20
-        color: Theme.field
+        color: Theme.surface; border.width: 1; border.color: Theme.track
         Column {
             id: ap
             width: parent.width
@@ -96,7 +96,7 @@ Column {
                 Text { anchors.left: parent.left; anchors.leftMargin: 18; anchors.verticalCenter: parent.verticalCenter; text: "Apariencia"; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 14 }
                 Rectangle {
                     anchors.right: parent.right; anchors.rightMargin: 16; anchors.verticalCenter: parent.verticalCenter
-                    width: 184; height: 32; radius: 16; color: Theme.raised
+                    width: 184; height: 32; radius: 16; color: Theme.field
                     Row {
                         anchors.fill: parent; anchors.margins: 3
                         Repeater {
@@ -105,7 +105,7 @@ Column {
                                 required property var modelData
                                 readonly property bool cur: DisplayState.theme === modelData.id
                                 width: parent.width / 2; height: parent.height; radius: height / 2
-                                color: cur ? Theme.fill : (thm.containsMouse ? Theme.field : "transparent")
+                                color: cur ? Theme.fill : (thm.containsMouse ? Theme.hover : "transparent")
                                 Text { anchors.centerIn: parent; text: modelData.label; color: parent.cur ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: parent.cur ? Font.DemiBold : Font.Normal }
                                 MouseArea { id: thm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: DisplayState.setTheme(modelData.id) }
                             }
@@ -121,7 +121,7 @@ Column {
         width: parent.width
         height: opts.implicitHeight
         radius: 20
-        color: Theme.field
+        color: Theme.surface; border.width: 1; border.color: Theme.track
         Column {
             id: opts
             width: parent.width
@@ -161,7 +161,7 @@ Column {
                 }
                 Rectangle {
                     anchors.right: parent.right; anchors.rightMargin: 16; anchors.verticalCenter: parent.verticalCenter
-                    width: 168; height: 32; radius: 16; color: Theme.raised
+                    width: 168; height: 32; radius: 16; color: Theme.field
                     Row {
                         anchors.fill: parent; anchors.margins: 3
                         Repeater {
@@ -170,7 +170,7 @@ Column {
                                 required property int modelData
                                 readonly property bool cur: DisplayState.sleepMinutes === modelData
                                 width: parent.width / 3; height: parent.height; radius: height / 2
-                                color: cur ? Theme.fill : (zm.containsMouse ? Theme.field : "transparent")
+                                color: cur ? Theme.fill : (zm.containsMouse ? Theme.hover : "transparent")
                                 Text { anchors.centerIn: parent; text: modelData + " min"; color: parent.cur ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: parent.cur ? Font.DemiBold : Font.Normal }
                                 MouseArea { id: zm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: DisplayState.setSleepMinutes(modelData) }
                             }

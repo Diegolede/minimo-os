@@ -14,7 +14,7 @@ Rectangle {
     readonly property string fileName: file.substring(file.lastIndexOf("/") + 1)
     height: col.implicitHeight
     radius: 20
-    color: Theme.field
+    color: Theme.surface; border.width: 1; border.color: Theme.track
 
     Process {
         id: picker
@@ -56,7 +56,6 @@ Rectangle {
                 }
                 PillButton {
                     text: root.file !== "" ? "Cambiar…" : "Elegir…"
-                    raised: true
                     opacity: LiveWallpaper.available ? 1 : 0.4
                     enabled: LiveWallpaper.available
                     onClicked: if (!picker.running) { root.pickerOpened(); picker.running = true }

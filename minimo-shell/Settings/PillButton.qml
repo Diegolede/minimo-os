@@ -3,18 +3,17 @@
 import QtQuick
 import "../Common"
 
-// Botón píldora (gris claro, blanco si `raised`, con borde si `outlined`; negro si `primary`).
+// Botón píldora: superficie blanca (negra en oscuro) con filete; `outlined` sin relleno; `primary` negro.
 Rectangle {
     id: b
     property string text
     property string icon: ""
     property bool outlined: false
     property bool primary: false
-    property bool raised: false        // sobre una tarjeta gris: fondo blanco
     signal clicked()
     width: r.implicitWidth + 32; height: 36; radius: 18
-    color: primary ? (m.containsMouse ? Theme.fillHover : Theme.fill) : (m.containsMouse ? Theme.hover : (outlined ? "transparent" : raised ? Theme.raised : Theme.field))
-    border.width: outlined ? 1 : 0; border.color: Theme.track
+    color: primary ? (m.containsMouse ? Theme.fillHover : Theme.fill) : (m.containsMouse ? Theme.hover : (outlined ? "transparent" : Theme.surface))
+    border.width: primary ? 0 : 1; border.color: outlined ? Theme.dot : Theme.surfaceBorder
     Row {
         id: r
         anchors.centerIn: parent; spacing: 8

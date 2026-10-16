@@ -84,7 +84,7 @@ Column {
                 width: parent.width
                 height: list.implicitHeight
                 radius: 20
-                color: Theme.field
+                color: Theme.surface; border.width: 1; border.color: Theme.track
                 Column {
                     id: list
                     width: parent.width

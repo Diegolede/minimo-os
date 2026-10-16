@@ -92,7 +92,7 @@ Item {
 
         Title { text: "En segundo plano" }
         Rectangle {
-            width: parent.width; radius: 18; color: Theme.field
+            width: parent.width; radius: 18; color: Theme.surface; border.width: 1; border.color: Theme.track
             height: (root.items.length === 0 ? empty.height : list.implicitHeight) + 8
             Behavior on height { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
             clip: true
@@ -145,7 +145,7 @@ Item {
                         Rectangle {
                             id: menuBox
                             x: 12; y: 40; width: parent.width - 24; radius: 16
-                            color: Theme.raised
+                            color: Theme.field
                             height: row.menuOpen ? menuCol.implicitHeight + 8 : 0
                             opacity: row.menuOpen ? 1 : 0
                             visible: height > 0

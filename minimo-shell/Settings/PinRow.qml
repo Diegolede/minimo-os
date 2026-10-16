@@ -23,7 +23,7 @@ Item {
         id: badge
         x: 16; anchors.verticalCenter: parent.verticalCenter
         width: 32; height: 32; radius: 16
-        color: Theme.raised
+        color: Theme.field
         Icon { anchors.centerIn: parent; visible: row.icon !== ""; name: row.icon; size: 16; tone: "dark" }
         Text {
             anchors.centerIn: parent; visible: row.icon === ""
@@ -52,7 +52,8 @@ Item {
             visible: row.removable
             anchors.verticalCenter: parent.verticalCenter
             width: rl.implicitWidth + 24; height: 28; radius: 14
-            color: row.armed ? Theme.danger : (rm.containsMouse ? Theme.hover : Theme.raised)
+            color: row.armed ? Theme.danger : (rm.containsMouse ? Theme.hover : Theme.surface)
+            border.width: row.armed ? 0 : 1; border.color: Theme.surfaceBorder
             Behavior on color { ColorAnimation { duration: Theme.durFast } }
             Text { id: rl; anchors.centerIn: parent; text: row.armed ? "Confirmar" : "Eliminar"; color: row.armed ? "#FFFFFF" : Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: row.armed ? Font.DemiBold : Font.Normal }
             MouseArea {
