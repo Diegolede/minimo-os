@@ -32,36 +32,28 @@ Column {
         Column {
             id: list
             width: parent.width
+            // Una sola lista en el orden del menú: catálogo y accesos propios mezclados.
             Repeater {
-                model: QuickItems.builtins
+                model: QuickItems.order
                 delegate: PinRow {
-                    required property var modelData
+                    id: pr
+                    required property string modelData
                     required property int index
+                    readonly property var it: QuickItems.item(modelData)
+                    readonly property bool isCustom: QuickItems.custom(modelData) !== null
                     width: list.width
-                    icon: modelData.icon
-                    text: modelData.label
-                    detail: modelData.slider ? "Control deslizante" : ""
-                    pinned: QuickItems.pinned(modelData.id)
-                    canPin: QuickItems.canPin(modelData.id)
-                    last: index === QuickItems.builtins.length - 1 && root.customs.length === 0
-                    onToggled: v => QuickItems.setPinned(modelData.id, v)
-                }
-            }
-            Repeater {
-                model: root.customs
-                delegate: PinRow {
-                    required property var modelData
-                    required property int index
-                    width: list.width
-                    icon: ""
-                    text: modelData.label
-                    detail: modelData.cmd
-                    removable: true
-                    pinned: QuickItems.pinned(modelData.id)
-                    canPin: QuickItems.canPin(modelData.id)
-                    last: index === root.customs.length - 1
-                    onToggled: v => QuickItems.setPinned(modelData.id, v)
-                    onRemoveRequested: QuickItems.removeCustom(modelData.id)
+                    icon: isCustom ? "" : (it?.icon ?? "")
+                    text: it?.label ?? ""
+                    detail: isCustom ? it.cmd : (it?.slider ? "Control deslizante" : "")
+                    removable: isCustom
+                    pinned: QuickItems.pinned(modelData)
+                    canPin: QuickItems.canPin(modelData)
+                    canUp: index > 0
+                    canDown: index < QuickItems.order.length - 1
+                    last: index === QuickItems.order.length - 1
+                    onToggled: v => QuickItems.setPinned(modelData, v)
+                    onMoveRequested: d => QuickItems.move(modelData, d)
+                    onRemoveRequested: QuickItems.removeCustom(modelData)
                 }
             }
         }

@@ -3,6 +3,7 @@
 pragma Singleton
 import QtQuick
 import Quickshell
+import "pinorder.js" as PinOrder
 
 // Catálogo de lo que se puede fijar en el menú de la isla y reglas de fijado.
 // El estado (qué está fijado, en qué orden, y los accesos propios) vive en DisplayState.
@@ -28,8 +29,14 @@ Singleton {
     function exists(id) { return builtins.some(b => b.id === id) || custom(id) !== null }
 
     // Fijados que existen (ignora accesos propios borrados).
-    readonly property var pinnedSliders: DisplayState.pins.filter(p => isSlider(p))
-    readonly property var pinnedButtons: DisplayState.pins.filter(p => !isSlider(p) && exists(p)).slice(0, maxButtons)
+    // Orden de todos los elementos (catálogo + propios); define el orden en la isla.
+    readonly property var allIds: builtins.map(b => b.id).concat(DisplayState.customItems.map(c => c.id))
+    readonly property var order: PinOrder.full(DisplayState.pinOrder, DisplayState.pins, allIds)
+    readonly property var orderedPins: PinOrder.sortPins(DisplayState.pins, order)
+    readonly property var pinnedSliders: orderedPins.filter(p => isSlider(p))
+    readonly property var pinnedButtons: orderedPins.filter(p => !isSlider(p)).slice(0, maxButtons)
+    function item(id) { return builtins.find(b => b.id === id) ?? custom(id) }
+    function move(id, delta) { DisplayState.setPinOrder(PinOrder.move(order, id, delta)) }
     readonly property bool full: pinnedButtons.length >= maxButtons
 
     function pinned(id) { return DisplayState.pins.indexOf(id) >= 0 }
@@ -37,6 +44,8 @@ Singleton {
     function setPinned(id, on) {
         const rest = DisplayState.pins.filter(p => p !== id)
         if (on && !canPin(id)) return
+        // Congela el orden actual la primera vez, para que reactivar no lo mueva al final.
+        if (DisplayState.pinOrder.length === 0) DisplayState.pinOrder = order.slice()
         DisplayState.setPins(on ? rest.concat([id]) : rest)
     }
     function addCustom(label, cmd) {
@@ -50,6 +59,7 @@ Singleton {
     function removeCustom(id) {
         DisplayState.setCustomItems(DisplayState.customItems.filter(c => c.id !== id))
         DisplayState.setPins(DisplayState.pins.filter(p => p !== id))
+        DisplayState.setPinOrder(DisplayState.pinOrder.filter(p => p !== id))
     }
     function run(cmd) { Quickshell.execDetached(["sh", "-c", cmd]) }
 }

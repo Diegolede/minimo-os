@@ -29,15 +29,24 @@ Column {
         else { const c = QuickItems.custom(id); if (c) { QuickItems.run(c.cmd); root.done() } }
     }
 
-    Column {
+    // Deslizadores en el orden elegido en Ajustes: volumen antes o después del bloque
+    // de pantalla (brillo y saturación van juntos en DisplaySection, en ese orden).
+    Item {
+        id: sl
         width: parent.width
-        spacing: 8
         visible: root.sliders.length > 0
-        // El orden de los deslizadores sigue el del catálogo (volumen, brillo, saturación).
-        VolumeSection { width: parent.width; visible: ready && root.sliders.indexOf("volume") >= 0 }
+        readonly property int volAt: root.sliders.indexOf("volume")
+        readonly property bool volFirst: volAt === 0
+        readonly property real volH: vol.visible ? vol.height : 0
+        readonly property real dispH: disp.visible ? disp.height : 0
+        readonly property real gap: vol.visible && disp.visible ? 8 : 0
+        height: volH + dispH + gap
+        VolumeSection { id: vol; width: parent.width; visible: ready && sl.volAt >= 0; y: sl.volFirst ? 0 : sl.dispH + sl.gap }
         DisplaySection {
+            id: disp
             width: parent.width
             visible: brightness || vibrance
+            y: sl.volFirst ? sl.volH + sl.gap : 0
             brightness: root.sliders.indexOf("brightness") >= 0
             vibrance: root.sliders.indexOf("vibrance") >= 0
         }

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Diego Ledesma (TRN1) — Minimo OS
+pragma ComponentBehavior: Bound
 import QtQuick
 import "../Common"
 
@@ -15,7 +16,10 @@ Item {
     property bool removable: false
     property bool last: false
     property bool armed: false
+    property bool canUp: false
+    property bool canDown: false
     signal toggled(bool v)
+    signal moveRequested(int delta)
     signal removeRequested()
     implicitHeight: 56
 
@@ -48,6 +52,28 @@ Item {
         anchors.right: parent.right; anchors.rightMargin: 16
         anchors.verticalCenter: parent.verticalCenter
         spacing: 12
+        // Reordenar: subir / bajar (deshabilitado en los extremos).
+        Row {
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 4
+            Repeater {
+                model: [-1, 1]
+                delegate: Rectangle {
+                    id: mv
+                    required property int modelData
+                    readonly property bool ok: modelData < 0 ? row.canUp : row.canDown
+                    width: 28; height: 28; radius: 14
+                    color: mvm.containsMouse && ok ? Theme.hover : "transparent"
+                    opacity: ok ? 1 : 0.3
+                    Icon { anchors.centerIn: parent; name: "chevron"; size: 16; tone: "dark"; rotation: mv.modelData < 0 ? 180 : 0 }
+                    MouseArea {
+                        id: mvm; anchors.fill: parent; hoverEnabled: true
+                        enabled: mv.ok; cursorShape: Qt.PointingHandCursor
+                        onClicked: row.moveRequested(mv.modelData)
+                    }
+                }
+            }
+        }
         Rectangle {
             visible: row.removable
             anchors.verticalCenter: parent.verticalCenter
