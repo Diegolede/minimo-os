@@ -29,6 +29,9 @@ Rectangle {
     signal outroDone()                  // terminó la salida tras un login correcto
     signal powerOff()
     signal reboot()
+    property var sessions: []           // [{ id, name }] (selector abajo a la izquierda)
+    property string session: ""
+    signal sessionPicked(string id)
     property bool reveal: false         // mostrar la contraseña (ojo)
     property bool caps: false           // Bloq Mayús (deducido de lo que se escribe)
     property int idleMs: 60000          // Minimo se duerme tras 1 min sin actividad
@@ -242,6 +245,16 @@ Rectangle {
         text: "MINIMO OS"
     }
     }   // stage
+
+    SessionPicker {
+        anchors.left: parent.left; anchors.bottom: parent.bottom
+        anchors.leftMargin: 24; anchors.bottomMargin: 20
+        opacity: stage.opacity
+        enabled: !root.busy
+        sessions: root.sessions
+        current: root.session
+        onPicked: id => { root.activity(); root.sessionPicked(id); root.focusField() }
+    }
 
     // Apagar / reiniciar: discretos abajo a la derecha. Primer clic pide confirmación
     // (la etiqueta aparece), el segundo dentro de 3 s ejecuta.

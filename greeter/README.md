@@ -34,3 +34,16 @@ Probar sin cerrar sesión: `MINIMO_GREETER_TEST=1 qs -p greeter` (clave: `minimo
 - Apagar / reiniciar abajo a la derecha: primer clic muestra la etiqueta, el segundo (≤ 3 s)
   ejecuta `systemctl poweroff|reboot` (logind lo permite a la sesión activa del asiento).
 - Vista previa de estados: `qml6 greeter/preview.qml -- --typing|--loading|--success|--caps|--sleep|--power|--dark`.
+
+## Selector de sesión
+
+Abajo a la izquierda aparece la sesión elegida (solo si hay más de una). Se listan
+**Minimo OS** (`minimo-session`, Hyprland; la predeterminada) y las sesiones válidas de
+`/usr/share/wayland-sessions/*.desktop` (se omiten `Hidden=true`/`NoDisplay=true` y las que
+no tienen `Exec`; los códigos `%f %U…` se quitan). Las sesiones X (`xsessions`) no se
+listan: el greeter corre en cage y greetd no inicia un servidor X.
+
+La última elección se guarda en `/var/cache/minimo-greeter/last-session` (carpeta creada
+por `install-greeter.sh` con dueño `greeter`). Si no se puede escribir, simplemente no se
+recuerda y se vuelve a Minimo OS. Variables para pruebas: `MINIMO_SESSIONS_DIR`,
+`MINIMO_GREETER_CACHE`.

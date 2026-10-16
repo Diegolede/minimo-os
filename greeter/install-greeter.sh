@@ -56,6 +56,8 @@ run sudo install -Dm644 "$SRC/config.toml" /etc/greetd/config.toml
 getent passwd greeter >/dev/null || [ "$DRY" = 1 ] || die "El paquete greetd no creó el usuario greeter"
 # el greeter necesita la GPU y el teclado/mouse (seat): grupos video e input
 [ "$DRY" = 1 ] || id -nG greeter | grep -qw video || run sudo usermod -aG video,input greeter
+# última sesión elegida en el selector (la escribe el usuario greeter)
+run sudo install -d -o greeter -g greeter -m755 /var/cache/minimo-greeter
 
 # 3b. Llavero de GNOME: se desbloquea con la clave del inicio (sólo si está instalado)
 PAMF=/etc/pam.d/greetd

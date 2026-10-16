@@ -9,11 +9,21 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Greetd
 import "Common"
+import "Common/sessions.js" as Sessions
 
 ShellRoot {
     id: shell
     readonly property bool test: Quickshell.env("MINIMO_GREETER_TEST") === "1"
     readonly property string session: Quickshell.env("MINIMO_SESSION") || "minimo-session"
+    // Sesiones: Minimo (minimo-session) + las de /usr/share/wayland-sessions válidas.
+    // Las de X (xsessions) no se listan: el greeter corre en cage (Wayland) y greetd no
+    // arranca un servidor X por sí mismo.
+    readonly property string sessionsDir: Quickshell.env("MINIMO_SESSIONS_DIR") || "/usr/share/wayland-sessions"
+    readonly property string cacheDir: Quickshell.env("MINIMO_GREETER_CACHE") || "/var/cache/minimo-greeter"
+    property var sessions: Sessions.parseAll("", shell.session.split(" ").filter(s => s.length))
+    property string chosen: "minimo"
+    property string remembered: ""
+    readonly property var chosenSession: sessions.find(s => s.id === chosen) ?? sessions[0]
     // Respuesta pendiente: la clave escrita se usa para el primer pedido secreto de PAM.
     // Si PAM pide algo más (p. ej. un segundo factor), la píldora muestra ese pedido y lo
     // que se escriba después va directo como respuesta.
@@ -38,6 +48,9 @@ ShellRoot {
             id: login
             anchors.fill: parent
             user: Quickshell.env("MINIMO_USER") || "usuario"
+            sessions: shell.sessions
+            session: shell.chosen
+            onSessionPicked: id => { shell.chosen = id; shell.remember(id) }
             onOutroDone: shell.test ? Qt.quit() : shell.launchSession()
             onCancelled: if (shell.awaiting && !shell.test) { Greetd.cancelSession(); shell.awaiting = false; login.prompt = ""; login.secret = true }
             // logind permite apagar/reiniciar a la sesión activa del asiento (la del greeter)
@@ -59,6 +72,32 @@ ShellRoot {
         }
     }
     Process { id: powerProc }
+
+    // Lista de sesiones (una sola lectura al arrancar; sin sondeos).
+    Process {
+        running: true
+        command: ["sh", "-c", 'for f in "$1"/*.desktop; do [ -f "$f" ] && printf "@@FILE %s\\n" "$f" && cat "$f" && echo; done; exit 0', "sessions", shell.sessionsDir]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                shell.sessions = Sessions.parseAll(text, shell.session.split(" ").filter(s => s.length))
+                shell.chosen = Sessions.pick(shell.sessions, shell.remembered)
+            }
+        }
+    }
+    // Última sesión elegida: /var/cache/minimo-greeter/last-session (la carpeta la crea
+    // install-greeter.sh con dueño greeter). Si no se puede leer/escribir, se usa Minimo.
+    FileView {
+        path: shell.cacheDir + "/last-session"
+        printErrors: false
+        onLoaded: { shell.remembered = text().trim(); shell.chosen = Sessions.pick(shell.sessions, shell.remembered) }
+    }
+    Process { id: rememberProc }
+    function remember(id) {
+        if (shell.test) return
+        // Escritura atómica (temporal + mv); los errores se ignoran (sin permisos: no se recuerda).
+        rememberProc.command = ["sh", "-c", 'printf "%s\\n" "$2" > "$1/last-session.tmp" && mv -f "$1/last-session.tmp" "$1/last-session"', "remember", shell.cacheDir, id]
+        rememberProc.running = true
+    }
     Timer { id: fake; interval: 900; onTriggered: login.password === "minimo" ? login.succeed() : shell.fail("Contraseña incorrecta (prueba: minimo)") }
 
     Connections {
@@ -80,8 +119,8 @@ ShellRoot {
         function onReadyToLaunch() { shell.pending = ""; login.succeed() }
     }
     function launchSession() {
-            Greetd.launch(shell.session.split(" ").filter(s => s.length),
-                          ["XDG_SESSION_TYPE=wayland", "XDG_SESSION_DESKTOP=Hyprland", "XDG_CURRENT_DESKTOP=Hyprland"])
+            const s = shell.chosenSession
+            Greetd.launch(s.exec, Sessions.envFor(s))
     }
     Connections {
         target: Greetd
