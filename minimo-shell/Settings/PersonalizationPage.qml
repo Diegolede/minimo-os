@@ -152,7 +152,7 @@ Column {
             width: parent.width
             SwitchRow {
                 width: parent.width
-                text: I18n.tr("Ocultar isla automáticamente")
+                text: I18n.tr("Ocultar la isla automáticamente")
                 detail: I18n.tr("Se esconde arriba y aparece al pasar el mouse.")
                 checked: DisplayState.islandAutoHide
                 onToggled: v => DisplayState.setIslandAutoHide(v)

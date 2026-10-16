@@ -71,7 +71,7 @@ Item {
             visible: root.editing === "" && Notes.notes.length === 0
             width: parent.width; topPadding: 24; bottomPadding: 24
             horizontalAlignment: Text.AlignHCenter
-            text: I18n.tr("Sin notas. Tocá + para escribir una.")
+            text: I18n.tr("Sin notas. Hacé clic en + para escribir una.")
             color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13
         }
         Flickable {

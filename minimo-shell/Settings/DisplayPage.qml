@@ -197,6 +197,6 @@ Column {
             onIconClicked: DisplayState.set(1.0, DisplayState.brightness)
             onMoved: v => DisplayState.set(Math.abs(v - 1) < 0.04 ? 1.0 : v, DisplayState.brightness)
         }
-        Text { text: I18n.tr("Por software (shader de Hyprland). Tocá la gota para volver al 100%."); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 11 }
+        Text { text: I18n.tr("Por software (shader de Hyprland). Hacé clic en la gota para volver al 100%."); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 11 }
     }
 }
