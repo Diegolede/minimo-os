@@ -32,6 +32,9 @@ Item {
         return ks[ks.length - 1]
     }
     function playRandom(idleMs) { play(pick(idleWeights(idleMs))) }
+    // Mascota: "Jugar" elige entre juegos variados sin repetir los dos últimos.
+    readonly property var playWeights: ({ sway: 1.3, wiggle: 1.2, peekaboo: 1.1, giggle: 1, curious: 0.7, wink: 0.6 })
+    function playGame() { play(pick(playWeights)) }
     function playOpen() { play(pick({ greet: 1.3, happyBounce: 1.1 })) }
     // Clic: ciclo fijo (siempre se ve algo distinto); el primero tras mostrarse es el guiño.
     readonly property var clickCycle: ["wink", "giggle", "wink", "happyBounce", "wink", "curious"]
@@ -41,7 +44,8 @@ Item {
 
     readonly property var anims: ({ hop: hop, doubleHop: doubleHop, giggle: giggle, lookAround: lookAround,
         surprise: surprise, wink: wink, dizzy: dizzy, yawn: yawn, curious: curious,
-        greet: greet, happyBounce: happyBounce, startled: startled })
+        greet: greet, happyBounce: happyBounce, startled: startled,
+        chew: chew, sway: sway, wiggle: wiggle, peekaboo: peekaboo })
 
     function play(name, fromClick) {
         const a = anims[name]
@@ -283,6 +287,93 @@ Item {
         ParallelAnimation {
             NumberAnimation { target: rx.c; property: "eyeHMul"; to: 1; duration: 320; easing.type: Easing.InOutSine }
             NumberAnimation { target: rx.c; property: "eyeWMul"; to: 1; duration: 320; easing.type: Easing.InOutSine }
+        }
+    }
+
+    // ---------- mascota: comer y jugar (sin saltos ni giros; ojos siempre pastillas) ----------
+    // Masticar: mira hacia abajo, entrecierra los ojos con gusto y el cuerpo "mastica"
+    // con squash & stretch rítmico (5 bocados); al final, satisfecho.
+    SequentialAnimation {
+        id: chew
+        ParallelAnimation {
+            NumberAnimation { target: rx.c; property: "lookOverride"; to: 1; duration: 200; easing.type: Easing.OutCubic }
+            NumberAnimation { target: rx.c; property: "oY"; to: 0.55; duration: 240; easing.type: Easing.OutCubic }
+            NumberAnimation { target: rx.c; property: "half"; to: 0.6; duration: 240; easing.type: Easing.OutCubic }
+            NumberAnimation { target: rx.c; property: "rY"; to: rx.s * 0.02; duration: 240; easing.type: Easing.OutCubic }
+        }
+        SequentialAnimation {        // 5 bocados
+            loops: 5
+            Squash { who: rx.c; sx: 1.05; sy: 0.95; ms: 130; ease: Easing.OutQuad }
+            Squash { who: rx.c; sx: 0.98; sy: 1.02; ms: 150; ease: Easing.InOutSine }
+        }
+        ParallelAnimation {
+            Squash { who: rx.c; sx: 1; sy: 1; ms: 220; ease: Easing.OutBack }
+            NumberAnimation { target: rx.c; property: "oY"; to: 0; duration: 280; easing.type: Easing.InOutSine }
+            NumberAnimation { target: rx.c; property: "rY"; to: 0; duration: 280; easing.type: Easing.OutCubic }
+            NumberAnimation { target: rx.c; property: "half"; to: 1; duration: 280; easing.type: Easing.InOutSine }
+            NumberAnimation { target: rx.c; property: "smile"; to: 1; duration: 260; easing.type: Easing.OutCubic }
+        }
+        PauseAnimation { duration: 420 }
+        ParallelAnimation {
+            NumberAnimation { target: rx.c; property: "smile"; to: 0; duration: 320; easing.type: Easing.InOutSine }
+            NumberAnimation { target: rx.c; property: "lookOverride"; to: 0; duration: 320; easing.type: Easing.InOutSine }
+        }
+    }
+    // Vaivén: se inclina a un lado y al otro siguiendo algo con la mirada.
+    SequentialAnimation {
+        id: sway
+        ParallelAnimation {
+            NumberAnimation { target: rx.c; property: "lookOverride"; to: 1; duration: 200; easing.type: Easing.OutCubic }
+            NumberAnimation { target: rx.c; property: "smile"; to: 0.8; duration: 240; easing.type: Easing.OutCubic }
+            NumberAnimation { target: rx.c; property: "rRot"; to: -7; duration: 320; easing.type: Easing.InOutSine }
+            NumberAnimation { target: rx.c; property: "oX"; to: -0.7; duration: 320; easing.type: Easing.InOutSine }
+        }
+        ParallelAnimation {
+            NumberAnimation { target: rx.c; property: "rRot"; to: 7; duration: 520; easing.type: Easing.InOutSine }
+            NumberAnimation { target: rx.c; property: "oX"; to: 0.7; duration: 520; easing.type: Easing.InOutSine }
+        }
+        ParallelAnimation {
+            NumberAnimation { target: rx.c; property: "rRot"; to: -4; duration: 460; easing.type: Easing.InOutSine }
+            NumberAnimation { target: rx.c; property: "oX"; to: -0.4; duration: 460; easing.type: Easing.InOutSine }
+        }
+        ParallelAnimation {
+            NumberAnimation { target: rx.c; property: "rRot"; to: 0; duration: 420; easing.type: Easing.OutBack; easing.overshoot: 1.0 }
+            NumberAnimation { target: rx.c; property: "oX"; to: 0; duration: 420; easing.type: Easing.InOutSine }
+            SequentialAnimation { PauseAnimation { duration: 200 } NumberAnimation { target: rx.c; property: "smile"; to: 0; duration: 300; easing.type: Easing.InOutSine } }
+            SequentialAnimation { PauseAnimation { duration: 200 } NumberAnimation { target: rx.c; property: "lookOverride"; to: 0; duration: 300 } }
+        }
+    }
+    // Contoneo: estremecimiento alegre rápido (squash alternado, sin despegar del suelo).
+    SequentialAnimation {
+        id: wiggle
+        NumberAnimation { target: rx.c; property: "smile"; to: 1; duration: 160; easing.type: Easing.OutCubic }
+        SequentialAnimation {
+            loops: 4
+            Squash { who: rx.c; sx: 1.06; sy: 0.94; ms: 90; ease: Easing.OutQuad }
+            Squash { who: rx.c; sx: 0.95; sy: 1.05; ms: 90; ease: Easing.OutQuad }
+        }
+        Squash { who: rx.c; sx: 1; sy: 1; ms: 260; ease: Easing.OutBack }
+        NumberAnimation { target: rx.c; property: "smile"; to: 0; duration: 320; easing.type: Easing.InOutSine }
+    }
+    // Escondidas: cierra los ojos, espera y los abre grandes con alegría.
+    SequentialAnimation {
+        id: peekaboo
+        ParallelAnimation {
+            NumberAnimation { target: rx.c; properties: "openL,openR"; to: 0.08; duration: 180; easing.type: Easing.InCubic }
+            NumberAnimation { target: rx.c; property: "rScale"; to: 0.95; duration: 220; easing.type: Easing.OutCubic }
+        }
+        PauseAnimation { duration: 520 }
+        ParallelAnimation {
+            NumberAnimation { target: rx.c; properties: "openL,openR"; to: 1; duration: 160; easing.type: Easing.OutCubic }
+            NumberAnimation { target: rx.c; property: "eyeHMul"; to: 1.15; duration: 160; easing.type: Easing.OutCubic }
+            NumberAnimation { target: rx.c; property: "rScale"; to: 1.04; duration: 200; easing.type: Easing.OutBack; easing.overshoot: 1.0 }
+            NumberAnimation { target: rx.c; property: "smile"; to: 1; duration: 200; easing.type: Easing.OutCubic }
+        }
+        PauseAnimation { duration: 360 }
+        ParallelAnimation {
+            NumberAnimation { target: rx.c; property: "eyeHMul"; to: 1; duration: 320; easing.type: Easing.InOutSine }
+            NumberAnimation { target: rx.c; property: "rScale"; to: 1; duration: 320; easing.type: Easing.InOutSine }
+            NumberAnimation { target: rx.c; property: "smile"; to: 0; duration: 360; easing.type: Easing.InOutSine }
         }
     }
 }

@@ -180,6 +180,7 @@ Item {
     function opened() { if (active) { reactions.resetClicks(); reactions.playOpen() } }
     function hop() { if (active && !asleep && !reactions.busy) reactions.play("hop") }
     function react(name) { if (active && !asleep) reactions.play(name) }
+    function playGame() { if (active && !asleep) reactions.playGame() }
     // Clics: dormido → despierta suave. 1 clic → reacción. ≥4 clics en 1,5 s → caricias.
     // `side` (-1..1): dónde cayó el clic respecto del centro (para acurrucarse hacia ahí).
     property var clickTimes: []

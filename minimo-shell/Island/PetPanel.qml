@@ -77,8 +77,8 @@ Item {
 
         Row {
             anchors.horizontalCenter: parent.horizontalCenter
-            MenuButton { icon: "bowl"; label: "Comer"; onActivated: { Pet.feed(); chr.react("giggle") } }
-            MenuButton { icon: "ball"; label: "Jugar"; onActivated: { Pet.play(); chr.react("wink") } }
+            MenuButton { icon: "bowl"; label: "Comer"; onActivated: { Pet.feed(); chr.react("chew") } }
+            MenuButton { icon: "ball"; label: "Jugar"; onActivated: { Pet.play(); chr.playGame() } }
             MenuButton { icon: "moon"; label: "Dormir"; onActivated: { root.done(); napLater.restart() } }
         }
     }
