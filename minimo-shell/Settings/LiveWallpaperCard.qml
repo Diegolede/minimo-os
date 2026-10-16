@@ -68,7 +68,7 @@ Rectangle {
             visible: root.file !== ""
             width: parent.width
             text: "Pausar con ventanas abiertas"
-            detail: "Ahorra GPU y batería: se mueve solo cuando el escritorio está libre. Siempre se pausa en inactividad."
+            detail: "Ahorra GPU y batería: se mueve solo con el escritorio libre. Siempre se pausa en inactividad."
             checked: DisplayState.livePauseCovered
             onToggled: v => DisplayState.setLivePauseCovered(v)
         }
