@@ -5,6 +5,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
+import "livewall.js" as LW
 
 // Fondo animado con mpvpaper (opcional, AUR): un solo proceso para todos los monitores,
 // decodificación por hardware, sin audio. Para gastar lo mínimo se pausa (IPC de mpv):
@@ -23,17 +24,27 @@ Singleton {
 
     Process { running: true; command: ["sh", "-c", "command -v mpvpaper >/dev/null"]; onExited: code => root.available = code === 0 }
 
+    // Sin bindings en running/command: antes \`running: root.active\` se rompía al asignar
+    // \`player.running = false\` para cambiar de archivo, y después de Quitar ya no arrancaba otro.
+    // Ahora el ciclo lo decide Common/livewall.js (nunca dos procesos; reinicio tras exited).
+    property var lw: LW.initial()
+    readonly property string wanted: active ? DisplayState.liveWallpaper : ""
+    onWantedChanged: sync()
+    function sync() {
+        const r = LW.want(lw, wanted, Date.now())
+        lw = r.state
+        if (r.act === "start") {
+            // Borra un socket viejo (de un mpvpaper que murió) y \`exec\`: el PID es el de mpvpaper,
+            // así que detener el Process le llega directo a él.
+            player.command = ["sh", "-c", 'rm -f "$1"; shift; exec mpvpaper "$@"', "mpvwall", root.sock,
+                              "-o", "no-audio loop-file=inf hwdec=auto panscan=1.0 input-ipc-server=" + root.sock, "*", lw.current]
+            player.running = true
+        } else if (r.act === "stop") player.running = false
+    }
     Process {
         id: player
-        running: root.active
-        command: ["mpvpaper", "-o", "no-audio loop-file=inf hwdec=auto panscan=1.0 input-ipc-server=" + root.sock,
-                  "*", DisplayState.liveWallpaper]
         onRunningChanged: if (running) sendLater.restart()
-    }
-    // Cambio de archivo con el reproductor andando: reiniciarlo con el nuevo.
-    Connections {
-        target: DisplayState
-        function onLiveWallpaperChanged() { if (player.running) { player.running = false; Qt.callLater(() => player.running = root.active) } }
+        onExited: { root.lw = LW.exited(root.lw, Date.now()); Qt.callLater(root.sync) }
     }
 
     onPausedChanged: send()

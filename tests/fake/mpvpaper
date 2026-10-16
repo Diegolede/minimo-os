@@ -1,0 +1,7 @@
+#!/bin/sh
+# mpvpaper falso para pruebas: crea el "socket" y queda vivo hasta SIGTERM.
+sock=$(printf '%s' "$2" | sed -n 's/.*input-ipc-server=\([^ ]*\).*/\1/p')
+[ -n "$sock" ] && : > "$sock"
+trap 'rm -f "$sock"; exit 0' TERM INT
+case "$4" in *roto*) exit 1 ;; esac
+while :; do sleep 0.05; done
