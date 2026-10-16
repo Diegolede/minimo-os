@@ -277,15 +277,6 @@ Item {
     property real wobble: 0        // radio del bamboleo de la mirada (mareo)
     property real wobblePh: 0
     property real half: 1          // ojos entrecerrados (bostezo)
-    // Comer (solo los usa la reacción "chew"; en reposo todo vale 0 y no se dibuja nada):
-    property real cheek: 0         // cachetes llenos (0..1): sobresalen de la silueta abajo a los lados
-    property real mouthOn: 0       // la boca existe solo mientras come (Diego no quiere boca fija)
-    property real mouth: 0         // apertura de la boca al masticar (0..1)
-    property real foodT: 0         // bocado: 0 = abajo al frente, 1 = en la boca
-    property real foodK: 0         // tamaño del bocado (0 = no hay)
-    // posición de la boca en la cara (debajo de los ojos, sigue la mirada)
-    readonly property real mouthX: r + r * Math.sin(yaw) * cosP
-    readonly property real mouthY: r + r * Math.sin(Math.min(1.25, Math.asin(sinP) + 0.62))
 
     // ===== Ánimo (lo fija quien usa el personaje, p. ej. el panel de estado) =====
     // "" = normal/feliz · "worried" = preocupado (ojos más chicos e inclinados, sacudón)
@@ -398,21 +389,6 @@ Item {
             Translate { x: c.rX + c.petSide * c.s * 0.045 * c.petK * (c.petLean - 5) / 4; y: c.bounceY + c.danceY + c.rY + c.petHopY }
         ]
 
-        // Cachetes: dos círculos del mismo negro plano, escondidos dentro de la esfera en
-        // reposo; al inflarse asoman por los costados de abajo (sin brillo ni sombra).
-        Repeater {
-            model: c.cheek > 0.001 ? [-1, 1] : []
-            delegate: Rectangle {
-                required property int modelData
-                readonly property real d: c.s * 0.40
-                width: d; height: d; radius: d / 2
-                x: c.r + modelData * c.s * (0.27 + 0.10 * c.cheek) - d / 2
-                y: c.s * 0.64 - d / 2
-                scale: 0.75 + 0.25 * c.cheek
-                color: Theme.sphere
-                antialiasing: true
-            }
-        }
         Rectangle {
             anchors.fill: parent
             radius: width / 2
@@ -475,28 +451,7 @@ Item {
                     }
                 }
             }
-            // Boca de masticar (solo al comer): óvalo del color de los ojos, se abre y cierra.
-            Rectangle {
-                visible: c.mouthOn > 0.01
-                opacity: c.mouthOn
-                width: c.s * (0.15 + 0.03 * c.cheek - 0.03 * c.mouth)
-                height: Math.max(c.s * 0.035, c.s * 0.13 * c.mouth)
-                radius: Math.min(width, height) / 2
-                x: c.mouthX - width / 2; y: c.mouthY - height / 2
-                color: Theme.eye
-                antialiasing: true
-            }
         }
-        }
-        // Bocado: sube desde abajo al frente hasta la boca y entra (se achica dentro de ella).
-        Rectangle {
-            visible: c.foodK > 0.01
-            readonly property real d: c.s * 0.16 * c.foodK
-            width: d; height: d; radius: d / 2
-            x: c.mouthX - d / 2 + (1 - c.foodT) * c.s * 0.06
-            y: c.mouthY - d / 2 + (1 - c.foodT) * c.s * 0.42
-            color: Theme.sphere
-            antialiasing: true
         }
     }
 }
