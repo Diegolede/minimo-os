@@ -69,13 +69,13 @@ Item {
         c.bounceY = 0; c.squashX = 1; c.squashY = 1
         c.lookOverride = 0; c.oX = 0; c.oY = 0
         c.eyeHMul = 1; c.eyeWMul = 1; c.openL = 1; c.openR = 1; c.smile = 0; c.wobble = 0; c.half = 1
-        c.cheek = 0; c.mouth = 0; c.mouthOn = 0; c.foodT = 0; c.foodK = 0
+        c.cheek = 0; c.cheekLR = 0; c.cheekSq = 0; c.foodT = 0; c.foodK = 0
     }
     SequentialAnimation {
         id: settle
         ParallelAnimation {
             NumberAnimation { target: rx.c; properties: "rScale,squashX,squashY,eyeHMul,eyeWMul,openL,openR,half"; to: 1; duration: 160; easing.type: Easing.OutCubic }
-            NumberAnimation { target: rx.c; properties: "rX,rY,rRot,roll,bounceY,lookOverride,oX,oY,smile,wobble,cheek,mouth,mouthOn,foodK"; to: 0; duration: 160; easing.type: Easing.OutCubic }
+            NumberAnimation { target: rx.c; properties: "rX,rY,rRot,roll,bounceY,lookOverride,oX,oY,smile,wobble,cheek,cheekLR,cheekSq,foodK"; to: 0; duration: 160; easing.type: Easing.OutCubic }
         }
         ScriptAction { script: { rx.reset(); if (rx.pending) { rx.current = rx.pending; rx.pending = null; rx.current.start() } } }
     }
@@ -292,53 +292,63 @@ Item {
     }
 
     // ---------- mascota: comer y jugar (sin saltos ni giros; ojos siempre pastillas) ----------
-    // Comer: recibe el bocado → se le llenan los cachetes → mastica (cachetes y boca en
-    // sincronía) → traga → vuelve gradualmente a la normalidad. La boca existe solo durante
-    // esta animación. Una sola animación (play/stopAll/settle): repetir no acumula nada y
-    // si se interrumpe, settle/reset deja cachetes, boca y bocado en 0.
+    // Comer (sin boca): el bocado sube y se funde en la parte baja del cuerpo → se llenan
+    // los cachetes → mastica (cachetes laten alternando izq./der. y se aplastan en cada
+    // mordisco, con un leve squash del cuerpo) → traga (cachetes se vacían, ojos se cierran
+    // un instante) → vuelve gradualmente. Una sola animación (play/stopAll/settle): repetir
+    // no acumula nada y si se interrumpe, settle/reset deja cachetes y bocado en 0.
     SequentialAnimation {
         id: chew
         ScriptAction { script: { rx.c.foodT = 0; rx.c.foodK = 0 } }
-        ParallelAnimation {       // mira el bocado que llega y abre la boca
+        ParallelAnimation {       // mira el bocado que aparece abajo
             NumberAnimation { target: rx.c; property: "lookOverride"; to: 1; duration: 200; easing.type: Easing.OutCubic }
-            NumberAnimation { target: rx.c; property: "oY"; to: 0.45; duration: 240; easing.type: Easing.OutCubic }
-            NumberAnimation { target: rx.c; property: "foodK"; to: 1; duration: 180; easing.type: Easing.OutCubic }
-            NumberAnimation { target: rx.c; property: "mouthOn"; to: 1; duration: 200; easing.type: Easing.OutCubic }
-            NumberAnimation { target: rx.c; property: "mouth"; to: 0.9; duration: 260; easing.type: Easing.OutCubic }
+            NumberAnimation { target: rx.c; property: "oY"; to: 0.55; duration: 240; easing.type: Easing.OutCubic }
+            NumberAnimation { target: rx.c; property: "foodK"; to: 1; duration: 200; easing.type: Easing.OutCubic }
         }
         NumberAnimation { target: rx.c; property: "foodT"; to: 1; duration: 380; easing.type: Easing.InOutSine }
-        ParallelAnimation {       // ñam: entra el bocado, cierra la boca y se inflan los cachetes
-            NumberAnimation { target: rx.c; property: "foodK"; to: 0; duration: 140; easing.type: Easing.InQuad }
-            NumberAnimation { target: rx.c; property: "mouth"; to: 0.1; duration: 160; easing.type: Easing.OutCubic }
+        ParallelAnimation {       // ñam: el bocado desaparece y se inflan los cachetes
+            NumberAnimation { target: rx.c; property: "foodK"; to: 0; duration: 120; easing.type: Easing.InQuad }
             NumberAnimation { target: rx.c; property: "cheek"; to: 1; duration: 320; easing.type: Easing.OutBack }
             NumberAnimation { target: rx.c; property: "half"; to: 0.6; duration: 240; easing.type: Easing.OutCubic }
             NumberAnimation { target: rx.c; property: "oY"; to: 0.2; duration: 240; easing.type: Easing.OutCubic }
             Squash { who: rx.c; sx: 1.04; sy: 0.97; ms: 160; ease: Easing.OutQuad }
         }
-        SequentialAnimation {     // 5 mordiscos: boca abre ↔ cachetes se desinflan un poco
-            loops: 5
+        SequentialAnimation {     // 3 pares de mordiscos: izquierda, derecha
+            loops: 3
             ParallelAnimation {
-                NumberAnimation { target: rx.c; property: "mouth"; to: 0.75; duration: 150; easing.type: Easing.OutQuad }
-                NumberAnimation { target: rx.c; property: "cheek"; to: 0.78; duration: 150; easing.type: Easing.OutQuad }
-                Squash { who: rx.c; sx: 1.0; sy: 1.01; ms: 150; ease: Easing.OutQuad }
+                NumberAnimation { target: rx.c; property: "cheekLR"; to: -1; duration: 160; easing.type: Easing.OutQuad }
+                NumberAnimation { target: rx.c; property: "cheekSq"; to: 1; duration: 160; easing.type: Easing.OutQuad }
+                NumberAnimation { target: rx.c; property: "cheek"; to: 0.85; duration: 160; easing.type: Easing.OutQuad }
+                Squash { who: rx.c; sx: 1.04; sy: 0.96; ms: 160; ease: Easing.OutQuad }
             }
             ParallelAnimation {
-                NumberAnimation { target: rx.c; property: "mouth"; to: 0.08; duration: 170; easing.type: Easing.InOutSine }
-                NumberAnimation { target: rx.c; property: "cheek"; to: 1; duration: 170; easing.type: Easing.InOutSine }
-                Squash { who: rx.c; sx: 1.04; sy: 0.97; ms: 170; ease: Easing.InOutSine }
+                NumberAnimation { target: rx.c; property: "cheekSq"; to: 0; duration: 150; easing.type: Easing.InOutSine }
+                NumberAnimation { target: rx.c; property: "cheek"; to: 1; duration: 150; easing.type: Easing.InOutSine }
+                Squash { who: rx.c; sx: 0.99; sy: 1.01; ms: 150; ease: Easing.InOutSine }
+            }
+            ParallelAnimation {
+                NumberAnimation { target: rx.c; property: "cheekLR"; to: 1; duration: 160; easing.type: Easing.OutQuad }
+                NumberAnimation { target: rx.c; property: "cheekSq"; to: 1; duration: 160; easing.type: Easing.OutQuad }
+                NumberAnimation { target: rx.c; property: "cheek"; to: 0.85; duration: 160; easing.type: Easing.OutQuad }
+                Squash { who: rx.c; sx: 1.04; sy: 0.96; ms: 160; ease: Easing.OutQuad }
+            }
+            ParallelAnimation {
+                NumberAnimation { target: rx.c; property: "cheekSq"; to: 0; duration: 150; easing.type: Easing.InOutSine }
+                NumberAnimation { target: rx.c; property: "cheek"; to: 1; duration: 150; easing.type: Easing.InOutSine }
+                Squash { who: rx.c; sx: 0.99; sy: 1.01; ms: 150; ease: Easing.InOutSine }
             }
         }
-        ParallelAnimation {       // traga: cachetes se vacían, cierra los ojos, pequeño "glup"
-            NumberAnimation { target: rx.c; property: "cheek"; to: 0; duration: 260; easing.type: Easing.InQuad }
-            NumberAnimation { target: rx.c; property: "mouth"; to: 0; duration: 200; easing.type: Easing.OutCubic }
-            NumberAnimation { target: rx.c; property: "half"; to: 0.35; duration: 200; easing.type: Easing.OutCubic }
-            Squash { who: rx.c; sx: 0.97; sy: 1.03; ms: 220; ease: Easing.OutQuad }
+        ParallelAnimation {       // traga: cachetes se vacían, ojos se cierran, pequeño "glup"
+            NumberAnimation { target: rx.c; property: "cheekLR"; to: 0; duration: 200; easing.type: Easing.OutCubic }
+            NumberAnimation { target: rx.c; property: "cheek"; to: 0; duration: 280; easing.type: Easing.InQuad }
+            NumberAnimation { target: rx.c; property: "half"; to: 0.15; duration: 200; easing.type: Easing.OutCubic }
+            Squash { who: rx.c; sx: 0.96; sy: 1.04; ms: 220; ease: Easing.OutQuad }
         }
+        PauseAnimation { duration: 120 }
         ParallelAnimation {       // vuelta gradual a lo normal y satisfecho
             Squash { who: rx.c; sx: 1; sy: 1; ms: 260; ease: Easing.OutBack }
-            NumberAnimation { target: rx.c; property: "mouthOn"; to: 0; duration: 300; easing.type: Easing.InOutSine }
-            NumberAnimation { target: rx.c; property: "oY"; to: 0; duration: 300; easing.type: Easing.InOutSine }
-            NumberAnimation { target: rx.c; property: "half"; to: 1; duration: 300; easing.type: Easing.InOutSine }
+            NumberAnimation { target: rx.c; property: "oY"; to: 0; duration: 320; easing.type: Easing.InOutSine }
+            NumberAnimation { target: rx.c; property: "half"; to: 1; duration: 320; easing.type: Easing.InOutSine }
             NumberAnimation { target: rx.c; property: "smile"; to: 1; duration: 260; easing.type: Easing.OutCubic }
         }
         PauseAnimation { duration: 380 }
