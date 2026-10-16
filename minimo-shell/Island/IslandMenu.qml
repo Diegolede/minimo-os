@@ -28,7 +28,7 @@ Item {
         running: root.open && root.stage < 6
         onTriggered: root.stage++
     }
-    onOpenChanged: if (!open) { stage = 0; page = "menu" }
+    onOpenChanged: if (!open) { stage = 0; page = "menu"; actions.reset() }
 
     SystemClock { id: clock; precision: SystemClock.Minutes }
 
