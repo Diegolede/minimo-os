@@ -228,7 +228,7 @@ PanelWindow {
              : Math.max(Theme.compactW, compact.implicitWidth + Theme.compactPadX * 2) + Math.abs(rubber) * 1.2
         height: win.expanded ? Math.min(menu.implicitHeight, Theme.maxExpandedH)
               : win.panel ? Math.min(win.panelKind === "apps" ? apps.implicitHeight : win.panelKind === "pet" ? pet.implicitHeight : status.implicitHeight, Theme.maxExpandedH)
-              : Theme.compactH + pull * 0.65   // al tirar hacia abajo: se estira y baja un poco
+              : compact.implicitHeight + pull * 0.65   // al tirar hacia abajo: se estira y baja un poco
         x: (win.width - width) / 2 + rubber * 0.5
         y: win.shown ? Theme.topMargin + pull * 0.35 : -height - 64
         radius: Math.min(height / 2, Theme.radiusCard)
@@ -246,7 +246,9 @@ PanelWindow {
 
         IslandCompact {
             id: compact
-            anchors.centerIn: parent
+            anchors.horizontalCenter: parent.horizontalCenter
+            // con vista previa crece hacia abajo desde arriba; si no, centrada (tirón incluido)
+            y: compact.hasShot ? 0 : (parent.height - height) / 2
             active: win.shown && !win.open
             opacity: win.open ? 0 : 1
             visible: opacity > 0
