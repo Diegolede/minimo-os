@@ -80,8 +80,8 @@ def describe(key, act, arg, desc):
         if "launcher toggle" in c: return "Lanzador de Minimo", "Aplicaciones"
         if "recorder toggle" in c: return "Grabar pantalla", "Capturas"
         if "overview toggle" in c: return "Vista de ventanas", "Ventanas"
-        if "slurp" in c and "grim" in c: return "Captura de una zona", "Capturas"
-        if "grim" in c: return "Captura de pantalla completa", "Capturas"
+        if "screenshot.sh area" in c or ("slurp" in c and "grim" in c): return "Captura de una zona", "Capturas"
+        if "screenshot.sh" in c or "grim" in c: return "Captura de pantalla completa", "Capturas"
         prog = c.split()[0] if c.split() else c
         names = {"ghostty": "Terminal", "fuzzel": "Fuzzel (lanzador)"}
         return desc or names.get(prog, "Abrir " + prog), "Aplicaciones"

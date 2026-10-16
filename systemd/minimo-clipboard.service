@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2026 Diego Ledesma (TRN1) — Minimo OS
 # Historial del portapapeles: wl-paste avisa cada copia (sin sondeo) y cliphist la guarda.
+# Dos vigilantes (recomendación de cliphist): uno para texto y otro para imágenes; sin --type,
+# wl-paste elige un solo tipo y las imágenes copiadas desde apps se perdían.
 [Unit]
 Description=Minimo OS: historial del portapapeles (cliphist)
 PartOf=graphical-session.target
@@ -8,7 +10,7 @@ After=graphical-session.target
 Requisite=graphical-session.target
 
 [Service]
-ExecStart=/usr/bin/wl-paste --watch /usr/bin/cliphist -max-items 200 store
+ExecStart=/bin/sh -c 'wl-paste --type text --watch cliphist -max-items 200 store & wl-paste --type image --watch cliphist -max-items 200 store & wait'
 Restart=on-failure
 RestartSec=2
 

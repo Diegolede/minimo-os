@@ -20,7 +20,17 @@ Singleton {
     function refresh() { lister.running = false; lister.running = true }
 
     // Copiar: el elemento vuelve a ser lo último copiado (pegar con Ctrl+V).
-    function copy(item) { Quickshell.execDetached(["sh", "-c", 'printf "%s" "$1" | cliphist decode | wl-copy', "copy", item.line]) }
+    // Imágenes: se restauran con su tipo (image/png, image/jpeg…) leído de la vista previa de
+    // cliphist ("[[ binary data 182 KiB png 1920x1080 ]]"); texto: wl-copy lo detecta solo.
+    function mimeOf(item) {
+        const m = item.binary ? item.text.match(/binary data .*?\b(png|jpe?g|webp|gif|bmp)\b/i) : null
+        return m ? "image/" + m[1].toLowerCase().replace("jpg", "jpeg") : ""
+    }
+    function copy(item) {
+        const mime = mimeOf(item)
+        Quickshell.execDetached(["sh", "-c", 'printf "%s" "$1" | cliphist decode | if [ -n "$2" ]; then wl-copy --type "$2"; else wl-copy; fi',
+                                 "copy", item.line, mime])
+    }
     function copyText(text) { Quickshell.execDetached(["wl-copy", "--", text]) }
     function remove(item) {
         items = items.filter(i => i.id !== item.id)

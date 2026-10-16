@@ -27,10 +27,10 @@ bind("XF86AudioPause", dsp.exec_cmd("playerctl play-pause"), fijo)
 bind("XF86AudioNext", dsp.exec_cmd("playerctl next"), fijo)
 bind("XF86AudioPrev", dsp.exec_cmd("playerctl previous"), fijo)
 
--- Capturas (en ~/Imágenes/Capturas)
-local dir = [[d="$HOME/Imágenes/Capturas"; mkdir -p "$d"; f="$d/captura-$(date +%Y%m%d-%H%M%S).png"; ]]
-bind("Print", dsp.exec_cmd([[sh -c ']] .. dir .. [[g=$(slurp) && grim -g "$g" "$f"']]))
-bind("CTRL + Print", dsp.exec_cmd([[sh -c ']] .. dir .. [[grim "$f"']]))
+-- Capturas (en ~/Imágenes/Capturas y al portapapeles; aviso con miniatura)
+local shot = os.getenv("HOME") .. "/Proyectos/minimo-os/minimo-shell/scripts/screenshot.sh "
+bind("Print", dsp.exec_cmd(shot .. "area"))
+bind("CTRL + Print", dsp.exec_cmd(shot .. "full"))
 
 -- Ventanas
 bind("SUPER + Q", dsp.window.close())
