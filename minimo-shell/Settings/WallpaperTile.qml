@@ -89,7 +89,7 @@ Item {
         Text {
             id: lbl
             anchors.left: parent.left; anchors.leftMargin: 12; anchors.verticalCenter: parent.verticalCenter
-            text: tile.owned ? "Eliminar" : "Quitar"
+            text: tile.owned ? I18n.tr("Eliminar") : I18n.tr("Quitar")
             color: Theme.onAccent; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.DemiBold
             opacity: tile.armed ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: Theme.durFast } }

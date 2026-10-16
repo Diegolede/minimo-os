@@ -65,7 +65,7 @@ Item {
             }
             Text {
                 anchors.centerIn: parent
-                text: "Escritorios"
+                text: I18n.tr("Escritorios")
                 color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 15; font.weight: Font.DemiBold
             }
         }
@@ -163,7 +163,7 @@ Item {
         Text {
             width: parent.width
             horizontalAlignment: Text.AlignHCenter
-            text: "Arrastrá un escritorio para reordenarlo"
+            text: I18n.tr("Arrastrá un escritorio para reordenarlo")
             color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 11
         }
     }

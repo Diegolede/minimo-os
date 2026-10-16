@@ -94,7 +94,7 @@ PanelWindow {
                     selectionColor: Theme.track; selectedTextColor: Theme.textPrimary
                     cursorDelegate: Rectangle { width: 2; radius: 1; color: Theme.textPrimary; visible: field.activeFocus }
                     clip: true
-                    Text { visible: !field.text; text: "Buscar aplicaciones"; color: Theme.textSecondary; font: field.font }
+                    Text { visible: !field.text; text: I18n.tr("Buscar aplicaciones"); color: Theme.textSecondary; font: field.font }
                     Keys.onEscapePressed: LauncherState.hide()
                     Keys.onDownPressed: win.selected = Math.min(win.selected + 1, win.results.length - 1)
                     Keys.onUpPressed: win.selected = Math.max(win.selected - 1, 0)

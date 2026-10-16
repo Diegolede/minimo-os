@@ -115,7 +115,7 @@ Item {
         spacing: 2
         Text {
             width: parent.width; elide: Text.ElideRight
-            text: root.player ? (root.player.trackTitle || "Sin título") : ""
+            text: root.player ? (root.player.trackTitle || I18n.tr("Sin título")) : ""
             color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13; font.weight: Font.DemiBold
         }
         Text {

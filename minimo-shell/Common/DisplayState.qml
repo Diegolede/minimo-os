@@ -22,6 +22,8 @@ Singleton {
     // Menú de la isla: elementos fijados (en orden) y accesos propios { id, label, cmd }.
     property var pins: ["volume", "brightness", "vibrance", "terminal", "record", "capture", "desktops", "notes", "browser", "files"]
     property var customItems: []
+    // Idioma: el guardado; si no hay, el del sistema (LANG en… → inglés, si no español).
+    property string language: (Quickshell.env("LANG") || "").startsWith("en") ? "en" : "es"
     property var pinOrder: []               // orden de todos los elementos del menú (fijados o no)
     // Fondo animado (video o GIF con mpvpaper). Vacío = fondo estático.
     property string liveWallpaper: ""
@@ -47,6 +49,7 @@ Singleton {
     function setTheme(v) { theme = v; save() }
     function setPins(list) { pins = list; save() }
     function setPinOrder(list) { pinOrder = list; save() }
+    function setLanguage(v) { language = v === "en" ? "en" : "es"; save() }
     function setCustomItems(list) { customItems = list; save() }
     function setLiveWallpaper(p) { liveWallpaper = p; save() }
     function setLivePauseCovered(v) { livePauseCovered = v; save() }
@@ -55,7 +58,7 @@ Singleton {
     function save() {
         file.setText(JSON.stringify({ saturation: root.saturation, brightness: root.brightness, wallpaper: root.wallpaper, wallpaperHistory: root.wallpaperHistory,
                                      islandAutoHide: root.islandAutoHide, islandSmartHide: root.islandSmartHide, characterAnimated: root.characterAnimated,
-                                     sleepMinutes: root.sleepMinutes, theme: root.theme,
+                                     sleepMinutes: root.sleepMinutes, theme: root.theme, language: root.language,
                                      pins: root.pins, pinOrder: root.pinOrder, customItems: root.customItems,
                                      liveWallpaper: root.liveWallpaper, livePauseCovered: root.livePauseCovered }, null, 2))
     }
@@ -98,6 +101,7 @@ Singleton {
                 root.characterAnimated = s.characterAnimated ?? true
                 root.sleepMinutes = s.sleepMinutes ?? 1
                 root.theme = s.theme === "dark" ? "dark" : "light"
+                if (s.language === "es" || s.language === "en") root.language = s.language
                 if (Array.isArray(s.pins)) root.pins = s.pins.filter(p => typeof p === "string")
                 if (Array.isArray(s.pinOrder)) root.pinOrder = s.pinOrder.filter(p => typeof p === "string")
                 root.liveWallpaper = typeof s.liveWallpaper === "string" ? s.liveWallpaper : ""

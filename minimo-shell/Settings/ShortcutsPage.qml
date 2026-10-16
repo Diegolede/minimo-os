@@ -23,7 +23,7 @@ Column {
 
     Process {
         id: reader
-        command: ["python3", root.script]
+        command: ["python3", root.script, "--lang", I18n.lang]
         stdout: StdioCollector {
             onStreamFinished: {
                 try {
@@ -60,7 +60,7 @@ Column {
         Text {
             anchors.fill: input; verticalAlignment: Text.AlignVCenter
             visible: !input.text
-            text: "Buscar atajo o tecla"; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 14
+            text: I18n.tr("Buscar atajo o tecla"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 14
         }
     }
 
@@ -68,7 +68,7 @@ Column {
         visible: root.failed || (root.groups.length > 0 && root.shownGroups.length === 0)
         width: parent.width
         wrapMode: Text.WordWrap
-        text: root.failed ? "No se pudieron leer los atajos (hace falta lua y python)." : "Ningún atajo coincide."
+        text: root.failed ? I18n.tr("No se pudieron leer los atajos (hace falta lua y python).") : I18n.tr("Ningún atajo coincide.")
         color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13
     }
 
@@ -108,7 +108,7 @@ Column {
         visible: !root.failed && root.groups.length > 0
         width: parent.width
         wrapMode: Text.WordWrap
-        text: "Se editan en ~/.config/hypr/minimo/atajos.lua. Los cambios se ven al volver a abrir esta página."
+        text: I18n.tr("Se editan en ~/.config/hypr/minimo/atajos.lua. Los cambios se ven al volver a abrir esta página.")
         color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
     }
 }

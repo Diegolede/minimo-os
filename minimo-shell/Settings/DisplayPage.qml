@@ -80,7 +80,7 @@ Column {
     }
     Process { id: writer }
 
-    SectionTitle { text: "Monitores" }
+    SectionTitle { text: I18n.tr("Monitores") }
 
     Repeater {
         model: root.monitors
@@ -114,7 +114,7 @@ Column {
                 }
 
                 // Resolución y frecuencia (desplegable).
-                Text { text: "Resolución"; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13 }
+                Text { text: I18n.tr("Resolución"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13 }
                 Rectangle {
                     width: parent.width; height: 40; radius: 20; color: Theme.field
                     Text {
@@ -154,7 +154,7 @@ Column {
                 }
 
                 // Escala (segmentado).
-                Text { text: "Escala"; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13 }
+                Text { text: I18n.tr("Escala"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13 }
                 Rectangle {
                     width: parent.width; height: 40; radius: 20; color: Theme.field
                     Row {
@@ -177,7 +177,7 @@ Column {
         }
     }
 
-    SectionTitle { text: "Brillo y color" }
+    SectionTitle { text: I18n.tr("Brillo y color") }
     Column {
         width: parent.width
         spacing: 10
@@ -197,6 +197,6 @@ Column {
             onIconClicked: DisplayState.set(1.0, DisplayState.brightness)
             onMoved: v => DisplayState.set(Math.abs(v - 1) < 0.04 ? 1.0 : v, DisplayState.brightness)
         }
-        Text { text: "Por software (shader de Hyprland). Tocá la gota para volver al 100%."; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 11 }
+        Text { text: I18n.tr("Por software (shader de Hyprland). Tocá la gota para volver al 100%."); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 11 }
     }
 }

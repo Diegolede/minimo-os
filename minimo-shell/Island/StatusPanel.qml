@@ -32,9 +32,9 @@ Item {
     function batText(b) {
         if (!b) return ""
         const t = b.mins === null || b.mins === undefined ? "" : " · " + (b.mins >= 60 ? Math.floor(b.mins / 60) + " h " : "") + (b.mins % 60) + " min"
-        return b.pct + "%" + (b.status === "Charging" ? " · Cargando" + t
-                            : b.status === "Full" ? " · Cargada"
-                            : b.status === "Not charging" ? " · Enchufada" : t)
+        return b.pct + "%" + (b.status === "Charging" ? I18n.tr(" · Cargando") + t
+                            : b.status === "Full" ? I18n.tr(" · Cargada")
+                            : b.status === "Not charging" ? I18n.tr(" · Enchufada") : t)
     }
 
     component Title: Text {
@@ -109,28 +109,28 @@ Item {
             visible: !(root.n && root.n.type === "wifi" && Network.hasWifi && SysStatus.online)
             Row2 {
                 icon: root.n && root.n.type === "wifi" ? "wifi" : "ethernet"
-                label: !root.n || !root.n.type ? "Sin conexión" : (root.n.type === "wifi" ? "Internet" : "Ethernet")
-                value: !SysStatus.known ? "Comprobando…"
-                     : SysStatus.online ? "Conectado"
-                     : SysStatus.connectivity === "portal" ? "Requiere inicio de sesión"
-                     : SysStatus.connectivity === "limited" ? "Sin internet (red limitada)" : "Sin internet"
+                label: !root.n || !root.n.type ? I18n.tr("Sin conexión") : (root.n.type === "wifi" ? "Internet" : "Ethernet")
+                value: !SysStatus.known ? I18n.tr("Comprobando…")
+                     : SysStatus.online ? I18n.tr("Conectado")
+                     : SysStatus.connectivity === "portal" ? I18n.tr("Requiere inicio de sesión")
+                     : SysStatus.connectivity === "limited" ? I18n.tr("Sin internet (red limitada)") : I18n.tr("Sin internet")
                 valueColor: SysStatus.known && !SysStatus.online ? Theme.danger : Theme.textSecondary
             }
         }
         WifiSection { width: parent.width; active: root.open }
 
         // Recursos
-        Title { text: "Recursos"; topPadding: 4 }
+        Title { text: I18n.tr("Recursos"); topPadding: 4 }
         Card {
             Row2 { icon: "chip"; label: "CPU"; value: root.r ? root.r.cpu + "%" + (root.r.temp !== null && root.r.temp !== undefined ? " · " + root.r.temp + " °C" : "") : "…" }
             Bar { frac: root.r ? root.r.cpu / 100 : 0 }
-            Row2 { icon: "apps"; label: "Memoria"; value: root.r ? SysStatus.gib(root.r.memUsed) + " / " + SysStatus.gib(root.r.memTotal) + " GB" : "…" }
+            Row2 { icon: "apps"; label: I18n.tr("Memoria"); value: root.r ? SysStatus.gib(root.r.memUsed) + " / " + SysStatus.gib(root.r.memTotal) + " GB" : "…" }
             Bar { frac: root.r ? root.r.memUsed / root.r.memTotal : 0 }
-            Row2 { icon: "folder"; label: "Disco"; value: root.r ? Math.round(100 * root.r.diskUsed / root.r.diskTotal) + "% · " + SysStatus.gib(root.r.diskTotal - root.r.diskUsed) + " GB libres" : "…" }
+            Row2 { icon: "folder"; label: I18n.tr("Disco"); value: root.r ? Math.round(100 * root.r.diskUsed / root.r.diskTotal) + "% · " + SysStatus.gib(root.r.diskTotal - root.r.diskUsed) + " GB libres" : "…" }
             Bar { frac: root.r ? root.r.diskUsed / root.r.diskTotal : 0 }
             Row2 {
                 visible: !!root.bat
-                icon: "battery"; label: "Batería"
+                icon: "battery"; label: I18n.tr("Batería")
                 value: root.batText(root.bat)
                 valueColor: root.bat && root.bat.pct < 15 && root.bat.status === "Discharging" ? Theme.danger : Theme.textSecondary
             }
@@ -143,14 +143,14 @@ Item {
         }
 
         // Dispositivos
-        Title { text: "Dispositivos"; topPadding: 4 }
+        Title { text: I18n.tr("Dispositivos"); topPadding: 4 }
         Card {
-            Repeater { model: root.d ? root.d.keyboards : []; Row2 { required property var modelData; icon: "keyboard"; label: "Teclado"; value: modelData } }
-            Repeater { model: root.d ? root.d.mice : []; Row2 { required property var modelData; icon: "mouse"; label: "Mouse"; value: modelData } }
+            Repeater { model: root.d ? root.d.keyboards : []; Row2 { required property var modelData; icon: "keyboard"; label: I18n.tr("Teclado"); value: modelData } }
+            Repeater { model: root.d ? root.d.mice : []; Row2 { required property var modelData; icon: "mouse"; label: I18n.tr("Mouse"); value: modelData } }
             Row2 { visible: !!(root.d && root.d.audio); icon: "volume"; label: "Audio"; value: root.d ? root.d.audio : "" }
             Repeater { model: root.d ? root.d.bluetooth : []; Row2 { required property var modelData; icon: "bluetooth"; label: "Bluetooth"; value: modelData } }
             Repeater { model: root.d ? root.d.usb : []; Row2 { required property var modelData; icon: "usb"; label: "USB"; value: modelData } }
-            Row2 { visible: !root.d; icon: "info"; label: "Buscando…"; value: "" }
+            Row2 { visible: !root.d; icon: "info"; label: I18n.tr("Buscando…"); value: "" }
         }
     }
 }

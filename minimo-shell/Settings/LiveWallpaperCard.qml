@@ -18,9 +18,9 @@ Rectangle {
 
     Process {
         id: picker
-        command: ["zenity", "--file-selection", "--title=Elegir fondo animado",
+        command: ["zenity", "--file-selection", "--title=" + I18n.tr("Elegir fondo animado"),
                   "--filename=" + Quickshell.env("HOME") + "/Vídeos/",
-                  "--file-filter=Videos y GIF | *.mp4 *.webm *.mkv *.mov *.gif *.MP4 *.WEBM *.GIF"]
+                  "--file-filter=" + I18n.tr("Videos y GIF") + " | *.mp4 *.webm *.mkv *.mov *.gif *.MP4 *.WEBM *.GIF"]
         stdout: SplitParser { onRead: line => { const p = line.trim(); if (p !== "" && LiveWallpaper.isAnimated(p)) DisplayState.setLiveWallpaper(p) } }
     }
 
@@ -34,12 +34,12 @@ Rectangle {
                 anchors.right: buttons.left; anchors.rightMargin: 12
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 2
-                Text { text: "Fondo animado"; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 14 }
+                Text { text: I18n.tr("Fondo animado"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 14 }
                 Text {
                     width: parent.width; elide: Text.ElideMiddle
-                    text: !LiveWallpaper.available ? "Necesita mpvpaper (AUR): yay -S mpvpaper"
-                        : root.file !== "" ? root.fileName + (LiveWallpaper.paused ? " · en pausa" : "")
-                        : "Un video o GIF en bucle, sin sonido."
+                    text: !LiveWallpaper.available ? I18n.tr("Necesita mpvpaper (AUR): yay -S mpvpaper")
+                        : root.file !== "" ? root.fileName + (LiveWallpaper.paused ? I18n.tr(" · en pausa") : "")
+                        : I18n.tr("Un video o GIF en bucle, sin sonido.")
                     color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
                 }
             }
@@ -50,12 +50,12 @@ Rectangle {
                 spacing: 8
                 PillButton {
                     visible: root.file !== ""
-                    text: "Quitar"; outlined: true
+                    text: I18n.tr("Quitar"); outlined: true
                     border.color: Theme.dot
                     onClicked: DisplayState.setLiveWallpaper("")
                 }
                 PillButton {
-                    text: root.file !== "" ? "Cambiar…" : "Elegir…"
+                    text: root.file !== "" ? I18n.tr("Cambiar…") : I18n.tr("Elegir…")
                     opacity: LiveWallpaper.available ? 1 : 0.4
                     enabled: LiveWallpaper.available
                     onClicked: if (!picker.running) { root.pickerOpened(); picker.running = true }
@@ -66,8 +66,8 @@ Rectangle {
         SwitchRow {
             visible: root.file !== ""
             width: parent.width
-            text: "Pausar con ventanas abiertas"
-            detail: "Ahorra GPU y batería: se mueve solo con el escritorio libre. Siempre se pausa en inactividad."
+            text: I18n.tr("Pausar con ventanas abiertas")
+            detail: I18n.tr("Ahorra GPU y batería: se mueve solo con el escritorio libre. Siempre se pausa en inactividad.")
             checked: DisplayState.livePauseCovered
             onToggled: v => DisplayState.setLivePauseCovered(v)
         }

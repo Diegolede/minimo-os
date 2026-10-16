@@ -71,7 +71,7 @@ Item {
                     }
                     // Clic en la fecha → calendario.
                     Text {
-                        text: { const t = clock.date.toLocaleDateString(Qt.locale("es_AR"), "dddd d 'de' MMMM"); return t.charAt(0).toUpperCase() + t.slice(1) }
+                        text: I18n.longDate(clock.date)
                         color: dateMouse.containsMouse ? Theme.textPrimary : Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
                         MouseArea { id: dateMouse; anchors.fill: parent; anchors.margins: -4; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
                             onClicked: { cal.reset(); root.page = "cal" } }
@@ -130,7 +130,7 @@ Item {
         y: 20
         width: root.width - 40
         today: clock.date
-        locale: Qt.locale("es_AR")
+        locale: I18n.locale
         opacity: root.page === "cal" ? 1 : 0
         visible: opacity > 0
         enabled: root.page === "cal"

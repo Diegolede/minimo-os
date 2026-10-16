@@ -25,9 +25,9 @@ PanelWindow {
     onOpenChanged: if (open) { card.forceActiveFocus(); personal.refresh(); display.refresh() }
 
     readonly property var sections: [
-        { id: "personalizacion", label: "Personalización", icon: "brush" },
-        { id: "pantalla", label: "Pantalla", icon: "display" },
-        { id: "atajos", label: "Atajos", icon: "keyboard" },
+        { id: "personalizacion", label: I18n.tr("Personalización"), icon: "brush" },
+        { id: "pantalla", label: I18n.tr("Pantalla"), icon: "display" },
+        { id: "atajos", label: I18n.tr("Atajos"), icon: "keyboard" },
         { id: "minimo", label: "Minimo OS", icon: "info" }
     ]
 
@@ -75,7 +75,7 @@ PanelWindow {
                 x: 14; y: 22
                 width: parent.width - 28
                 spacing: 4
-                Text { x: 12; text: "Ajustes"; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 22; font.weight: Font.DemiBold; bottomPadding: 14 }
+                Text { x: 12; text: I18n.tr("Ajustes"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 22; font.weight: Font.DemiBold; bottomPadding: 14 }
                 Repeater {
                     model: win.sections
                     delegate: Rectangle {
@@ -104,7 +104,7 @@ PanelWindow {
             Text {
                 id: heading
                 x: 36; y: 26
-                text: SettingsState.section === "pantalla" ? "Pantalla" : SettingsState.section === "atajos" ? "Atajos de teclado" : SettingsState.section === "minimo" ? "Acerca de" : "Personalización"
+                text: SettingsState.section === "pantalla" ? I18n.tr("Pantalla") : SettingsState.section === "atajos" ? I18n.tr("Atajos de teclado") : SettingsState.section === "minimo" ? I18n.tr("Acerca de") : I18n.tr("Personalización")
                 color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 22; font.weight: Font.DemiBold
             }
             Flickable {
@@ -161,14 +161,14 @@ PanelWindow {
                     width: parent.width - 48
                     spacing: 10
                     Icon { anchors.horizontalCenter: parent.horizontalCenter; name: "display"; size: 30 }
-                    Text { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: "¿Mantener esta configuración?"; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 16; font.weight: Font.DemiBold }
-                    Text { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: "Se revierte en " + display.countdown + " s"; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13; font.features: { "tnum": 1 } }
+                    Text { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: I18n.tr("¿Mantener esta configuración?"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 16; font.weight: Font.DemiBold }
+                    Text { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: I18n.tr("Se revierte en %1 s", display.countdown); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13; font.features: { "tnum": 1 } }
                     Item { width: 1; height: 6 }
                     Row {
                         anchors.horizontalCenter: parent.horizontalCenter
                         spacing: 10
-                        PillButton { text: "Revertir"; outlined: true; onClicked: display.revert() }
-                        PillButton { text: "Mantener"; primary: true; onClicked: display.keep() }
+                        PillButton { text: I18n.tr("Revertir"); outlined: true; onClicked: display.revert() }
+                        PillButton { text: I18n.tr("Mantener"); primary: true; onClicked: display.keep() }
                     }
                 }
             }

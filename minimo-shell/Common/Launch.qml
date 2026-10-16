@@ -25,7 +25,7 @@ Singleton {
         stderr: StdioCollector { id: err }
         onExited: code => {
             if (code === 0) root.launched()
-            else { root.error = err.text.trim() || (root.pending === "files" ? "No se pudo abrir el gestor de archivos." : "No se pudo abrir el navegador."); clear.restart() }
+            else { root.error = root.pending === "files" ? I18n.tr("No se pudo abrir el gestor de archivos.") : I18n.tr("No se pudo abrir el navegador."); clear.restart() }
             root.pending = ""
         }
     }

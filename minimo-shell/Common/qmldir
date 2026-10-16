@@ -24,3 +24,4 @@ singleton OverviewState 1.0 OverviewState.qml
 singleton LiveWallpaper 1.0 LiveWallpaper.qml
 singleton Notes 1.0 Notes.qml
 singleton Launch 1.0 Launch.qml
+singleton I18n 1.0 I18n.qml

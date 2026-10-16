@@ -10,7 +10,7 @@ Item {
     property string label
     property real frac: 1
     readonly property bool low: frac < 0.25
-    readonly property string word: frac >= 0.75 ? "Muy bien" : frac >= 0.5 ? "Bien" : frac >= 0.25 ? "Bajo" : "Muy bajo"
+    readonly property string word: frac >= 0.75 ? I18n.tr("Muy bien") : frac >= 0.5 ? I18n.tr("Bien") : frac >= 0.25 ? I18n.tr("Bajo") : I18n.tr("Muy bajo")
     implicitHeight: 52
 
     Icon { x: 14; y: 11; name: m.icon; size: 18; tone: "dark" }

@@ -75,7 +75,7 @@ Column {
             clip: true
             Text {
                 visible: !field.text
-                text: "Buscar"
+                text: I18n.tr("Buscar")
                 color: Theme.textSecondary
                 font: field.font
             }

@@ -19,10 +19,10 @@ Column {
 
     Item {
         width: parent.width; height: title.implicitHeight
-        SectionTitle { id: title; text: "Menú de la isla" }
+        SectionTitle { id: title; text: I18n.tr("Menú de la isla") }
         Text {
             anchors.right: parent.right; anchors.baseline: title.baseline
-            text: root.used + " de " + QuickItems.maxButtons + " botones" + (QuickItems.full ? " · completo" : "")
+            text: I18n.tr("%1 de %2 botones", root.used, QuickItems.maxButtons) + (QuickItems.full ? I18n.tr(" · completo") : "")
             color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
         }
     }
@@ -44,7 +44,7 @@ Column {
                     width: list.width
                     icon: isCustom ? "" : (it?.icon ?? "")
                     text: it?.label ?? ""
-                    detail: isCustom ? it.cmd : (it?.slider ? "Control deslizante" : "")
+                    detail: isCustom ? it.cmd : (it?.slider ? I18n.tr("Control deslizante") : "")
                     removable: isCustom
                     pinned: QuickItems.pinned(modelData)
                     canPin: QuickItems.canPin(modelData)
@@ -76,7 +76,7 @@ Column {
                 KeyNavigation.tab: cmdIn
                 onAccepted: cmdIn.forceActiveFocus()
             }
-            Text { anchors.fill: nameIn; verticalAlignment: Text.AlignVCenter; visible: !nameIn.text; text: "Nombre"; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13 }
+            Text { anchors.fill: nameIn; verticalAlignment: Text.AlignVCenter; visible: !nameIn.text; text: I18n.tr("Nombre"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13 }
         }
         Rectangle {
             width: parent.width - nameBox.width - addBtn.width - 16; height: 36; radius: 18; color: Theme.field
@@ -88,11 +88,11 @@ Column {
                 clip: true; selectByMouse: true
                 onAccepted: root.add()
             }
-            Text { anchors.fill: cmdIn; verticalAlignment: Text.AlignVCenter; visible: !cmdIn.text; text: "Comando (p. ej. firefox)"; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13 }
+            Text { anchors.fill: cmdIn; verticalAlignment: Text.AlignVCenter; visible: !cmdIn.text; text: I18n.tr("Comando (p. ej. firefox)"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13 }
         }
         PillButton {
             id: addBtn
-            icon: "plus"; text: "Agregar"; primary: nameIn.text.trim() !== "" && cmdIn.text.trim() !== ""
+            icon: "plus"; text: I18n.tr("Agregar"); primary: nameIn.text.trim() !== "" && cmdIn.text.trim() !== ""
             onClicked: root.add()
         }
     }
@@ -100,7 +100,7 @@ Column {
         width: parent.width
         wrapMode: Text.WordWrap
         topPadding: 2
-        text: QuickItems.full ? "Con 3 filas llenas, desactivá un botón para fijar otro." : "Los accesos propios ejecutan el comando con sh y se fijan al agregarlos."
+        text: QuickItems.full ? I18n.tr("Con 3 filas llenas, desactivá un botón para fijar otro.") : I18n.tr("Los accesos propios ejecutan el comando con sh y se fijan al agregarlos.")
         color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
     }
 }

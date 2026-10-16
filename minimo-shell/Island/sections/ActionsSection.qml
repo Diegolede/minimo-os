@@ -31,8 +31,8 @@ Row {
     function reset() { disarm.stop(); st = Confirm.disarm(st) }
     Timer { id: disarm; interval: 3000; onTriggered: root.st = Confirm.disarm(root.st) }
 
-    MenuButton { icon: "logout"; label: "Cerrar sesión"; armed: root.armed === "logout"; onActivated: root.press("logout") }
-    MenuButton { icon: "restart"; label: "Reiniciar"; armed: root.armed === "reboot"; onActivated: root.press("reboot") }
-    MenuButton { icon: "power"; label: "Apagar"; armed: root.armed === "poweroff"; onActivated: root.press("poweroff") }
-    MenuButton { icon: "settings"; label: "Ajustes"; onActivated: { root.reset(); root.settings() } }
+    MenuButton { icon: "logout"; label: I18n.tr("Cerrar sesión"); armed: root.armed === "logout"; onActivated: root.press("logout") }
+    MenuButton { icon: "restart"; label: I18n.tr("Reiniciar"); armed: root.armed === "reboot"; onActivated: root.press("reboot") }
+    MenuButton { icon: "power"; label: I18n.tr("Apagar"); armed: root.armed === "poweroff"; onActivated: root.press("poweroff") }
+    MenuButton { icon: "settings"; label: I18n.tr("Ajustes"); onActivated: { root.reset(); root.settings() } }
 }

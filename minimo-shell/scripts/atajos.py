@@ -61,6 +61,47 @@ MEDIA = {
 DIR = {"l": "a la izquierda", "r": "a la derecha", "u": "arriba", "d": "abajo"}
 ORDER = ["Aplicaciones", "Ventanas", "Foco", "Escritorios", "Capturas", "Multimedia", "Sesión", "Otros"]
 
+# Idioma: `--lang en` traduce SOLO los textos generados aquí (acciones, grupos, teclas);
+# las descripciones escritas en la configuración (description = ...) quedan como están.
+LANG = "es"
+EN = {
+    # grupos
+    "Aplicaciones": "Apps", "Ventanas": "Windows", "Foco": "Focus", "Escritorios": "Desktops",
+    "Capturas": "Screenshots", "Multimedia": "Media", "Sesión": "Session", "Otros": "Other",
+    # teclas
+    "Espacio": "Space", "Inicio": "Home", "Fin": "End", "RePág": "PgUp", "AvPág": "PgDn",
+    "ImprPant": "Print", "Intro": "Enter", "Clic izq.": "Left click", "Clic der.": "Right click",
+    "Silencio": "Mute", "Pausa": "Pause", "Siguiente": "Next", "Anterior": "Previous",
+    "Rueda ↓": "Wheel ↓", "Rueda ↑": "Wheel ↑",
+    # direcciones
+    "a la izquierda": "left", "a la derecha": "right", "arriba": "up", "abajo": "down",
+    "siguiente": "next", "anterior": "previous",
+    # acciones
+    "Subir volumen": "Volume up", "Bajar volumen": "Volume down", "Silenciar": "Mute",
+    "Silenciar micrófono": "Mute microphone", "Reproducir / pausar": "Play / pause",
+    "Siguiente pista": "Next track", "Pista anterior": "Previous track",
+    "Ajustes": "Settings", "Abrir la isla": "Open the island", "Portapapeles": "Clipboard",
+    "Lanzador de Minimo": "Minimo launcher", "Grabar pantalla": "Record screen",
+    "Vista de ventanas": "Window overview", "Captura de una zona": "Screenshot of an area",
+    "Captura de pantalla completa": "Full-screen screenshot", "Terminal": "Terminal",
+    "Fuzzel (lanzador)": "Fuzzel (launcher)", "Abrir": "Open",
+    "Mover con el mouse": "Move with the mouse", "Redimensionar con el mouse": "Resize with the mouse",
+    "Cerrar sesión": "Log out", "Apagar / encender pantalla": "Turn display off / on",
+    "Cerrar ventana": "Close window", "Pantalla completa": "Fullscreen", "Maximizar": "Maximize",
+    "Maximizar / restaurar": "Maximize / restore", "Ventana flotante": "Floating window",
+    "Agrupar ventanas (pestañas)": "Group windows (tabs)", "Cambiar división": "Toggle split",
+    "Próxima ventana": "Next window", "Redimensionar ventana": "Resize window",
+    "Más ancha": "Wider", "Más angosta": "Narrower", "Más alta": "Taller", "Más baja": "Shorter",
+    "Primera ventana": "First window", "Última ventana": "Last window", "Monitor": "Monitor",
+    "Mover ventana": "Move window", "Mover al monitor": "Move to monitor",
+    "Ir al escritorio": "Go to desktop", "Mover ventana al escritorio": "Move window to desktop",
+    "Escritorio siguiente": "Next desktop", "Escritorio anterior": "Previous desktop",
+    "Mover ventana al escritorio siguiente": "Move window to next desktop",
+    "Mover ventana al escritorio anterior": "Move window to previous desktop",
+}
+def T(s): return EN.get(s, s) if LANG == "en" else s
+def D(k): return T(DIR.get(k, ""))
+
 def keys_of(spec):
     parts = [p.strip() for p in spec.split("+")]
     return [MODS.get(p.upper(), SPECIAL.get(p, p.upper() if len(p) == 1 else p)) for p in parts if p]
@@ -71,59 +112,63 @@ def opts(a):
 def describe(key, act, arg, desc):
     o = opts(arg)
     if key in MEDIA:
-        return MEDIA[key]
+        return T(MEDIA[key][0]), MEDIA[key][1]
     if act == "exec_cmd":
         c = arg
-        if "settings toggle" in c: return "Ajustes", "Aplicaciones"
-        if "island open" in c: return "Abrir la isla", "Aplicaciones"
-        if "island clipboard" in c: return "Portapapeles", "Aplicaciones"
-        if "launcher toggle" in c: return "Lanzador de Minimo", "Aplicaciones"
-        if "recorder toggle" in c: return "Grabar pantalla", "Capturas"
-        if "overview toggle" in c: return "Vista de ventanas", "Ventanas"
-        if "screenshot.sh area" in c or ("slurp" in c and "grim" in c): return "Captura de una zona", "Capturas"
-        if "screenshot.sh" in c or "grim" in c: return "Captura de pantalla completa", "Capturas"
+        if "settings toggle" in c: return T("Ajustes"), "Aplicaciones"
+        if "island open" in c: return T("Abrir la isla"), "Aplicaciones"
+        if "island clipboard" in c: return T("Portapapeles"), "Aplicaciones"
+        if "launcher toggle" in c: return T("Lanzador de Minimo"), "Aplicaciones"
+        if "recorder toggle" in c: return T("Grabar pantalla"), "Capturas"
+        if "overview toggle" in c: return T("Vista de ventanas"), "Ventanas"
+        if "screenshot.sh area" in c or ("slurp" in c and "grim" in c): return T("Captura de una zona"), "Capturas"
+        if "screenshot.sh" in c or "grim" in c: return T("Captura de pantalla completa"), "Capturas"
         prog = c.split()[0] if c.split() else c
         names = {"ghostty": "Terminal", "fuzzel": "Fuzzel (lanzador)"}
-        return desc or names.get(prog, "Abrir " + prog), "Aplicaciones"
-    if act == "window.drag": return "Mover con el mouse", "Ventanas"
-    if act == "window.resize" and "mouse:" in key: return "Redimensionar con el mouse", "Ventanas"
+        return desc or T(names.get(prog, "")) or T("Abrir") + " " + prog, "Aplicaciones"
+    if act == "window.drag": return T("Mover con el mouse"), "Ventanas"
+    if act == "window.resize" and "mouse:" in key: return T("Redimensionar con el mouse"), "Ventanas"
     if desc:
         return desc, "Ventanas"
-    if act == "exit": return "Cerrar sesión", "Sesión"
-    if act == "dpms": return "Apagar / encender pantalla", "Sesión"
-    if act == "window.close": return "Cerrar ventana", "Ventanas"
+    if act == "exit": return T("Cerrar sesión"), "Sesión"
+    if act == "dpms": return T("Apagar / encender pantalla"), "Sesión"
+    if act == "window.close": return T("Cerrar ventana"), "Ventanas"
     if act == "window.fullscreen":
-        if o.get("mode") == "fullscreen": return "Pantalla completa", "Ventanas"
-        return ("Maximizar" if o.get("action") == "set" else "Maximizar / restaurar"), "Ventanas"
-    if act == "window.float": return "Ventana flotante", "Ventanas"
-    if act == "group.toggle": return "Agrupar ventanas (pestañas)", "Ventanas"
+        if o.get("mode") == "fullscreen": return T("Pantalla completa"), "Ventanas"
+        return T("Maximizar" if o.get("action") == "set" else "Maximizar / restaurar"), "Ventanas"
+    if act == "window.float": return T("Ventana flotante"), "Ventanas"
+    if act == "group.toggle": return T("Agrupar ventanas (pestañas)"), "Ventanas"
     if act == "layout":
-        if "togglesplit" in arg: return "Cambiar división", "Ventanas"
-        if "preselect" in arg: return "Próxima ventana " + DIR.get(arg.split()[-1], ""), "Ventanas"
+        if "togglesplit" in arg: return T("Cambiar división"), "Ventanas"
+        if "preselect" in arg: return T("Próxima ventana") + " " + D(arg.split()[-1]), "Ventanas"
     if act == "window.resize":
-        if not o: return "Redimensionar ventana", "Ventanas"
+        if not o: return T("Redimensionar ventana"), "Ventanas"
         x, y = int(float(o.get("x", 0))), int(float(o.get("y", 0)))
-        return ("Más ancha" if x > 0 else "Más angosta" if x < 0 else "Más alta" if y > 0 else "Más baja"), "Ventanas"
+        return T("Más ancha" if x > 0 else "Más angosta" if x < 0 else "Más alta" if y > 0 else "Más baja"), "Ventanas"
     if act == "focus":
-        if "window" in o: return ("Primera ventana" if o["window"] == "first" else "Última ventana"), "Foco"
-        if "direction" in o: return "Foco " + DIR.get(o["direction"], ""), "Foco"
-        if "monitor" in o: return "Monitor " + DIR.get(o["monitor"], ""), "Foco"
+        if "window" in o: return T("Primera ventana" if o["window"] == "first" else "Última ventana"), "Foco"
+        if "direction" in o: return T("Foco") + " " + D(o["direction"]), "Foco"
+        if "monitor" in o: return T("Monitor") + " " + D(o["monitor"]), "Foco"
         if "workspace" in o: return ws_label("Ir al escritorio", o["workspace"]), "Escritorios"
     if act == "window.move":
-        if "direction" in o: return "Mover ventana " + DIR.get(o["direction"], ""), "Ventanas"
-        if "monitor" in o: return "Mover al monitor " + DIR.get(o["monitor"], ""), "Ventanas"
+        if "direction" in o: return T("Mover ventana") + " " + D(o["direction"]), "Ventanas"
+        if "monitor" in o: return T("Mover al monitor") + " " + D(o["monitor"]), "Ventanas"
         if "workspace" in o: return ws_label("Mover ventana al escritorio", o["workspace"]), "Escritorios"
     return (act + (" " + arg if arg else "")).strip(), "Otros"
 
 def ws_label(base, ws):
     rel = {"e+1": "siguiente", "e-1": "anterior", "+1": "siguiente", "-1": "anterior"}.get(ws)
-    if not rel: return base + " " + ws
-    return "Escritorio " + rel if base.startswith("Ir") else base + " " + rel
+    if not rel: return T(base) + " " + ws
+    return T("Escritorio " + rel) if base == "Ir al escritorio" else T(base + " " + rel)
 
 def main():
     here = os.path.dirname(os.path.realpath(__file__))
     repo = os.path.join(here, "..", "..", "hypr")
-    paths = sys.argv[1:]
+    global LANG
+    args = sys.argv[1:]
+    if "--lang" in args:
+        i = args.index("--lang"); LANG = (args[i + 1:i + 2] or ["es"])[0]; del args[i:i + 2]
+    paths = args
     if not paths:
         # Los de la config activa (enlazados al repo por el instalador) y, si no están, los del repo.
         for rel in ("minimo/atajos.lua", "minimo.lua"):
@@ -143,7 +188,7 @@ def main():
         if not f[0]: continue
         k = f[0].split("+")[-1].strip()
         label, group = describe(k, f[1], f[2], f[3])
-        ks = keys_of(f[0])
+        ks = [T(k) for k in keys_of(f[0])]
         # Agrupar variantes: mismo texto y mismos modificadores (flechas y h/j/k/l, 1–9, etc.).
         if label.endswith(tuple(" %d" % i for i in range(1, 10))) and ks[-1].isdigit():
             label = label[:-2] + " 1–9"; ks = ks[:-1] + ["1–9"]
@@ -152,7 +197,7 @@ def main():
         if ks not in r["combos"]: r["combos"].append(ks)
     groups = {}
     arrows = ["←", "→", "↑", "↓"]
-    dirorder = [" a la izquierda", " a la derecha", " arriba", " abajo"]
+    dirorder = [" " + D(k) for k in ("l", "r", "u", "d")]
     def sortkey(label):
         # Mismo verbo junto y direcciones en orden fijo (izq., der., arriba, abajo).
         for i, d in enumerate(dirorder):
@@ -174,7 +219,7 @@ def main():
         for n, it in enumerate(groups[g]):
             first.setdefault(sortkey(it["label"])[0], n)
         groups[g].sort(key=lambda it: (first[sortkey(it["label"])[0]], sortkey(it["label"])[1]))
-    res = [{"name": g, "items": groups[g]} for g in ORDER if g in groups]
+    res = [{"name": T(g), "items": groups[g]} for g in ORDER if g in groups]
     print(json.dumps({"groups": res}, ensure_ascii=False))
 
 if __name__ == "__main__":

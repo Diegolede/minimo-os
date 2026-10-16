@@ -33,7 +33,7 @@ Item {
             }
             Text {
                 anchors.centerIn: parent
-                text: "Portapapeles"
+                text: I18n.tr("Portapapeles")
                 color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 15; font.weight: Font.DemiBold
             }
             Rectangle {
@@ -43,7 +43,7 @@ Item {
                 color: root.armed ? Theme.fill : (cm.containsMouse ? Theme.hover : Theme.surface)
                 border.width: root.armed ? 0 : 1; border.color: Theme.surfaceBorder
                 Behavior on color { ColorAnimation { duration: Theme.durFast } }
-                Text { id: cl; anchors.centerIn: parent; text: root.armed ? "Confirmar" : "Borrar"; color: root.armed ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: root.armed ? Font.DemiBold : Font.Normal }
+                Text { id: cl; anchors.centerIn: parent; text: root.armed ? I18n.tr("Confirmar") : I18n.tr("Borrar"); color: root.armed ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: root.armed ? Font.DemiBold : Font.Normal }
                 MouseArea {
                     id: cm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
                     onClicked: { if (!root.armed) { root.armed = true; disarm.restart() } else { root.armed = false; Clipboard.clear() } }
@@ -68,7 +68,7 @@ Item {
                 Text {
                     visible: Clipboard.pins.length > 0
                     leftPadding: 14; bottomPadding: 2
-                    text: "Fijados"; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.DemiBold
+                    text: I18n.tr("Fijados"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.DemiBold
                 }
                 Repeater {
                     model: Clipboard.pins
@@ -86,7 +86,7 @@ Item {
                 Text {
                     visible: Clipboard.pins.length > 0 && root.history.length > 0
                     leftPadding: 14; bottomPadding: 2
-                    text: "Recientes"; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.DemiBold
+                    text: I18n.tr("Recientes"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.DemiBold
                 }
                 Repeater {
                     model: root.history
@@ -109,7 +109,7 @@ Item {
             topPadding: 18; bottomPadding: 18
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WordWrap
-            text: Clipboard.available ? "Lo que copies aparece acá." : "Falta cliphist para guardar el historial."
+            text: Clipboard.available ? I18n.tr("Lo que copies aparece acá.") : I18n.tr("Falta cliphist para guardar el historial.")
             color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13
         }
     }

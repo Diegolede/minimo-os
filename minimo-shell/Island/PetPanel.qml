@@ -22,11 +22,11 @@ Item {
     Timer { id: napLater; interval: 350; onTriggered: IdleState.sleepNow() }
 
     readonly property string line: {
-        if (Pet.energy < 0.25) return "Llevás " + root.duration(Pet.activeMinutes) + " sin pausa. ¿Un descanso?"
-        if (Pet.food < 0.25) return "Tiene hambre."
-        if (Pet.fun < 0.2) return "Se aburre. ¿Jugamos?"
-        if (Pet.energy < 0.5) return "Empieza a tener sueño."
-        return "Está contento."
+        if (Pet.energy < 0.25) return I18n.tr("Llevás %1 sin pausa. ¿Un descanso?", root.duration(Pet.activeMinutes))
+        if (Pet.food < 0.25) return I18n.tr("Tiene hambre.")
+        if (Pet.fun < 0.2) return I18n.tr("Se aburre. ¿Jugamos?")
+        if (Pet.energy < 0.5) return I18n.tr("Empieza a tener sueño.")
+        return I18n.tr("Está contento.")
     }
     function duration(m) { return m >= 60 ? Math.floor(m / 60) + " h" + (m % 60 ? " " + (m % 60) + " min" : "") : m + " min" }
 
@@ -69,17 +69,17 @@ Item {
             Column {
                 id: meters
                 y: 4; width: parent.width
-                PetMeter { width: parent.width; icon: "bowl"; label: "Comida"; frac: Pet.food }
-                PetMeter { width: parent.width; icon: "ball"; label: "Ánimo"; frac: Pet.fun }
-                PetMeter { width: parent.width; icon: "moon"; label: "Energía"; frac: Pet.energy }
+                PetMeter { width: parent.width; icon: "bowl"; label: I18n.tr("Comida"); frac: Pet.food }
+                PetMeter { width: parent.width; icon: "ball"; label: I18n.tr("Ánimo"); frac: Pet.fun }
+                PetMeter { width: parent.width; icon: "moon"; label: I18n.tr("Energía"); frac: Pet.energy }
             }
         }
 
         Row {
             anchors.horizontalCenter: parent.horizontalCenter
-            MenuButton { icon: "bowl"; label: "Comer"; onActivated: { Pet.feed(); chr.react("chew") } }
-            MenuButton { icon: "ball"; label: "Jugar"; onActivated: { Pet.play(); chr.playGame() } }
-            MenuButton { icon: "moon"; label: "Dormir"; onActivated: { root.done(); napLater.restart() } }
+            MenuButton { icon: "bowl"; label: I18n.tr("Comer"); onActivated: { Pet.feed(); chr.react("chew") } }
+            MenuButton { icon: "ball"; label: I18n.tr("Jugar"); onActivated: { Pet.play(); chr.playGame() } }
+            MenuButton { icon: "moon"; label: I18n.tr("Dormir"); onActivated: { root.done(); napLater.restart() } }
         }
     }
 }

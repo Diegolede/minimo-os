@@ -14,17 +14,17 @@ Singleton {
     readonly property int maxButtons: columns * maxRows
 
     readonly property var builtins: [
-        { id: "volume", label: "Volumen", icon: "volume", slider: true },
-        { id: "brightness", label: "Brillo", icon: "sun", slider: true },
-        { id: "vibrance", label: "Saturación", icon: "drop", slider: true },
+        { id: "volume", label: I18n.tr("Volumen"), icon: "volume", slider: true },
+        { id: "brightness", label: I18n.tr("Brillo"), icon: "sun", slider: true },
+        { id: "vibrance", label: I18n.tr("Saturación"), icon: "drop", slider: true },
         { id: "terminal", label: "Terminal", icon: "terminal", slider: false },
-        { id: "record", label: "Grabar pantalla", icon: "record", slider: false },
-        { id: "capture", label: "Captura", icon: "capture", slider: false },
-        { id: "desktops", label: "Escritorios", icon: "desktops", slider: false },
-        { id: "clipboard", label: "Portapapeles", icon: "clipboard", slider: false },
-        { id: "notes", label: "Notas", icon: "note", slider: false },
-        { id: "browser", label: "Navegador", icon: "globe", slider: false },
-        { id: "files", label: "Archivos", icon: "folder", slider: false }
+        { id: "record", label: I18n.tr("Grabar pantalla"), icon: "record", slider: false },
+        { id: "capture", label: I18n.tr("Captura"), icon: "capture", slider: false },
+        { id: "desktops", label: I18n.tr("Escritorios"), icon: "desktops", slider: false },
+        { id: "clipboard", label: I18n.tr("Portapapeles"), icon: "clipboard", slider: false },
+        { id: "notes", label: I18n.tr("Notas"), icon: "note", slider: false },
+        { id: "browser", label: I18n.tr("Navegador"), icon: "globe", slider: false },
+        { id: "files", label: I18n.tr("Archivos"), icon: "folder", slider: false }
     ]
 
     function isSlider(id) { return id === "volume" || id === "brightness" || id === "vibrance" }

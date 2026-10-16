@@ -41,7 +41,7 @@ Item {
         width: btn.width - 4
         horizontalAlignment: Text.AlignHCenter
         elide: Text.ElideRight
-        text: btn.armed ? "Confirmar" : btn.label
+        text: btn.armed ? I18n.tr("Confirmar") : btn.label
         color: (btn.armed || btn.active) ? Theme.textPrimary : Theme.textSecondary
         font.family: Theme.font; font.pixelSize: 11; font.weight: (btn.armed || btn.active) ? Font.DemiBold : Font.Normal
     }

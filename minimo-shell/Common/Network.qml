@@ -116,7 +116,7 @@ Singleton {
             if (code !== 0) {
                 const t = connErr.text.toLowerCase()
                 root.error = (t.includes("secrets") || t.includes("password") || t.includes("802-11-wireless-security"))
-                    ? "Contraseña incorrecta" : "No se pudo conectar"
+                    ? I18n.tr("Contraseña incorrecta") : I18n.tr("No se pudo conectar")
             }
             root.connecting = ""
             root.refresh()

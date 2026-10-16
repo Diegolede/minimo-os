@@ -17,6 +17,12 @@ wl-copy --type image/png < "$f"
 # Aviso con miniatura (solo si la captura salió bien). gdbus viene con glib2: sin dependencias
 # nuevas. image-path = la captura; x-minimo-open = archivo que abre un clic en el aviso.
 q=$(printf '%s' "$f" | sed "s/'/\\\\'/g")
+# Idioma de Minimo (Ajustes › Personalización › Idioma, en ~/.config/minimo-os/state.json).
+if grep -q '"language": *"en"' "$HOME/.config/minimo-os/state.json" 2>/dev/null; then
+    t1="Screenshot saved"; t2="Copied to the clipboard"
+else
+    t1="Captura guardada"; t2="Copiada al portapapeles"
+fi
 gdbus call --session --dest org.freedesktop.Notifications --object-path /org/freedesktop/Notifications \
-    --method org.freedesktop.Notifications.Notify "Capturas" 0 "" "Captura guardada" "Copiada al portapapeles" "[]" \
+    --method org.freedesktop.Notifications.Notify "Capturas" 0 "" "$t1" "$t2" "[]" \
     "{'image-path': <'file://$q'>, 'x-minimo-open': <'$q'>}" 4000 >/dev/null 2>&1 || true

@@ -39,7 +39,7 @@ Item {
                     visible: combo.index > 0
                     anchors.verticalCenter: parent.verticalCenter
                     rightPadding: 6
-                    text: "o"; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
+                    text: I18n.tr("o"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
                 }
                 Repeater {
                     model: combo.modelData.mods

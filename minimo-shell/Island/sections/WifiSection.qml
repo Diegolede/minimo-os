@@ -36,9 +36,9 @@ Column {
             Text { width: parent.width; elide: Text.ElideRight; text: "Wi-Fi"; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13; font.weight: Font.DemiBold }
             Text {
                 width: parent.width; elide: Text.ElideRight
-                text: !Network.wifiEnabled ? "Desactivado"
-                    : Network.connecting ? "Conectando a " + Network.connecting + "…"
-                    : Network.ssid || "Sin conexión"
+                text: !Network.wifiEnabled ? I18n.tr("Desactivado")
+                    : Network.connecting ? I18n.tr("Conectando a %1…", Network.connecting)
+                    : Network.ssid || I18n.tr("Sin conexión")
                 color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
             }
         }
@@ -69,7 +69,7 @@ Column {
                 Text {
                     visible: Network.networks.length === 0
                     x: 12; height: 36; verticalAlignment: Text.AlignVCenter
-                    text: "Buscando redes…"; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
+                    text: I18n.tr("Buscando redes…"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
                 }
                 Repeater {
                     model: Network.networks.slice(0, 12)
@@ -122,7 +122,7 @@ Column {
                                 color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13
                                 clip: true
                                 cursorDelegate: Rectangle { width: 2; radius: 1; color: Theme.textPrimary; visible: pass.activeFocus }
-                                Text { visible: !pass.text; text: "Contraseña"; color: Theme.textSecondary; font: pass.font }
+                                Text { visible: !pass.text; text: I18n.tr("Contraseña"); color: Theme.textSecondary; font: pass.font }
                                 onAccepted: go.submit()
                             }
                             Rectangle {
@@ -131,7 +131,7 @@ Column {
                                 anchors.right: parent.right; anchors.rightMargin: 4; anchors.verticalCenter: parent.verticalCenter
                                 width: 76; height: 32; radius: 16
                                 color: pass.text.length > 0 ? Theme.fill : Theme.track
-                                Text { anchors.centerIn: parent; text: "Unirse"; color: pass.text.length > 0 ? Theme.onAccent : Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.DemiBold }
+                                Text { anchors.centerIn: parent; text: I18n.tr("Unirse"); color: pass.text.length > 0 ? Theme.onAccent : Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.DemiBold }
                                 MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: go.submit() }
                             }
                         }

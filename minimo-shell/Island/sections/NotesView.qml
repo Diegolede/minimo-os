@@ -19,7 +19,7 @@ Item {
     function goBack() { if (editing !== "") close(); else root.back() }
     function stamp(ms) {
         const d = new Date(ms), now = new Date()
-        return d.toDateString() === now.toDateString() ? Qt.formatTime(d, "HH:mm") : d.toLocaleDateString(Qt.locale("es_AR"), "d MMM")
+        return d.toDateString() === now.toDateString() ? Qt.formatTime(d, "HH:mm") : d.toLocaleDateString(I18n.locale, I18n.lang === "en" ? "MMM d" : "d MMM")
     }
 
     Timer { id: disarm; interval: 3000; onTriggered: root.armed = false }
@@ -44,7 +44,7 @@ Item {
             RoundButton { icon: "back"; onClicked: root.goBack() }
             Text {
                 anchors.centerIn: parent
-                text: "Notas"
+                text: I18n.tr("Notas")
                 color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 15; font.weight: Font.DemiBold
             }
             RoundButton { anchors.right: parent.right; visible: root.editing === ""; icon: "plus"; onClicked: root.open(Notes.create()) }
@@ -55,7 +55,7 @@ Item {
                 color: root.armed ? Theme.danger : (dm.containsMouse ? Theme.hover : Theme.surface)
                 border.width: root.armed ? 0 : 1; border.color: Theme.surfaceBorder
                 Behavior on color { ColorAnimation { duration: Theme.durFast } }
-                Text { id: dl; anchors.centerIn: parent; text: root.armed ? "Confirmar" : "Eliminar"; color: root.armed ? "#FFFFFF" : Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: root.armed ? Font.DemiBold : Font.Normal }
+                Text { id: dl; anchors.centerIn: parent; text: root.armed ? I18n.tr("Confirmar") : I18n.tr("Eliminar"); color: root.armed ? "#FFFFFF" : Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: root.armed ? Font.DemiBold : Font.Normal }
                 MouseArea {
                     id: dm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
                     onClicked: {
@@ -71,7 +71,7 @@ Item {
             visible: root.editing === "" && Notes.notes.length === 0
             width: parent.width; topPadding: 24; bottomPadding: 24
             horizontalAlignment: Text.AlignHCenter
-            text: "Sin notas. Tocá + para escribir una."
+            text: I18n.tr("Sin notas. Tocá + para escribir una.")
             color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13
         }
         Flickable {
@@ -102,7 +102,7 @@ Item {
                                 spacing: 2
                                 Text {
                                     width: parent.width; elide: Text.ElideRight; textFormat: Text.PlainText
-                                    text: Notes.title(nr.modelData.text) || "Nota nueva"
+                                    text: Notes.title(nr.modelData.text) || I18n.tr("Nota nueva")
                                     color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 14; font.weight: Font.Medium
                                 }
                                 Text {
@@ -154,7 +154,7 @@ Item {
                 }
                 Text {
                     visible: editor.text === ""
-                    text: "Escribí algo…"
+                    text: I18n.tr("Escribí algo…")
                     color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 14
                 }
             }

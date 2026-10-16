@@ -103,7 +103,7 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             readonly property bool away: root.year !== root.today.getFullYear() || root.month !== root.today.getMonth()
             opacity: away ? 1 : 0
-            text: "Hoy"
+            text: I18n.tr("Hoy")
             color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13; font.underline: hm.containsMouse
             MouseArea { id: hm; anchors.fill: parent; anchors.margins: -6; enabled: parent.away; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.reset() }
         }

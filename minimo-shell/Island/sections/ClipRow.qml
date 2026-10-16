@@ -18,7 +18,7 @@ Rectangle {
     // "[[ binary data 182 KiB png 1920x1080 ]]" → "Imagen PNG · 1920 × 1080".
     function imageText() {
         const m = row.text.match(/binary data .*?(\w+)\s+(\d+)x(\d+)/)
-        return m ? "Imagen " + m[1].toUpperCase() + " · " + m[2] + " × " + m[3] : "Imagen"
+        return m ? I18n.tr("Imagen %1 · %2 × %3", m[1].toUpperCase(), m[2], m[3]) : I18n.tr("Imagen")
     }
 
     implicitHeight: Math.max(44, label.implicitHeight + 22)

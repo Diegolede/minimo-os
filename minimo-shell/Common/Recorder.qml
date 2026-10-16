@@ -65,9 +65,9 @@ Singleton {
         onExited: (code, status) => {
             const was = root.recording
             root.recording = false
-            if (code === 127) root.say("Instalá wf-recorder", 3500)
-            else if (was && root.elapsed > 0) root.say("Guardado · " + root.file)
-            else if (was) root.say("No se pudo grabar", 2500)
+            if (code === 127) root.say(I18n.tr("Instalá wf-recorder"), 3500)
+            else if (was && root.elapsed > 0) root.say(I18n.tr("Guardado · %1", root.file))
+            else if (was) root.say(I18n.tr("No se pudo grabar"), 2500)
         }
     }
     property string dir: ""

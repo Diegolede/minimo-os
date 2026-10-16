@@ -70,7 +70,7 @@ Column {
                 readonly property bool rec: modelData === "record" && Recorder.recording
                 icon: rec ? "stop" : (item && item.icon ? item.icon : "")
                 letter: item && !item.icon ? item.label.charAt(0).toUpperCase() : ""
-                label: rec ? "Detener" : modelData === "record" ? "Grabar" : (item ? item.label : "")
+                label: rec ? I18n.tr("Detener") : modelData === "record" ? I18n.tr("Grabar") : (item ? item.label : "")
                 active: rec
                 onActivated: root.activate(b.modelData)
             }

@@ -44,7 +44,7 @@ PanelWindow {
             list.push({
                 title: t.title || o.title || "",
                 icon: iconFor(t),
-                badge: ws === cur ? "" : "Escritorio " + ws,
+                badge: ws === cur ? "" : I18n.tr("Escritorio %1", ws),
                 aspect: size[1] > 0 ? Math.max(0.5, Math.min(3, size[0] / size[1])) : 1.6,
                 source: t.wayland,
                 address: t.address,
@@ -110,7 +110,7 @@ PanelWindow {
         Text {
             anchors.centerIn: parent
             visible: win.windows.length === 0
-            text: "No hay ventanas abiertas"
+            text: I18n.tr("No hay ventanas abiertas")
             color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 15
         }
     }

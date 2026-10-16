@@ -81,7 +81,7 @@ Item {
             color: row.armed ? Theme.danger : (rm.containsMouse ? Theme.hover : Theme.surface)
             border.width: row.armed ? 0 : 1; border.color: Theme.surfaceBorder
             Behavior on color { ColorAnimation { duration: Theme.durFast } }
-            Text { id: rl; anchors.centerIn: parent; text: row.armed ? "Confirmar" : "Eliminar"; color: row.armed ? "#FFFFFF" : Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: row.armed ? Font.DemiBold : Font.Normal }
+            Text { id: rl; anchors.centerIn: parent; text: row.armed ? I18n.tr("Confirmar") : I18n.tr("Eliminar"); color: row.armed ? "#FFFFFF" : Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: row.armed ? Font.DemiBold : Font.Normal }
             MouseArea {
                 id: rm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
                 onClicked: { if (!row.armed) { row.armed = true; disarm.restart() } else { row.armed = false; row.removeRequested() } }
