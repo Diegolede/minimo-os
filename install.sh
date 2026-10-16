@@ -32,7 +32,7 @@ done
 if [ -t 1 ] || [ "$PREVIEW" = 1 ]; then
     B=$'\e[1m'; G=$'\e[32m'; Y=$'\e[33m'; R=$'\e[31m'; C=$'\e[36m'; D=$'\e[2m'; N=$'\e[0m'
 else B=; G=; Y=; R=; C=; D=; N=; fi
-TOTAL=9; STEP=0; WARNS=0; T0=$SECONDS
+TOTAL=10; STEP=0; WARNS=0; T0=$SECONDS
 # Minimo y título con caracteres de densidad (el mismo algoritmo que terminal/minimo-hello)
 HDR_MINIMO=( "         ......"
              "     .:++%%%%%%++:."
@@ -152,6 +152,7 @@ PKGS=(
     cava playerctl                                             # niveles de audio (baile), teclas multimedia
     ghostty grim slurp wf-recorder zenity                      # terminal, capturas, grabación, selector de fondo
     adwaita-fonts                                              # tipografía Adwaita Sans
+    fontconfig                                                 # fc-cache (Google Sans Flex)
     networkmanager                                             # Wi-Fi en la isla (nmcli)
     wl-clipboard cliphist                                      # historial del portapapeles
     gnome-keyring                                              # llavero (se desbloquea al iniciar sesión)
@@ -276,6 +277,19 @@ elif confirm "¿Instalar Helium ($HELIUM, AUR)?"; then
         [ "$DRY" = 1 ] || rm -rf "$AURD"
     fi
 else warn "Helium omitido"; fi
+
+step "Tipografía: Google Sans Flex"
+# Fuente variable (OFL 1.1, de github.com/google/fonts) para toda la shell y la pantalla de
+# inicio. Va al sistema (/usr/share/fonts/minimo) para que el usuario "greeter" también la vea.
+FONT_SRC="$REPO/fonts/GoogleSansFlex[ROND,opsz,slnt,wdth,wght].ttf"
+FONT_DIR=/usr/share/fonts/minimo
+if [ "$PREVIEW" = 0 ] && cmp -s "$FONT_SRC" "$FONT_DIR/GoogleSansFlex.ttf" 2>/dev/null; then ok "Google Sans Flex instalada"
+else
+    run sudo install -Dm644 "$FONT_SRC" "$FONT_DIR/GoogleSansFlex.ttf"
+    run sudo install -Dm644 "$REPO/fonts/OFL.txt" "$FONT_DIR/OFL.txt"
+    run sudo fc-cache -f "$FONT_DIR"
+    ok "Google Sans Flex instalada en $FONT_DIR"
+fi
 
 step "Pantalla de inicio"
 # Por defecto: respalda la config de greetd, desactiva el gestor actual SIN detenerlo (tu

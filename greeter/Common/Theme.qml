@@ -46,7 +46,8 @@ QtObject {
     readonly property int radiusCard: 28
     readonly property int radiusField: 12
 
-    readonly property string font: "Adwaita Sans"
+    // Google Sans Flex (OFL, la instala install.sh en /usr/share/fonts/minimo); si no está, Adwaita Sans.
+    readonly property string font: Qt.fontFamilies().indexOf("Google Sans Flex") >= 0 ? "Google Sans Flex" : "Adwaita Sans"
 
     readonly property int durFast: 160
     readonly property int durNormal: 360
