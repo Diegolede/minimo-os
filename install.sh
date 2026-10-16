@@ -296,8 +296,12 @@ if [ "$REPO" != "$DEST" ]; then
 fi
 run systemctl --user daemon-reload
 run systemctl --user enable minimo-shell.service minimo-clipboard.service
+# Agente de autenticación polkit (diálogos de contraseña de pkexec, particiones, etc.):
+# lo trae hyprpolkitagent con su propia unidad; systemd garantiza una sola instancia.
+run systemctl --user enable hyprpolkitagent.service
 if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
     run systemctl --user restart minimo-shell.service minimo-clipboard.service
+    run systemctl --user start hyprpolkitagent.service
     run hyprctl reload
 else
     ok "Se iniciará al entrar en Hyprland"
