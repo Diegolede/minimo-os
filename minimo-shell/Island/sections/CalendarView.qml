@@ -31,7 +31,7 @@ Item {
         property real iconRotation: 0
         signal clicked()
         width: 32; height: 32; radius: 16
-        color: rbm.containsMouse ? Theme.hover : Theme.surface; border.width: 1; border.color: Theme.surfaceBorder
+        color: rbm.containsMouse ? Theme.hover : Theme.surface
         Icon { anchors.centerIn: parent; name: rb.icon; size: 18; rotation: rb.iconRotation }
         MouseArea { id: rbm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: rb.clicked() }
     }

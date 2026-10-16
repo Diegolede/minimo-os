@@ -28,7 +28,7 @@ Column {
     }
 
     Rectangle {
-        width: parent.width; height: list.implicitHeight; radius: 20; color: Theme.surface; border.width: 1; border.color: Theme.track
+        width: parent.width; height: list.implicitHeight; radius: 20; color: Theme.surface
         Column {
             id: list
             width: parent.width

@@ -18,10 +18,10 @@ Singleton {
     property color cardSolid: pick("#FFFFFF", "#1C1C1E")
     readonly property color card: cardSolid                             // isla, lanzador, ajustes
     property color field: pick("#F2F2F7", "#2C2C2E")                   // campos y filas
-    // Superficies (tarjetas y botones) sobre fondo blanco/negro: mismo color que la tarjeta
-    // + filete. El gris queda para campos de texto, pistas, barras y resaltados.
+    // Superficies (tarjetas y botones) sobre fondo blanco/negro: mismo color que la tarjeta,
+    // sin filete. El gris queda para campos de texto, pistas, barras y resaltados.
     readonly property color surface: cardSolid
-    readonly property color surfaceBorder: track
+    readonly property color surfaceBorder: "transparent"   // sin filetes: la separación la da el espaciado
     property color raised: pick("#FFFFFF", "#3A3A3C")                  // chips dentro de un campo
     property color subtle: pick("#F7F7FA", "#242426")                  // barra lateral, hover suave
     property color hover: pick("#E9E9EE", "#3A3A3C")

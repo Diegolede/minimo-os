@@ -20,7 +20,7 @@ Column {
     // Fila principal.
     Rectangle {
         width: parent.width; height: 52; radius: root.radius
-        color: rowMouse.containsMouse ? Theme.hover : Theme.surface; border.width: 1; border.color: Theme.track
+        color: rowMouse.containsMouse ? Theme.hover : Theme.surface
         Behavior on color { ColorAnimation { duration: 140 } }
         Rectangle {
             id: badge
@@ -57,7 +57,7 @@ Column {
         visible: root.expanded && Network.wifiEnabled
         height: visible ? Math.min(listCol.implicitHeight + 12, 300) : 0
         radius: root.radius
-        color: Theme.surface; border.width: 1; border.color: Theme.surfaceBorder
+        color: Theme.surface
         clip: true
         Flickable {
             anchors.fill: parent; anchors.margins: 6

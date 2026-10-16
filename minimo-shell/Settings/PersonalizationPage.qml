@@ -87,7 +87,7 @@ Column {
         width: parent.width
         height: ap.implicitHeight
         radius: 20
-        color: Theme.surface; border.width: 1; border.color: Theme.track
+        color: Theme.surface
         Column {
             id: ap
             width: parent.width
@@ -146,7 +146,7 @@ Column {
         width: parent.width
         height: opts.implicitHeight
         radius: 20
-        color: Theme.surface; border.width: 1; border.color: Theme.track
+        color: Theme.surface
         Column {
             id: opts
             width: parent.width

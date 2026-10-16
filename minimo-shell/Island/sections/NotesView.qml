@@ -29,7 +29,7 @@ Item {
         property string icon
         signal clicked()
         width: 32; height: 32; radius: 16
-        color: rbm.containsMouse ? Theme.hover : Theme.surface; border.width: 1; border.color: Theme.surfaceBorder
+        color: rbm.containsMouse ? Theme.hover : Theme.surface
         Icon { anchors.centerIn: parent; name: rb.icon; size: 18 }
         MouseArea { id: rbm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: rb.clicked() }
     }
@@ -53,7 +53,6 @@ Item {
                 visible: root.editing !== ""
                 width: dl.implicitWidth + 24; height: 32; radius: 16
                 color: root.armed ? Theme.danger : (dm.containsMouse ? Theme.hover : Theme.surface)
-                border.width: root.armed ? 0 : 1; border.color: Theme.surfaceBorder
                 Behavior on color { ColorAnimation { duration: Theme.durFast } }
                 Text { id: dl; anchors.centerIn: parent; text: root.armed ? I18n.tr("Confirmar") : I18n.tr("Eliminar"); color: root.armed ? "#FFFFFF" : Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: root.armed ? Font.DemiBold : Font.Normal }
                 MouseArea {
@@ -84,7 +83,7 @@ Item {
             Rectangle {
                 id: list
                 width: parent.width; implicitHeight: notesCol.implicitHeight; radius: 18
-                color: Theme.surface; border.width: 1; border.color: Theme.surfaceBorder
+                color: Theme.surface
                 Column {
                     id: notesCol
                     width: parent.width

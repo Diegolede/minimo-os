@@ -62,7 +62,7 @@ Item {
     component Card: Rectangle {
         default property alias content: inner.children
         width: parent ? parent.width : 0; height: inner.implicitHeight + 8
-        radius: 18; color: Theme.surface; border.width: 1; border.color: Theme.surfaceBorder
+        radius: 18; color: Theme.surface
         Column { id: inner; y: 4; width: parent.width }
     }
     component Bar: Item {

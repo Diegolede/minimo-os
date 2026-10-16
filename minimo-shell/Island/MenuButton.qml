@@ -4,6 +4,8 @@ import QtQuick
 import "../Common"
 
 // Botón circular gris claro con icono de línea y etiqueta gris debajo.
+// Sin filete: el círculo se distingue por icono, etiqueta y hover. El foco por teclado se
+// muestra con un aro solo mientras hay foco (Tab), nunca como borde permanente.
 // Si `confirm` es true, el primer clic lo pone negro ("Confirmar").
 Item {
     id: btn
@@ -16,14 +18,21 @@ Item {
     signal activated()
 
     width: 80; height: 80
+    activeFocusOnTab: true
+    Keys.onReturnPressed: mouse.fire()
+    Keys.onSpacePressed: mouse.fire()
 
     Rectangle {
         id: circle
         anchors.horizontalCenter: parent.horizontalCenter
         width: 52; height: 52; radius: 26
         color: (btn.armed || btn.active) ? Theme.fill : (mouse.containsMouse ? Theme.hover : Theme.surface)
-        border.width: (btn.armed || btn.active) ? 0 : 1; border.color: Theme.surfaceBorder
         scale: mouse.pressed ? 0.92 : 1
+        Rectangle {          // aro de foco por teclado (solo con foco)
+            anchors.fill: parent; anchors.margins: -4; radius: width / 2
+            color: "transparent"; border.width: 2; border.color: Theme.fill
+            visible: btn.activeFocus
+        }
         Behavior on color { ColorAnimation { duration: Theme.durFast } }
         Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutQuad } }
         Icon { anchors.centerIn: parent; name: btn.icon; visible: btn.letter === ""; size: 22; tone: (btn.armed || btn.active) ? "white" : "dark" }
@@ -53,10 +62,11 @@ Item {
         anchors.fill: circle
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: {
+        function fire() {
             if (btn.confirm && !btn.armed) { btn.armed = true; disarm.restart(); return }
             btn.armed = false
             btn.activated()
         }
+        onClicked: fire()
     }
 }

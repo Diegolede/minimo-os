@@ -27,7 +27,7 @@ Item {
             width: parent.width; height: 32
             Rectangle {
                 width: 32; height: 32; radius: 16
-                color: bm.containsMouse ? Theme.hover : Theme.surface; border.width: 1; border.color: Theme.track
+                color: bm.containsMouse ? Theme.hover : Theme.surface
                 Icon { anchors.centerIn: parent; name: "back"; size: 18 }
                 MouseArea { id: bm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.back() }
             }
@@ -41,7 +41,6 @@ Item {
                 visible: Clipboard.items.length > 0
                 width: cl.implicitWidth + 24; height: 32; radius: 16
                 color: root.armed ? Theme.fill : (cm.containsMouse ? Theme.hover : Theme.surface)
-                border.width: root.armed ? 0 : 1; border.color: Theme.surfaceBorder
                 Behavior on color { ColorAnimation { duration: Theme.durFast } }
                 Text { id: cl; anchors.centerIn: parent; text: root.armed ? I18n.tr("Confirmar") : I18n.tr("Borrar"); color: root.armed ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: root.armed ? Font.DemiBold : Font.Normal }
                 MouseArea {

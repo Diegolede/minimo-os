@@ -67,7 +67,7 @@ Column {
         width: parent.width
         height: info.implicitHeight + 8
         radius: 20
-        color: Theme.surface; border.width: 1; border.color: Theme.track
+        color: Theme.surface
         Column {
             id: info
             width: parent.width

@@ -59,7 +59,7 @@ Item {
             Rectangle {
                 id: backBtn
                 width: 32; height: 32; radius: 16
-                color: backMouse.containsMouse ? Theme.hover : Theme.surface; border.width: 1; border.color: Theme.track
+                color: backMouse.containsMouse ? Theme.hover : Theme.surface
                 Icon { anchors.centerIn: parent; name: "back"; size: 18 }
                 MouseArea { id: backMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.back() }
             }
@@ -103,8 +103,8 @@ Item {
                     z: dragging ? 10 : 0
                     scale: dragging ? 1.04 : 1
                     color: tileMouse.containsMouse || dragging ? Theme.hover : Theme.surface
-                    border.width: active ? 2 : 1
-                    border.color: active ? Theme.textPrimary : Theme.surfaceBorder
+                    border.width: active ? 2 : 0
+                    border.color: Theme.textPrimary
                     Behavior on x { enabled: !tile.dragging && !root.snap; NumberAnimation { duration: 260; easing.type: Easing.OutQuint } }
                     Behavior on y { enabled: !tile.dragging && !root.snap; NumberAnimation { duration: 260; easing.type: Easing.OutQuint } }
                     Behavior on scale { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }

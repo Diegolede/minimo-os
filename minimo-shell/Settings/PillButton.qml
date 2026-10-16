@@ -3,7 +3,7 @@
 import QtQuick
 import "../Common"
 
-// Botón píldora: superficie blanca (negra en oscuro) con filete; `outlined` sin relleno; `primary` negro.
+// Botón píldora: superficie blanca (negra en oscuro) sin filete; `outlined` sin relleno ni borde (botón de texto); `primary` negro.
 Rectangle {
     id: b
     property string text
@@ -13,7 +13,15 @@ Rectangle {
     signal clicked()
     width: r.implicitWidth + 32; height: 36; radius: 18
     color: primary ? (m.containsMouse ? Theme.fillHover : Theme.fill) : (m.containsMouse ? Theme.hover : (outlined ? "transparent" : Theme.surface))
-    border.width: primary ? 0 : 1; border.color: outlined ? Theme.dot : Theme.surfaceBorder
+    border.width: 0
+    activeFocusOnTab: true
+    Keys.onReturnPressed: b.clicked()
+    Keys.onSpacePressed: b.clicked()
+    Rectangle {          // aro de foco por teclado (solo con foco, sin filete permanente)
+        anchors.fill: parent; anchors.margins: -3; radius: height / 2
+        color: "transparent"; border.width: 2; border.color: Theme.fill
+        visible: b.activeFocus
+    }
     Row {
         id: r
         anchors.centerIn: parent; spacing: 8

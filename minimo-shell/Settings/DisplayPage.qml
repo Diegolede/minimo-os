@@ -92,7 +92,7 @@ Column {
             width: root.width
             height: mcol.implicitHeight + 32
             radius: 20
-            color: Theme.surface; border.width: 1; border.color: Theme.track
+            color: Theme.surface
 
             Column {
                 id: mcol

@@ -14,7 +14,7 @@ Rectangle {
     readonly property string fileName: file.substring(file.lastIndexOf("/") + 1)
     height: col.implicitHeight
     radius: 20
-    color: Theme.surface; border.width: 1; border.color: Theme.track
+    color: Theme.surface
 
     Process {
         id: picker

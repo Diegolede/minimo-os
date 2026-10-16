@@ -65,7 +65,7 @@ Item {
         }
 
         Rectangle {
-            width: parent.width; height: meters.implicitHeight + 8; radius: 18; color: Theme.surface; border.width: 1; border.color: Theme.track
+            width: parent.width; height: meters.implicitHeight + 8; radius: 18; color: Theme.surface
             Column {
                 id: meters
                 y: 4; width: parent.width

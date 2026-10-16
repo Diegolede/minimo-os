@@ -92,7 +92,7 @@ Item {
 
         Title { text: I18n.tr("En segundo plano") }
         Rectangle {
-            width: parent.width; radius: 18; color: Theme.surface; border.width: 1; border.color: Theme.track
+            width: parent.width; radius: 18; color: Theme.surface
             height: (root.items.length === 0 ? empty.height : list.implicitHeight) + 8
             Behavior on height { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
             clip: true
