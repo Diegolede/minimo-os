@@ -308,22 +308,8 @@ Rectangle {
                 width: 34; height: 34; radius: 17
                 color: power.armed === pb.modelData ? Theme.fill : (ma.containsMouse ? Theme.field : "transparent")
                 Behavior on color { ColorAnimation { duration: 160 } }
-                readonly property color ink: power.armed === pb.modelData ? Theme.onAccent : Theme.textSecondary
-                onInkChanged: icon.requestPaint()
-                Icon { anchors.centerIn: parent; visible: pb.modelData === "off"; name: "power"; size: 18; tone: power.armed === pb.modelData ? "white" : "gray" }
-                Canvas {
-                    id: icon
-                    visible: pb.modelData !== "off"
-                    anchors.centerIn: parent; width: 16; height: 16
-                    renderStrategy: Canvas.Cooperative
-                    onPaint: {
-                        const g = getContext("2d"); g.reset()
-                        g.strokeStyle = pb.ink; g.fillStyle = pb.ink; g.lineWidth = 1.7; g.lineCap = "round"
-                        g.beginPath()
-                        g.arc(8, 8.5, 6, -Math.PI * 0.15, Math.PI * 1.45, false); g.stroke()
-                        g.beginPath(); g.moveTo(14.6, 1.8); g.lineTo(14.2, 6.6); g.lineTo(9.6, 5.6); g.stroke()
-                    }
-                }
+                // Fluent Filled: Power / Arrow Clockwise; blanco sobre el negro de confirmación.
+                Icon { anchors.centerIn: parent; name: pb.modelData === "off" ? "power" : "restart"; size: 18; tone: power.armed === pb.modelData ? "white" : "gray" }
                 MouseArea {
                     id: ma; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
                     onClicked: {

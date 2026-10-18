@@ -33,7 +33,7 @@ Window {
             else if (w.arg("--loading")) { login.password = "minimo"; login.busy = true }
             else if (w.arg("--caps")) { login.password = "MINIMO"; login.caps = true; login.reveal = true }
             else if (w.arg("--sleep")) IdleState.sleepNow()
-            else if (w.arg("--power")) { Cursor.move(w.width - 40, w.height - 37); login.children[login.children.length - 1].armed = "off" }
+            else if (w.arg("--power")) { Cursor.move(w.width - 40, w.height - 37); login.children[login.children.length - 1].armed = (w.arg("--reboot") ? "reboot" : "off") }
             else if (w.arg("--success")) { successT.start() }
             else if (w.arg("--sessions")) { login.children.find(c => c.picked !== undefined).open = true; Cursor.move(140, w.height - 150) }
             else Cursor.move(w.width * 0.78, w.height * 0.2)     // mirar hacia arriba a la derecha
