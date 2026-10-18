@@ -138,11 +138,29 @@ Rectangle {
             }
             MouseArea { anchors.fill: parent; cursorShape: Qt.IBeamCursor; onPressed: field.forceActiveFocus() }
             Text {
+                id: placeholder
                 anchors.centerIn: parent
                 visible: field.text.length === 0 && !root.busy
                 font.family: Theme.font; font.pixelSize: 15
                 color: Theme.textSecondary
                 text: root.prompt || "Contraseña"
+            }
+            // Cursor con el campo vacío: barra fina justo antes de "Contraseña" (el texto queda
+            // centrado y el cursor real caería encima). Parpadea solo con foco.
+            Rectangle {
+                id: emptyCaret
+                visible: field.activeFocus && field.text.length === 0 && !root.busy
+                x: placeholder.x - width - 4; anchors.verticalCenter: parent.verticalCenter
+                width: 2; height: 20; radius: 1
+                color: Theme.textPrimary
+                SequentialAnimation on opacity {
+                    running: emptyCaret.visible; loops: Animation.Infinite
+                    PropertyAction { value: 1 }
+                    PauseAnimation { duration: 530 }
+                    PropertyAction { value: 0 }
+                    PauseAnimation { duration: 530 }
+                    onStopped: emptyCaret.opacity = 1
+                }
             }
             // Cargando: tres puntos que respiran mientras greetd verifica
             Row {
@@ -176,7 +194,23 @@ Rectangle {
                 opacity: root.busy ? 0 : 1
                 Behavior on opacity { NumberAnimation { duration: 160 } }
                 passwordCharacter: "•"
-                cursorVisible: activeFocus && text.length > 0     // vacío: sólo el texto "Contraseña", sin cursor encima
+                // Cursor propio (2 px, color del texto: contraste alto en claro y oscuro). Vacío: lo
+                // dibuja emptyCaret junto a "Contraseña"; con texto, este, al final de los puntos.
+                cursorVisible: activeFocus && text.length > 0
+                cursorDelegate: Rectangle {
+                    id: caret
+                    width: 2; radius: 1
+                    color: Theme.textPrimary
+                    visible: field.cursorVisible
+                    SequentialAnimation on opacity {
+                        running: caret.visible; loops: Animation.Infinite
+                        PropertyAction { value: 1 }
+                        PauseAnimation { duration: 530 }
+                        PropertyAction { value: 0 }
+                        PauseAnimation { duration: 530 }
+                        onStopped: caret.opacity = 1
+                    }
+                }
                 font.family: Theme.font; font.pixelSize: 17; font.letterSpacing: 2
                 color: Theme.textPrimary
                 enabled: !root.busy
