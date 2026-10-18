@@ -31,5 +31,7 @@ assert.strictEqual(U.autoDelay(now, 0), U.AUTO_FIRST, "sin comprobaciones previa
 assert.strictEqual(U.autoDelay(now, now - 3600e3), U.AUTO_EVERY - 3600e3)
 assert.strictEqual(U.autoDelay(now, now - 10 * U.AUTO_EVERY), U.AUTO_FIRST, "atrasada: pronto, pero no en el arranque")
 assert.strictEqual(U.autoDelay(now, now + 1e9), U.AUTO_EVERY, "reloj hacia atrás: tope de 24 h")
+assert.strictEqual(U.canCheck(now, now + 1e9, false, true), true, "reloj hacia atrás: la manual sigue disponible")
+assert.strictEqual(U.canCheck(now, now + 1e9, false, false), false, "reloj hacia atrás: la automática espera")
 assert.strictEqual(U.sane("uptodate"), "uptodate"); assert.strictEqual(U.sane("raro"), "unknown"); assert.strictEqual(U.sane(undefined), "unknown")
 console.log("updates: changelog (es/en) y reglas OK")

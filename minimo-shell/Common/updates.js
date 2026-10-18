@@ -37,6 +37,7 @@ function parseChangelog(md) {
 function canCheck(now, last, running, manual) {
     if (running) return false
     if (!last) return true
+    if (manual && last > now) return true   // reloj atrasado: la manual no queda bloqueada para siempre
     return now - last >= (manual ? MIN_MANUAL : AUTO_EVERY)
 }
 

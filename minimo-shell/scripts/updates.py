@@ -14,7 +14,7 @@ una comprobación real.
 
 Estados: uptodate | available | offline | error | unknown.
 """
-import json, os, re, shutil, subprocess, sys, urllib.request
+import json, os, re, shlex, shutil, subprocess, sys, urllib.request
 
 TIMEOUT = 15
 
@@ -59,7 +59,8 @@ def check_minimo(path):
     merge = git(top, "config", "--get", f"branch.{branch}.merge").stdout.strip()
     if not remote or not merge:
         out["reason"] = "no-upstream"; return out
-    out["pull"] = f"git -C {top} pull --ff-only && {top}/install.sh"
+    q = shlex.quote(top)          # rutas con espacios: el comando copiado sigue funcionando
+    out["pull"] = f"git -C {q} pull --ff-only && {shlex.quote(top + '/install.sh')}"
     try:
         ls = git(top, "ls-remote", "--exit-code", remote, merge)
     except subprocess.TimeoutExpired:
