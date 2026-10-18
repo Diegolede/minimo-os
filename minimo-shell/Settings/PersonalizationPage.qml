@@ -174,6 +174,14 @@ Column {
                 onToggled: v => DisplayState.setCharacterAnimated(v)
             }
             Rectangle { x: 18; width: parent.width - 36; height: 1; color: Theme.track }
+            SwitchRow {
+                width: parent.width
+                text: I18n.tr("Mascota")
+                detail: I18n.tr("Necesidades de Minimo (comida, ánimo y energía) con avisos en la isla. Apagada: deslizar hacia abajo abre el menú.")
+                checked: DisplayState.petEnabled
+                onToggled: v => DisplayState.setPetEnabled(v)
+            }
+            Rectangle { x: 18; width: parent.width - 36; height: 1; color: Theme.track }
             // Dormir tras inactividad (segmentado 1/2/5 min).
             Item {
                 width: parent.width; height: 64

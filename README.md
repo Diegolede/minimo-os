@@ -93,7 +93,7 @@ Desactiva la shell y restaura el último respaldo de `~/.config/hypr`. No borra 
 
 Todo lo habitual se cambia desde **Ajustes** (botón en la isla o `Super + ,`):
 
-- **Personalización:** fondo de pantalla, ocultar la isla automáticamente, personaje animado y tiempo para dormir.
+- **Personalización:** fondo de pantalla, ocultar la isla automáticamente, personaje animado, mascota (necesidades y avisos; apagada, deslizar hacia abajo abre el menú) y tiempo para dormir.
 - **Pantalla:** resolución, frecuencia y escala por monitor (se revierte en 15 s si no confirmás), brillo y saturación.
 - **Minimo OS:** versión e información del sistema.
 

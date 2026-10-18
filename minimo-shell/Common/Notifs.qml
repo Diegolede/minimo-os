@@ -62,12 +62,28 @@ Singleton {
         if (!n) return
         const def = Array.from(n.actions || []).find(a => a.identifier === "default")
         const open = n.hints ? n.hints["x-minimo-open"] : ""
-        if (typeof open === "string" && open.startsWith("/")) Quickshell.execDetached(["xdg-open", open])   // captura: abrirla
+        if (n.minimo) { if (n.action) CharacterBus.islandCommand(n.action) }   // aviso propio: abre su panel
+        else if (typeof open === "string" && open.startsWith("/")) Quickshell.execDetached(["xdg-open", open])   // captura: abrirla
         else if (def) def.invoke()
         else Quickshell.execDetached([Qt.resolvedUrl("../scripts/focus-app.py").toString().replace("file://", ""),
                                       n.desktopEntry || "", n.appName || ""])
         finish(n)
     }
+    // Avisos propios de Minimo OS (p. ej. la mascota) por el mismo camino que los de las apps:
+    // misma cola, mismo tiempo en pantalla, respetan "No molestar". `tag` identifica el aviso
+    // (uno por tag a la vez) y `action` es el comando de isla al hacer clic (p. ej. "pet").
+    function post(o) {
+        if (root.dnd) return
+        withdraw(o.tag)
+        const n = { minimo: true, tag: o.tag, summary: o.summary || "", body: o.body || "", appName: "Minimo OS",
+                    appIcon: "", image: "", desktopEntry: "", hints: {}, actions: [], urgency: NotificationUrgency.Normal,
+                    action: o.action || "", expire() {}, dismiss() {} }
+        let q = root.queue.concat([n])
+        while (q.length > 8) { const old = q.splice(1, 1)[0]; old.expire() }
+        root.queue = q
+    }
+    // Retira un aviso propio que ya no corresponde (necesidad atendida, mascota apagada).
+    function withdraw(tag) { if (tag) root.queue = root.queue.filter(n => !(n.minimo && n.tag === tag)) }
     function invoke(action) { const n = current; action.invoke(); if (n) finish(n) }
 
     NotificationServer {

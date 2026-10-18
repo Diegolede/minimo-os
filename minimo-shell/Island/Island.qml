@@ -41,6 +41,8 @@ PanelWindow {
     mask: Region { x: win.open ? 0 : hoverZone.x; y: 0; width: win.open ? win.width : hoverZone.width; height: win.open ? win.height : hoverZone.height }
 
     function collapse() { expanded = false; panel = false }
+    // Mascota apagada con su panel abierto: se cierra (no queda nada de la mascota en pantalla).
+    Connections { target: DisplayState; function onPetEnabledChanged() { if (!DisplayState.petEnabled && win.panel && win.panelKind === "pet") win.collapse() } }
 
     // Auto-ocultar
     Timer {
@@ -179,7 +181,11 @@ PanelWindow {
             if (m.button === Qt.RightButton) return
             if (pulling) {
                 if (Date.now() - lastT > 80) velY = 0
-                if (dragDy > 24 || (velY > 0.5 && dragDy > 10)) { win.panelKind = "pet"; win.panel = true }
+                // Hacia abajo: panel de la mascota; con la mascota apagada, el mismo menú que un clic.
+                if (dragDy > 24 || (velY > 0.5 && dragDy > 10)) {
+                    if (DisplayState.petEnabled) { win.panelKind = "pet"; win.panel = true }
+                    else win.expanded = true
+                }
                 pulling = false; dragDy = 0; return
             }
             if (dragging) {
@@ -314,6 +320,7 @@ PanelWindow {
                 else { win.panel = false; win.expanded = true; menu.showClipboard() }
             }
             else if (cmd === "close") win.collapse()
+            else if (cmd === "pet" && !DisplayState.petEnabled) { win.panel = false; win.expanded = true }
             else if (cmd === "status" || cmd === "apps" || cmd === "pet") {
                 // Si ya está abierto el otro panel, cambiar a este en vez de cerrar.
                 win.panel = !(win.panel && win.panelKind === cmd)

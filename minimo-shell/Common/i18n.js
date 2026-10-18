@@ -8,6 +8,14 @@
 var languages = [{ id: "es", name: "Español", locale: "es_AR" }, { id: "en", name: "English", locale: "en_US" }]
 
 var en = {
+    "Minimo tiene hambre": "Minimo is hungry",
+    "Abrí la isla y dale de comer.": "Open the island and feed him.",
+    "Minimo se aburre": "Minimo is bored",
+    "¿Jugamos un rato?": "Want to play for a bit?",
+    "Minimo tiene sueño": "Minimo is sleepy",
+    "Llevás mucho tiempo sin pausa. ¿Un descanso?": "You've been going for a long time. Take a break?",
+    "Mascota": "Pet",
+    "Necesidades de Minimo (comida, ánimo y energía) con avisos en la isla. Apagada: deslizar hacia abajo abre el menú.": "Minimo's needs (food, mood and energy) with alerts in the island. Off: swiping down opens the menu.",
     " · Cargada": " · Charged",
     " · Cargando": " · Charging",
     " · Enchufada": " · Plugged in",
