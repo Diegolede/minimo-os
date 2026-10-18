@@ -216,6 +216,13 @@ else
     [ -L "$MON" ] && run rm -f "$MON"
     run install -Dm644 "$REPO/hypr/minimo/monitores.lua" "$MON"
 fi
+# Diálogo de contraseña: hyprpolkitagent ≥ 0.2 dibuja con hyprtoolkit, que toma colores,
+# fuente y redondeo de ~/.config/hypr/hyprtoolkit.conf. Se enlaza la paleta de Minimo solo si
+# no hay uno propio (la shell alterna claro/oscuro con scripts/dialog-theme.sh).
+HTK="$HYPR/hyprtoolkit.conf"
+if [ -L "$HTK" ] && [[ "$(readlink -f "$HTK")" == "$REPO"/hypr/hyprtoolkit/* ]]; then ok "$HTK"
+elif [ -e "$HTK" ]; then ok "$HTK (se conserva el propio; el diálogo de contraseña no toma el estilo de Minimo)"
+else link "$REPO/hypr/hyprtoolkit/claro.conf" "$HTK"; fi
 
 step "Fondos de pantalla"
 WALL="$HOME/Imágenes/Fondos"

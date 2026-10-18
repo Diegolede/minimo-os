@@ -17,6 +17,9 @@ for _, c in ipairs({
 }) do mosaico(c) end
 
 hl.window_rule({ match = { class = "^(org\\.gnome\\.)" }, rounding = 12 })
+-- Diálogo de contraseña (hyprpolkitagent): flotante y con el radio de las tarjetas de Minimo
+-- (sus colores salen de hypr/hyprtoolkit/*.conf).
+hl.window_rule({ match = { class = "^(hyprpolkitagent)$" }, float = true, rounding = 20 })
 hl.window_rule({ match = { class = "^(firefox)$", title = "^(Picture-in-Picture)$" }, float = true })
 hl.window_rule({ match = { class = "^(steam)$", title = "^(notificationtoasts)" }, no_initial_focus = true, pin = true })
 

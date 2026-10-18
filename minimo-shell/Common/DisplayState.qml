@@ -62,7 +62,10 @@ Singleton {
     function setLiveWallpaper(p) { liveWallpaper = p; save() }
     function setLivePauseCovered(v) { livePauseCovered = v; save() }
     // Empuja el tema al singleton Theme (sin dependencia inversa: evita init cíclico).
-    onThemeChanged: Theme.dark = theme === "dark"
+    onThemeChanged: { Theme.dark = theme === "dark"; if (loaded) syncDialogTheme() }
+    // Diálogo de contraseña (hyprpolkitagent/hyprtoolkit) con el mismo tema: un comando suelto, sin procesos vivos.
+    readonly property string dialogThemeScript: Qt.resolvedUrl("../scripts/dialog-theme.sh").toString().replace("file://", "")
+    function syncDialogTheme() { Quickshell.execDetached([dialogThemeScript, theme === "dark" ? "oscuro" : "claro"]) }
     function save() {
         file.setText(JSON.stringify({ saturation: root.saturation, brightness: root.brightness, wallpaper: root.wallpaper, wallpaperHistory: root.wallpaperHistory,
                                      islandAutoHide: root.islandAutoHide, islandSmartHide: root.islandSmartHide, characterAnimated: root.characterAnimated, petEnabled: root.petEnabled, emojiTone: root.emojiTone, updateAutoCheck: root.updateAutoCheck, updateLast: root.updateLast,
@@ -122,6 +125,7 @@ Singleton {
                 root.set(s.saturation ?? 1.0, s.brightness ?? 1.0)
             } catch (e) {}
             root.loaded = true
+            root.syncDialogTheme()
         }
         onLoadFailed: root.loaded = true
     }

@@ -30,6 +30,9 @@ fi
 
 printf '%s==>%s Hyprland\n' "$C" "$N"
 HYPR="$HOME/.config/hypr"
+# Paleta del diálogo de contraseña: quitar el enlace solo si es el de Minimo.
+HTK="$HYPR/hyprtoolkit.conf"
+if [ -L "$HTK" ]; then case "$(readlink "$HTK")" in */hypr/hyprtoolkit/*.conf) run rm -f "$HTK" ;; esac; fi
 last=$(ls -d "$HYPR".bak-* 2>/dev/null | sort | tail -1 || true)
 if [ -z "$last" ]; then
     printf '  %s!%s No hay respaldo de %s; se deja como está.\n' "$Y" "$N" "$HYPR"
