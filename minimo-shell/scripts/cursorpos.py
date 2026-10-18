@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: MIT
 # Copyright (c) 2026 Diego Ledesma (TRN1) — Minimo OS
 # Posición del cursor para el personaje, sin lanzar hyprctl: un solo proceso que consulta
-# el socket IPC de Hyprland. ~20 Hz mientras el mouse se mueve, ~3 Hz si está quieto >1 s.
+# el socket IPC de Hyprland. ~20 Hz mientras el mouse se mueve, ~3 Hz si está quieto >1 s y
+# ~1,5 Hz si lleva >10 s quieto (para entonces el personaje ya dejó de seguirlo: mira al frente).
 # Imprime "x,y" solo cuando cambia. Termina si la shell cierra la salida.
 import os, socket, sys, time
 
@@ -43,4 +44,5 @@ while True:
             print(pos, flush=True)
         except BrokenPipeError:
             sys.exit(0)
-    time.sleep(0.05 if now - still_since < 1.0 else 0.33)
+    still = now - still_since
+    time.sleep(0.05 if still < 1.0 else 0.33 if still < 10.0 else 0.66)
