@@ -4,7 +4,7 @@ Cada versión se divide en **Nuevas funciones**, **Correcciones** y **Optimizaci
 Ajustes › Actualizaciones muestra este archivo (y CHANGELOG.en.md en inglés). Al publicar una versión: renombrar
 «Próxima versión» con el número y la fecha, subir `minimo-shell/VERSION` y crear la etiqueta `vX.Y.Z`.
 
-## Próxima versión
+## 1.1.1 beta — 2026-10-18
 
 ### Nuevas funciones
 - Isla: la captura de pantalla se muestra en grande, con su proporción real.

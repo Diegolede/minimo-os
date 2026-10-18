@@ -3,7 +3,7 @@
 Each version is split into **New features**, **Fixes** and **Optimizations**.
 Shown in Settings › Updates. The Spanish file (CHANGELOG.md) is the reference.
 
-## Next version
+## 1.1.1 beta — 2026-10-18
 
 ### New features
 - Island: screenshots are shown large, with their real aspect ratio.

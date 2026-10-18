@@ -18,7 +18,7 @@ function parseChangelog(md) {
         var h3 = l.match(/^###\s+(.+?)\s*$/)
         var li = l.match(/^\s*[-*]\s+(.+?)\s*$/)
         if (h2 && !h3) {
-            var m = h2[1].match(/^v?(\d+\.\d+(?:\.\d+)?)\s*(?:[—–-]\s*(\d{4}-\d{2}-\d{2}))?/)
+            var m = h2[1].match(/^v?(\d+\.\d+(?:\.\d+)?(?:[ -]?(?:alpha|beta|rc)\d*)?)\s*(?:[—–-]\s*(\d{4}-\d{2}-\d{2}))?/)
             cur = { version: m ? m[1] : h2[1], date: m && m[2] ? m[2] : "", next: !m, sections: [] }
             sec = null
             out.push(cur)
