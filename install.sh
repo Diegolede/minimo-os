@@ -151,7 +151,7 @@ PKGS=(
     pipewire pipewire-pulse wireplumber                        # audio (Pipewire en la shell)
     cava playerctl                                             # niveles de audio (baile), teclas multimedia
     ghostty grim slurp wf-recorder zenity                      # terminal, capturas, grabación, selector de fondo
-    adwaita-fonts                                              # tipografía Adwaita Sans
+    adwaita-fonts noto-fonts-emoji                             # tipografía Adwaita Sans, emojis (selector de la isla)
     networkmanager                                             # Wi-Fi en la isla (nmcli)
     wl-clipboard cliphist                                      # historial del portapapeles
     gnome-keyring                                              # llavero (se desbloquea al iniciar sesión)

@@ -14,6 +14,7 @@ Column {
     signal desktops()
     signal clipboard()
     signal notes()
+    signal emoji()
     spacing: 18
 
     readonly property var sliders: QuickItems.pinnedSliders
@@ -28,6 +29,7 @@ Column {
         else if (id === "desktops") root.desktops()
         else if (id === "clipboard") root.clipboard()
         else if (id === "notes") root.notes()
+        else if (id === "emoji") root.emoji()
         // Navegador / archivos: la isla se cierra solo si se lanzó; si no, aviso en línea.
         else if (id === "browser" || id === "files") Launch.open(id)
         else { const c = QuickItems.custom(id); if (c) { QuickItems.run(c.cmd); root.done() } }

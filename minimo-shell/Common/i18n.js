@@ -8,6 +8,14 @@
 var languages = [{ id: "es", name: "Español", locale: "es_AR" }, { id: "en", name: "English", locale: "en_US" }]
 
 var en = {
+    "Emojis": "Emoji",
+    "Tono de piel": "Skin tone",
+    "Buscar emoji": "Search emoji",
+    "Resultados": "Results",
+    "Sin resultados": "No results",
+    "Cargando…": "Loading…",
+    "Copiado": "Copied",
+    "Clic para copiar · Ctrl+V para pegar": "Click to copy · Ctrl+V to paste",
     "Gestos de la isla dinámica": "Dynamic Island gestures",
     "Gestos": "Gestures",
     "Esc": "Esc",

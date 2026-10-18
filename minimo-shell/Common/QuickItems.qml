@@ -23,6 +23,7 @@ Singleton {
         { id: "desktops", label: I18n.tr("Escritorios"), icon: "desktops", slider: false },
         { id: "clipboard", label: I18n.tr("Portapapeles"), icon: "clipboard", slider: false },
         { id: "notes", label: I18n.tr("Notas"), icon: "note", slider: false },
+        { id: "emoji", label: I18n.tr("Emojis"), icon: "emoji", slider: false },
         { id: "browser", label: I18n.tr("Navegador"), icon: "globe", slider: false },
         { id: "files", label: I18n.tr("Archivos"), icon: "folder", slider: false }
     ]

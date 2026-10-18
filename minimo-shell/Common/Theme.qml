@@ -51,6 +51,7 @@ Singleton {
     readonly property int radiusField: 12
 
     readonly property string font: "Adwaita Sans"
+    readonly property string emojiFont: "Noto Color Emoji"   // noto-fonts-emoji (install.sh); solo en el selector de emojis
 
     readonly property int durFast: 160
     readonly property int durNormal: 360

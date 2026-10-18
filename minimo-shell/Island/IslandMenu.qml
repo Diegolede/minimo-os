@@ -13,8 +13,8 @@ Item {
     property bool open: false
     readonly property bool searchFocused: search.hasFocus
     property alias character: chr
-    property string page: "menu"   // "menu" | "desks" | "clip" | "cal" | "notes"
-    implicitHeight: (page === "desks" ? desks.implicitHeight : page === "clip" ? clip.implicitHeight : page === "cal" ? cal.implicitHeight : page === "notes" ? notes.implicitHeight : col.implicitHeight) + 40
+    property string page: "menu"   // "menu" | "desks" | "clip" | "cal" | "notes" | "emoji"
+    implicitHeight: (page === "desks" ? desks.implicitHeight : page === "clip" ? clip.implicitHeight : page === "cal" ? cal.implicitHeight : page === "notes" ? notes.implicitHeight : page === "emoji" ? emoji.implicitHeight : col.implicitHeight) + 40
 
     function showClipboard() { clip.refresh(); page = "clip" }
 
@@ -28,7 +28,7 @@ Item {
         running: root.open && root.stage < 6
         onTriggered: root.stage++
     }
-    onOpenChanged: if (!open) { stage = 0; page = "menu"; actions.reset(); notes.reset() }
+    onOpenChanged: if (!open) { stage = 0; page = "menu"; actions.reset(); notes.reset(); emoji.reset() }
 
     SystemClock { id: clock; precision: SystemClock.Minutes }
 
@@ -90,7 +90,8 @@ Item {
             PinnedSection { id: pinned; width: parent.width
                 onDone: root.done(); onDesktops: { desks.refresh(); root.page = "desks" }
                 onClipboard: root.showClipboard()
-                onNotes: root.page = "notes" } }
+                onNotes: root.page = "notes"
+                onEmoji: { emoji.reset(); root.page = "emoji" } } }
         Reveal { step: 4; width: parent.width; height: actions.implicitHeight
             ActionsSection { id: actions; anchors.horizontalCenter: parent.horizontalCenter; onDone: root.done()
                 onSettings: { root.done(); SettingsState.show() } } }
@@ -147,6 +148,20 @@ Item {
         opacity: root.page === "notes" ? 1 : 0
         visible: opacity > 0
         enabled: root.page === "notes"
+        Behavior on x { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
+        Behavior on opacity { NumberAnimation { duration: 220 } }
+        onBack: root.page = "menu"
+    }
+
+    EmojiView {
+        id: emoji
+        x: root.page === "emoji" ? 20 : root.width * 0.3
+        y: 20
+        width: root.width - 40
+        active: root.open && root.page === "emoji"
+        opacity: root.page === "emoji" ? 1 : 0
+        visible: opacity > 0
+        enabled: root.page === "emoji"
         Behavior on x { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
         Behavior on opacity { NumberAnimation { duration: 220 } }
         onBack: root.page = "menu"
