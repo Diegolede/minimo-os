@@ -32,7 +32,6 @@
 
 - [Descripción](#descripción)
 - [Características](#características)
-- [Capturas](#capturas)
 - [Requisitos](#requisitos)
 - [Instalación](#instalación)
 - [Actualización](#actualización)
@@ -96,12 +95,6 @@ en lugar de hacer sondeos periódicos y pausa sus animaciones durante la inactiv
 ### Pantalla de inicio
 
 - Basada en greetd, cage y Quickshell: Minimo en el inicio de sesión, aviso de Bloq Mayús, mostrar contraseña, selector de sesión, apagado y reinicio con confirmación y desbloqueo del llavero de GNOME.
-
-## Capturas
-
-| Personalización | Pantalla | Acerca de |
-|---|---|---|
-| ![Ajustes: Personalización](docs/ajustes-personalizacion.png) | ![Ajustes: Pantalla](docs/ajustes-pantalla.png) | ![Ajustes: Acerca de](docs/ajustes-acerca.png) |
 
 ## Requisitos
 
@@ -266,7 +259,7 @@ qs -p ~/Proyectos/minimo-os/minimo-shell ipc call character list
 | [terminal/](terminal) | Configuración de Ghostty y saludo de Minimo |
 | [systemd/](systemd) | Servicios de usuario de la shell y del portapapeles |
 | [assets/](assets) | Icono y fondos por defecto |
-| [docs/](docs) | Capturas |
+| [docs/](docs) | Video de demostración |
 | [tests/](tests) | Pruebas |
 
 ## Novedades
