@@ -13,6 +13,8 @@ Ajustes › Actualizaciones muestra este archivo (y CHANGELOG.en.md en inglés).
 - Isla: selector de emojis con categorías, búsqueda y tono de piel (se copia con un clic).
 - Ajustes: sección «Actualizaciones» con la versión instalada, comprobación de versiones nuevas y estas notas.
 - Iconos Fluent UI System Icons (Filled) en la shell y en la pantalla de inicio.
+- Isla › Escritorios: arrastrar una app a otro escritorio, cerrarla con × y enfocarla con un clic.
+- Diálogo de contraseña (polkit) con los colores, la fuente y el redondeo de Minimo, claro u oscuro.
 
 ### Correcciones
 - Pantalla de inicio: el cursor de la contraseña se ve siempre, también con el campo vacío.
@@ -20,6 +22,8 @@ Ajustes › Actualizaciones muestra este archivo (y CHANGELOG.en.md en inglés).
 
 ### Optimizaciones
 - Mascota: los avisos usan un solo temporizador hasta el próximo cambio (sin sondeos) y se detienen con la mascota apagada.
+- Conectividad por eventos de NetworkManager en vez de una comprobación cada 10 s.
+- El seguimiento del mouse consulta menos cuando el mouse lleva un rato quieto.
 
 ## 1.1.0 — 2026-10-16
 

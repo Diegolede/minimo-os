@@ -12,6 +12,8 @@ Shown in Settings › Updates. The Spanish file (CHANGELOG.md) is the reference.
 - Island: emoji picker with categories, search and skin tone (one click copies it).
 - Settings: "Updates" section with the installed version, a check for new versions and these notes.
 - Fluent UI System Icons (Filled) in the shell and the login screen.
+- Island › Desktops: drag an app to another desktop, close it with × and focus it with a click.
+- Password dialog (polkit) with Minimo's colors, font and rounding, light or dark.
 
 ### Fixes
 - Login screen: the password caret is always visible, also with an empty field.
@@ -19,6 +21,8 @@ Shown in Settings › Updates. The Spanish file (CHANGELOG.md) is the reference.
 
 ### Optimizations
 - Pet: alerts use a single timer until the next change (no polling) and stop when the pet is off.
+- Connectivity from NetworkManager events instead of a check every 10 s.
+- Mouse tracking polls less when the mouse has been still for a while.
 
 ## 1.1.0 — 2026-10-16
 
