@@ -22,6 +22,10 @@
   <a href="minimo-shell/CHANGELOG.md">Novedades</a>
 </p>
 
+<p align="center">
+  <a href="https://github.com/Diegolede/minimo-os/releases/download/v1.1.1-beta/minimo-os-demo.mp4"><img src="docs/demo.gif" width="860" alt="Minimo OS en uso: isla dinámica, panel de recursos y Ajustes en modo claro y oscuro"></a>
+</p>
+
 ---
 
 ## Contenido
