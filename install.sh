@@ -158,7 +158,7 @@ PKGS=(
     python lua                                                 # scripts de la shell (cursor, estado, escritorios, atajos)
     git
 )
-OPTIONAL=(fuzzel github-cli)
+OPTIONAL=(fuzzel github-cli pacman-contrib)   # pacman-contrib: checkupdates (Ajustes › Actualizaciones)
 step "Paquetes"
 missing=()
 for p in "${PKGS[@]}"; do { [ "$PREVIEW" = 0 ] && pacman -Q "$p" >/dev/null 2>&1; } || missing+=("$p"); done

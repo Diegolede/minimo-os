@@ -40,7 +40,7 @@ parte superior de la pantalla, acompañada por un pequeño personaje que reaccio
 - Arch Linux (usuario normal con `sudo`).
 - Hyprland 0.56 o superior (configuración en Lua).
 - Paquetes (el instalador los instala): `hyprland xdg-desktop-portal-hyprland hyprpolkitagent quickshell qt6-declarative qt6-svg qt6-wayland pipewire pipewire-pulse wireplumber cava playerctl ghostty grim slurp wf-recorder zenity adwaita-fonts noto-fonts-emoji networkmanager wl-clipboard cliphist gnome-keyring python lua git`.
-- Opcionales: `fuzzel github-cli`; `mpvpaper` (AUR) para el fondo animado.
+- Opcionales: `fuzzel github-cli pacman-contrib` (checkupdates, para comprobar los paquetes del sistema en Ajustes › Actualizaciones); `mpvpaper` (AUR) para el fondo animado.
 - Contraseñas de administrador (pkexec, gestores de particiones…): el agente polkit `hyprpolkitagent` se habilita como servicio de usuario.
 
 ## Instalación
