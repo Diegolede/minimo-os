@@ -2,7 +2,8 @@
 // Copyright (c) 2026 Diego Ledesma (TRN1) — Minimo OS
 import QtQuick
 
-// Icono de línea monocromo desde assets/icons/<tono>/<nombre>.svg.
+// Icono monocromo (Fluent UI System Icons, Filled; mapa en assets/icons/map.json) desde
+// assets/icons/<tono>/<nombre>.svg.
 Image {
     property string name
     property string tone: "dark"   // dark | gray | white

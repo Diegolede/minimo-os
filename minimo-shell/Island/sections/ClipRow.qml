@@ -58,15 +58,7 @@ Rectangle {
             visible: row.removable && hov.hovered
             width: 30; height: 30; radius: 15
             color: xm.containsMouse ? Theme.field : "transparent"
-            // × dibujada (dos trazos), como en las miniaturas de fondos.
-            Repeater {
-                model: [45, -45]
-                delegate: Rectangle {
-                    required property int modelData
-                    anchors.centerIn: parent; width: 11; height: 1.6; radius: 0.8
-                    rotation: modelData; color: Theme.textSecondary
-                }
-            }
+            Icon { anchors.centerIn: parent; name: "dismiss"; size: 14; tone: "gray" }
             MouseArea { id: xm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: row.removeRequested() }
         }
     }

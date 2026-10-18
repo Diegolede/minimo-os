@@ -71,20 +71,12 @@ Item {
         Behavior on opacity { NumberAnimation { duration: Theme.durFast } }
         Behavior on width { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
         Behavior on color { ColorAnimation { duration: Theme.durFast } }
-        // "×" dibujada
+        // × (Fluent Dismiss)
         Item {
             id: cross
             width: 26; height: 26
             anchors.right: parent.right
-            Repeater {
-                model: [45, -45]
-                Rectangle {
-                    required property int modelData
-                    anchors.centerIn: parent; width: 10; height: 1.6; radius: 0.8
-                    rotation: modelData; antialiasing: true
-                    color: tile.armed ? Theme.onAccent : Theme.textPrimary
-                }
-            }
+            Icon { anchors.centerIn: parent; name: "dismiss"; size: 13; tone: tile.armed ? "white" : "dark" }
         }
         Text {
             id: lbl

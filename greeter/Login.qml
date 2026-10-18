@@ -238,25 +238,17 @@ Rectangle {
                 width: 32; height: 32
                 anchors.right: parent.right; anchors.rightMargin: 42; anchors.verticalCenter: parent.verticalCenter
                 opacity: eyeMa.containsMouse ? 1 : 0.7
-                Rectangle { anchors.centerIn: parent; width: 18; height: 11; radius: 5.5; color: "transparent"; border.width: 1.6; border.color: Theme.textSecondary; antialiasing: true }
-                Rectangle { anchors.centerIn: parent; width: 5; height: 5; radius: 2.5; color: Theme.textSecondary; antialiasing: true }
-                Rectangle { anchors.centerIn: parent; width: 21; height: 1.6; radius: 0.8; rotation: -35; color: Theme.textSecondary; visible: !root.reveal; antialiasing: true }
+                Icon { anchors.centerIn: parent; name: root.reveal ? "eye" : "eye-off"; size: 18; tone: "gray" }
                 MouseArea { id: eyeMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
                     onClicked: { root.reveal = !root.reveal; field.forceActiveFocus() } }
             }
-            // Botón entrar: círculo con flecha (sin íconos externos)
+            // Botón entrar: círculo con flecha (Fluent Arrow Right)
             Rectangle {
                 width: 32; height: 32; radius: 16
                 anchors.right: parent.right; anchors.rightMargin: 6; anchors.verticalCenter: parent.verticalCenter
                 color: field.text.length ? Theme.fill : Theme.track
                 Behavior on color { ColorAnimation { duration: 160 } }
-                // flecha dibujada: tallo + punta (dos trazos redondeados)
-                Item {
-                    anchors.centerIn: parent; width: 14; height: 14
-                    Rectangle { width: 12; height: 2; radius: 1; x: 1; y: 6; color: field.text.length ? Theme.onAccent : Theme.textSecondary; antialiasing: true }
-                    Rectangle { width: 7; height: 2; radius: 1; x: 6.5; y: 3.6; rotation: 45; color: field.text.length ? Theme.onAccent : Theme.textSecondary; antialiasing: true }
-                    Rectangle { width: 7; height: 2; radius: 1; x: 6.5; y: 8.4; rotation: -45; color: field.text.length ? Theme.onAccent : Theme.textSecondary; antialiasing: true }
-                }
+                Icon { anchors.centerIn: parent; name: "arrow-right"; size: 16; tone: field.text.length ? "white" : "gray" }
                 MouseArea { anchors.fill: parent; enabled: field.text.length && !root.busy; onClicked: root.submit(field.text) }
             }
         }
@@ -318,21 +310,18 @@ Rectangle {
                 Behavior on color { ColorAnimation { duration: 160 } }
                 readonly property color ink: power.armed === pb.modelData ? Theme.onAccent : Theme.textSecondary
                 onInkChanged: icon.requestPaint()
+                Icon { anchors.centerIn: parent; visible: pb.modelData === "off"; name: "power"; size: 18; tone: power.armed === pb.modelData ? "white" : "gray" }
                 Canvas {
                     id: icon
+                    visible: pb.modelData !== "off"
                     anchors.centerIn: parent; width: 16; height: 16
                     renderStrategy: Canvas.Cooperative
                     onPaint: {
                         const g = getContext("2d"); g.reset()
                         g.strokeStyle = pb.ink; g.fillStyle = pb.ink; g.lineWidth = 1.7; g.lineCap = "round"
                         g.beginPath()
-                        if (pb.modelData === "off") {
-                            g.arc(8, 9, 6, -Math.PI * 0.32, Math.PI * 1.32, false); g.stroke()
-                            g.beginPath(); g.moveTo(8, 1.5); g.lineTo(8, 8); g.stroke()
-                        } else {
-                            g.arc(8, 8.5, 6, -Math.PI * 0.15, Math.PI * 1.45, false); g.stroke()
-                            g.beginPath(); g.moveTo(14.6, 1.8); g.lineTo(14.2, 6.6); g.lineTo(9.6, 5.6); g.stroke()
-                        }
+                        g.arc(8, 8.5, 6, -Math.PI * 0.15, Math.PI * 1.45, false); g.stroke()
+                        g.beginPath(); g.moveTo(14.6, 1.8); g.lineTo(14.2, 6.6); g.lineTo(9.6, 5.6); g.stroke()
                     }
                 }
                 MouseArea {

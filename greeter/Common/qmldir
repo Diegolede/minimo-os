@@ -7,3 +7,4 @@ singleton IdleState 1.0 IdleState.qml
 singleton Media 1.0 Media.qml
 singleton Recorder 1.0 Recorder.qml
 singleton Notifs 1.0 Notifs.qml
+Icon 1.0 Icon.qml
