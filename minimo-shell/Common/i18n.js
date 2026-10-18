@@ -8,6 +8,11 @@
 var languages = [{ id: "es", name: "Español", locale: "es_AR" }, { id: "en", name: "English", locale: "en_US" }]
 
 var en = {
+    "Arrastrá un escritorio para reordenarlo, o una app para llevarla a otro": "Drag a desktop to reorder it, or an app to move it to another one",
+    "Soltala en otro escritorio para moverla · Esc cancela": "Drop it on another desktop to move it · Esc cancels",
+    "Esa ventana ya no existe.": "That window no longer exists.",
+    "No se pudo completar la acción.": "The action couldn't be completed.",
+    "Cerrar ventana": "Close window",
     "Hay cambios nuevos publicados en GitHub.": "There are new changes published on GitHub.",
     "nunca": "never",
     "Actualizado": "Up to date",
@@ -91,7 +96,6 @@ var en = {
     "Apagar": "Shut down",
     "Apariencia": "Appearance",
     "Archivos": "Files",
-    "Arrastrá un escritorio para reordenarlo": "Drag a desktop to reorder it",
     "Atajos": "Shortcuts",
     "Atajos de teclado": "Keyboard shortcuts",
     "Bajo": "Low",
