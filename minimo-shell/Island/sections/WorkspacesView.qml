@@ -237,16 +237,17 @@ Item {
                                     preventStealing: true
                                     cursorShape: root.windowDrag ? Qt.ClosedHandCursor : Qt.PointingHandCursor
                                     property real px: 0; property real py: 0
+                                    property bool wasDrag: false      // este toque ya fue un arrastre: el clic no enfoca
                                     function gpos(m) { return mapToItem(grid, m.x, m.y) }
-                                    onPressed: m => { px = m.x; py = m.y; hold.restart() }
+                                    onPressed: m => { px = m.x; py = m.y; wasDrag = false; hold.restart() }
                                     onPositionChanged: m => {
                                         const g = gpos(m)
                                         if (winItem.lifted) root.moveDrag(g.x, g.y)
                                         else if (pressed && !root.windowDrag && Math.hypot(m.x - px, m.y - py) > 6) { hold.stop(); root.startDrag(winItem.addr, winItem.icon, tile.modelData.id, g.x, g.y) }
                                     }
-                                    onReleased: { hold.stop(); if (winItem.lifted) root.dropDrag() }
+                                    onReleased: { hold.stop(); if (winItem.lifted) { wasDrag = true; root.dropDrag() } }
                                     onCanceled: { hold.stop(); if (winItem.lifted) root.cancelDrag() }
-                                    onClicked: if (!winItem.lifted && !root.windowDrag) root.focusWindow(winItem.addr)
+                                    onClicked: if (!wasDrag && !winItem.lifted && !root.windowDrag) root.focusWindow(winItem.addr)
                                     Timer {
                                         id: hold; interval: 380
                                         onTriggered: if (wm.pressed && !root.windowDrag) { const g = wm.mapToItem(grid, wm.px, wm.py); root.startDrag(winItem.addr, winItem.icon, tile.modelData.id, g.x, g.y) }
