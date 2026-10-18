@@ -6,7 +6,8 @@ const U = new Function(src + "; return { MIN_MANUAL, AUTO_EVERY, AUTO_FIRST, par
 for (const [file, titles] of [["CHANGELOG.md", ["Nuevas funciones", "Correcciones", "Optimizaciones"]], ["CHANGELOG.en.md", ["New features", "Fixes", "Optimizations"]]]) {
     const v = U.parseChangelog(fs.readFileSync(path.join(__dirname, "../minimo-shell", file), "utf8"))
     assert.ok(v.length >= 3, file)
-    assert.ok(v[0].next, file + ": primero la próxima versión")
+    const cur = fs.readFileSync(path.join(__dirname, "../minimo-shell/VERSION"), "utf8").trim()
+    assert.ok(v[0].version === cur && !v[0].next && v[0].date, file + ": primero la versión instalada, con fecha")
     const r = v.find(x => x.version === "1.1.0")
     assert.ok(r && r.date === "2026-10-16", file + ": 1.1.0 con fecha")
     assert.deepStrictEqual(r.sections.map(s => s.title), titles, file)
