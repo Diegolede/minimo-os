@@ -28,6 +28,7 @@ PanelWindow {
         { id: "personalizacion", label: I18n.tr("Personalización"), icon: "brush" },
         { id: "pantalla", label: I18n.tr("Pantalla"), icon: "display" },
         { id: "atajos", label: I18n.tr("Atajos"), icon: "keyboard" },
+        { id: "gestos", label: I18n.tr("Gestos"), icon: "gesture" },
         { id: "minimo", label: "Minimo OS", icon: "info" }
     ]
 
@@ -104,7 +105,7 @@ PanelWindow {
             Text {
                 id: heading
                 x: 36; y: 26
-                text: SettingsState.section === "pantalla" ? I18n.tr("Pantalla") : SettingsState.section === "atajos" ? I18n.tr("Atajos de teclado") : SettingsState.section === "minimo" ? I18n.tr("Acerca de") : I18n.tr("Personalización")
+                text: SettingsState.section === "pantalla" ? I18n.tr("Pantalla") : SettingsState.section === "atajos" ? I18n.tr("Atajos de teclado") : SettingsState.section === "gestos" ? I18n.tr("Gestos de la isla dinámica") : SettingsState.section === "minimo" ? I18n.tr("Acerca de") : I18n.tr("Personalización")
                 color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 22; font.weight: Font.DemiBold
             }
             Flickable {
@@ -112,7 +113,7 @@ PanelWindow {
                 anchors.top: heading.bottom; anchors.topMargin: 18
                 anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
                 anchors.leftMargin: 36; anchors.rightMargin: 36
-                contentHeight: (SettingsState.section === "pantalla" ? display.implicitHeight : SettingsState.section === "atajos" ? shortcuts.implicitHeight : SettingsState.section === "minimo" ? about.implicitHeight : personal.implicitHeight) + 32
+                contentHeight: (SettingsState.section === "pantalla" ? display.implicitHeight : SettingsState.section === "atajos" ? shortcuts.implicitHeight : SettingsState.section === "gestos" ? gestures.implicitHeight : SettingsState.section === "minimo" ? about.implicitHeight : personal.implicitHeight) + 32
                 clip: true
                 boundsBehavior: Flickable.StopAtBounds
                 // Volver arriba solo al cambiar de sección (no cuando la página crece al cargar).
@@ -135,6 +136,11 @@ PanelWindow {
                     width: flick.width
                     visible: SettingsState.section === "atajos"
                     shown: visible && win.open
+                }
+                GesturesPage {
+                    id: gestures
+                    width: flick.width
+                    visible: SettingsState.section === "gestos"
                 }
                 DisplayPage {
                     id: display
