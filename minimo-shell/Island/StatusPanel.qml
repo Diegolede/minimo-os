@@ -178,20 +178,62 @@ Item {
             }
         }
 
+        // Liberar memoria: barra con el mismo aspecto que los sliders (MSlider) pero que actúa
+        // como botón. El relleno es el uso de RAM (datos del sondeo existente del panel); al
+        // armar se pone toda negra con "Confirmar"; tras liberar, el relleno baja animado.
         Item {
-            width: parent.width; height: freeBtn.height + (freeText.visible ? freeText.height + 4 : 0)
-            MenuButton {
-                id: freeBtn
-                anchors.horizontalCenter: parent.horizontalCenter
-                width: 120
-                icon: "apps"; label: I18n.tr("Liberar memoria")
-                armed: root.freeArmed
-                onActivated: root.pressFree()
+            width: parent.width; height: freeBar.height + (freeText.visible ? freeText.height + 6 : 0)
+            Item {
+                id: freeBar
+                width: parent.width; height: 40
+                activeFocusOnTab: true
+                readonly property real frac: root.freeArmed ? 1 : (root.r ? Math.max(0, Math.min(1, root.r.memUsed / root.r.memTotal)) : 0)
+                Keys.onReturnPressed: root.pressFree()
+                Keys.onSpacePressed: root.pressFree()
+                Rectangle {
+                    anchors.fill: parent; radius: height / 2; clip: true
+                    color: freeMouse.containsMouse && !root.freeArmed ? Theme.hover : Theme.track
+                    scale: freeMouse.pressed ? 0.98 : 1
+                    Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutQuad } }
+                    Rectangle {
+                        id: freeFill
+                        height: parent.height; radius: height / 2; color: Theme.fill
+                        width: Math.max(parent.height, parent.width * freeBar.frac)
+                        Behavior on width { NumberAnimation { duration: 600; easing.type: Easing.OutCubic } }
+                    }
+                }
+                Rectangle {          // aro de foco por teclado (solo con foco)
+                    anchors.fill: parent; anchors.margins: -4; radius: height / 2
+                    color: "transparent"; border.width: 2; border.color: Theme.fill
+                    visible: freeBar.activeFocus
+                }
+                Icon {
+                    x: 12; anchors.verticalCenter: parent.verticalCenter
+                    size: 18; name: "apps"; tone: freeFill.width > 36 ? "white" : "dark"
+                }
+                Text {
+                    x: 50; anchors.verticalCenter: parent.verticalCenter
+                    text: root.freeArmed ? I18n.tr("Confirmar") : freeProc.running ? I18n.tr("Liberando…") : I18n.tr("Liberar memoria")
+                    color: freeFill.width > 140 ? Theme.onAccent : Theme.textPrimary
+                    font.family: Theme.font; font.pixelSize: 13; font.weight: Font.DemiBold
+                }
+                Text {
+                    anchors.right: parent.right; anchors.rightMargin: 16; anchors.verticalCenter: parent.verticalCenter
+                    visible: !root.freeArmed
+                    text: root.r ? "RAM " + Math.round(100 * root.r.memUsed / root.r.memTotal) + "%" : ""
+                    color: freeBar.frac > 0.85 ? Theme.onAccent : Theme.textSecondary
+                    font.family: Theme.font; font.pixelSize: 12; font.weight: Font.Medium; font.features: { "tnum": 1 }
+                }
+                MouseArea {
+                    id: freeMouse
+                    anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
+                    onClicked: root.pressFree()
+                }
             }
             Text {
                 id: freeText
-                visible: root.freeMsg !== ""
-                anchors.top: freeBtn.bottom; anchors.topMargin: 4; width: parent.width
+                visible: root.freeMsg !== "" && !freeProc.running
+                anchors.top: freeBar.bottom; anchors.topMargin: 6; width: parent.width
                 horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap
                 text: root.freeMsg; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
             }
