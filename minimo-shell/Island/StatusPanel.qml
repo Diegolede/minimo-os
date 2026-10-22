@@ -4,6 +4,7 @@ import QtQuick
 import "../Common"
 import "../Character"
 import "sections"
+import Quickshell.Io
 
 // Panel de estado del sistema (se abre deslizando sobre la isla): Internet, Recursos, Dispositivos.
 // Consulta datos solo mientras está abierto.
@@ -13,6 +14,7 @@ Item {
     implicitHeight: col.implicitHeight + 32
 
     onOpenChanged: {
+        if (!open) { freeArmed = false; freeDisarm.stop() }
         open ? SysStatus.acquire() : SysStatus.release()
         if (open) greetLater.restart()
     }
@@ -24,6 +26,40 @@ Item {
         : (r && (r.cpu > 85 || (r.temp !== null && r.temp !== undefined && r.temp >= 85)))
           || (SysStatus.gpu && SysStatus.gpu.temp >= 85) ? "tired" : ""
     Component.onDestruction: if (open) SysStatus.release()
+
+    // Liberar memoria (estilo Android): primer clic arma (negro persistente, como Apagar),
+    // segundo clic cierra todas las ventanas menos la enfocada con el cierre normal de
+    // Hyprland (nunca mata procesos). Cerrar el panel cancela.
+    property bool freeArmed: false
+    property string freeMsg: ""
+    function pressFree() {
+        if (freeProc.running) return
+        if (!freeArmed) { freeArmed = true; freeMsg = ""; freeDisarm.restart(); return }
+        freeArmed = false; freeDisarm.stop()
+        freeMsg = I18n.tr("Liberando…")
+        freeProc.running = true
+    }
+    Timer { id: freeDisarm; interval: 3000; onTriggered: root.freeArmed = false }
+    Timer { id: freeMsgClear; interval: 5000; onTriggered: root.freeMsg = "" }
+    Process {
+        id: freeProc
+        command: [Qt.resolvedUrl("../scripts/free-mem.py").toString().replace("file://", "")]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                let j = null
+                try { j = JSON.parse(text) } catch (e) {}
+                if (!j) root.freeMsg = ""
+                else if (j.closed === 0) root.freeMsg = I18n.tr("No hay otras ventanas abiertas")
+                else {
+                    const parts = []
+                    if (j.ram !== null && j.ram > 0) parts.push("RAM " + (j.ram >= 1024 ? (j.ram / 1024).toFixed(1) + " GB" : j.ram + " MB"))
+                    if (j.vram !== null && j.vram > 0) parts.push(I18n.tr("Video") + " " + j.vram + " MB")
+                    root.freeMsg = I18n.tr("%1 ventanas cerradas", j.closed) + (parts.length ? " · " + I18n.tr("Liberado: %1", parts.join(", ")) : "")
+                }
+                freeMsgClear.restart()
+            }
+        }
+    }
 
     readonly property var r: SysStatus.res
     readonly property var n: SysStatus.net
@@ -139,6 +175,25 @@ Item {
                 visible: !!SysStatus.gpu
                 icon: "display"; label: SysStatus.gpu ? SysStatus.gpu.name : "GPU"
                 value: SysStatus.gpu ? SysStatus.gpu.util + "% · " + SysStatus.gpu.temp + " °C" : ""
+            }
+        }
+
+        Item {
+            width: parent.width; height: freeBtn.height + (freeText.visible ? freeText.height + 4 : 0)
+            MenuButton {
+                id: freeBtn
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 120
+                icon: "apps"; label: I18n.tr("Liberar memoria")
+                armed: root.freeArmed
+                onActivated: root.pressFree()
+            }
+            Text {
+                id: freeText
+                visible: root.freeMsg !== ""
+                anchors.top: freeBtn.bottom; anchors.topMargin: 4; width: parent.width
+                horizontalAlignment: Text.AlignHCenter; wrapMode: Text.WordWrap
+                text: root.freeMsg; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
             }
         }
 

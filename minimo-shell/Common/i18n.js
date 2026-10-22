@@ -8,6 +8,12 @@
 var languages = [{ id: "es", name: "Español", locale: "es_AR" }, { id: "en", name: "English", locale: "en_US" }]
 
 var en = {
+    "%1 ventanas cerradas": "%1 windows closed",
+    "Liberado: %1": "Freed: %1",
+    "Liberando…": "Freeing…",
+    "Liberar memoria": "Free memory",
+    "No hay otras ventanas abiertas": "No other windows open",
+    "Video": "Video",
     "Arrastrá un escritorio para reordenarlo, o una app para llevarla a otro": "Drag a desktop to reorder it, or an app to move it to another one",
     "Soltala en otro escritorio para moverla · Esc cancela": "Drop it on another desktop to move it · Esc cancels",
     "Esa ventana ya no existe.": "That window no longer exists.",

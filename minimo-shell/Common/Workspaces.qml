@@ -38,6 +38,22 @@ Singleton {
     }
     signal reordered()
     Process { id: reorderProc; onExited: { Hyprland.refreshWorkspaces(); Hyprland.refreshToplevels(); root.reordered() } }
+    // Compactar: al quedar vacío un escritorio (ventana cerrada o movida, o al salir de uno
+    // vacío) se corren los siguientes para no dejar huecos. Solo por eventos, sin sondeo;
+    // una ejecución por ráfaga.
+    Connections {
+        target: Hyprland
+        function onRawEvent(ev) {
+            const n = ev.name
+            if (n === "closewindow" || n === "movewindowv2" || n === "destroyworkspacev2") compactLater.restart()
+        }
+    }
+    Timer { id: compactLater; interval: 350; onTriggered: { if (reorderProc.running) restart(); else if (!compactProc.running) compactProc.running = true } }
+    Process {
+        id: compactProc
+        command: [Qt.resolvedUrl("../scripts/compact-ws.py").toString().replace("file://", "")]
+        onExited: { Hyprland.refreshWorkspaces(); Hyprland.refreshToplevels() }
+    }
     function goTo(id) { dispatchWs(String(id)) }
     function goEmpty() { dispatchWs("emptynm") }
 }

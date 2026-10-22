@@ -10,3 +10,6 @@ hl.bind("SUPER + V", hl.dsp.exec_cmd("qs -p " .. os.getenv("HOME") .. "/Proyecto
 
 -- Super+Tab: vista de ventanas (otra vez Tab: siguiente; soltar Super: ir a esa ventana).
 hl.bind("SUPER + Tab", hl.dsp.exec_cmd("qs -p " .. os.getenv("HOME") .. "/Proyectos/minimo-os/minimo-shell ipc call overview toggle"))
+
+-- Super+Shift+R: rescate si la interfaz se tilda (reinicia la shell de Minimo y recarga Hyprland, sin cerrar apps).
+hl.bind("SUPER + SHIFT + R", hl.dsp.exec_cmd("sh -c 'systemctl --user restart minimo-shell; hyprctl reload'"))
