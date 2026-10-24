@@ -3,6 +3,19 @@
 Each version is split into **New features**, **Fixes** and **Optimizations**.
 Shown in Settings › Updates. The Spanish file (CHANGELOG.md) is the reference.
 
+## Next version
+
+### New features
+- Laptop: battery indicator in the island, low (20%) and critical (5%) battery warnings, notice and pulse when plugging or unplugging the charger.
+- Laptop: brightness keys, lid handling (turns off the internal screen with an external monitor) and a Power saver / Balanced / Performance selector.
+- Resources panel: "Free memory" bar that closes windows you're not using and shows how much memory was freed.
+- Desktops rearrange themselves when one becomes empty.
+- Rescue shortcut Super+Shift+Escape: restarts the interface if it freezes, without closing apps.
+- Laptop simulator for development (`scripts/fake-laptop.sh`).
+
+### Optimizations
+- Without a battery no new process runs; with a battery UPower events are used.
+
 ## 1.1.1 beta — 2026-10-18
 
 ### New features

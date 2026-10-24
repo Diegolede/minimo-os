@@ -4,6 +4,19 @@ Cada versión se divide en **Nuevas funciones**, **Correcciones** y **Optimizaci
 Ajustes › Actualizaciones muestra este archivo (y CHANGELOG.en.md en inglés). Al publicar una versión: renombrar
 «Próxima versión» con el número y la fecha, subir `minimo-shell/VERSION` y crear la etiqueta `vX.Y.Z`.
 
+## Próxima versión
+
+### Nuevas funciones
+- Laptop: indicador de batería en la isla, avisos de batería baja (20 %) y crítica (5 %), aviso y pulso al enchufar o desenchufar el cargador.
+- Laptop: teclas de brillo, manejo de la tapa (apaga la pantalla interna con monitor externo) y selector de energía Ahorro / Equilibrado / Rendimiento.
+- Panel de recursos: barra «Liberar memoria», que cierra las ventanas que no usás y muestra cuánta memoria se liberó.
+- Escritorios: se reacomodan solos cuando uno queda vacío.
+- Atajo de rescate Super+Shift+Escape: reinicia la interfaz si se tilda, sin cerrar apps.
+- Simulador de laptop para desarrollo (`scripts/fake-laptop.sh`).
+
+### Optimizaciones
+- Sin batería no corre ningún proceso nuevo; con batería se usan eventos de UPower.
+
 ## 1.1.1 beta — 2026-10-18
 
 ### Nuevas funciones
