@@ -4,7 +4,7 @@ Cada versión se divide en **Nuevas funciones**, **Correcciones** y **Optimizaci
 Ajustes › Actualizaciones muestra este archivo (y CHANGELOG.en.md en inglés). Al publicar una versión: renombrar
 «Próxima versión» con el número y la fecha, subir `minimo-shell/VERSION` y crear la etiqueta `vX.Y.Z`.
 
-## Próxima versión
+## 1.2.0 beta — 2026-10-24
 
 ### Nuevas funciones
 - Laptop: indicador de batería en la isla, avisos de batería baja (20 %) y crítica (5 %), aviso y pulso al enchufar o desenchufar el cargador.

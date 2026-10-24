@@ -3,7 +3,7 @@
 Each version is split into **New features**, **Fixes** and **Optimizations**.
 Shown in Settings › Updates. The Spanish file (CHANGELOG.md) is the reference.
 
-## Next version
+## 1.2.0 beta — 2026-10-24
 
 ### New features
 - Laptop: battery indicator in the island, low (20%) and critical (5%) battery warnings, notice and pulse when plugging or unplugging the charger.
