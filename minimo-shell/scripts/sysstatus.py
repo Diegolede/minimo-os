@@ -126,6 +126,13 @@ def gpu():
     return {"name": p[0].replace("NVIDIA ", "").replace("GeForce ", ""), "util": num(p[1]), "temp": num(p[2])}
 
 def battery():
+    # Simulador (scripts/fake-laptop.sh): si existe el archivo falso, manda ese.
+    fk = os.path.expanduser("~/.cache/minimo/fake-battery.json")
+    if os.path.exists(fk):
+        try:
+            with open(fk) as fh: j = json.load(fh)
+            return {"pct": num(j.get("pct", 100)), "status": j.get("status", "Discharging"), "mins": j.get("mins")}
+        except (OSError, ValueError): return None
     # Primera batería real (no la de un mouse/teclado: scope "Device"). None si no hay.
     base = "/sys/class/power_supply"
     for d in (sorted(os.listdir(base)) if os.path.isdir(base) else []):

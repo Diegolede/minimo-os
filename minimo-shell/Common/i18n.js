@@ -8,6 +8,19 @@
 var languages = [{ id: "es", name: "Español", locale: "es_AR" }, { id: "en", name: "English", locale: "en_US" }]
 
 var en = {
+    "Ahorro": "Power saver",
+    "Batería baja · %1%": "Low battery · %1%",
+    "Batería crítica · %1% · enchufá el cargador": "Critical battery · %1% · plug in the charger",
+    "Brillo %1%": "Brightness %1%",
+    "Brillo +": "Brightness +",
+    "Brillo −": "Brightness −",
+    "Cargador desconectado · %1%": "Charger unplugged · %1%",
+    "Cargando · %1%": "Charging · %1%",
+    "Equilibrado": "Balanced",
+    "Rendimiento": "Performance",
+    "Tapa abierta (simulación)": "Lid opened (simulation)",
+    "Tapa cerrada (simulación): se apagaría la pantalla interna": "Lid closed (simulation): the built-in screen would turn off",
+    "Tapa cerrada (simulación): se bloquearía la pantalla": "Lid closed (simulation): the screen would lock",
     "%1 ventanas cerradas": "%1 windows closed",
     "Liberado: %1": "Freed: %1",
     "Liberando…": "Freeing…",

@@ -90,3 +90,11 @@ for i = 1, 9 do
 	bind("SUPER + " .. i, dsp.focus({ workspace = tostring(i) }))
 	bind("SUPER + SHIFT + " .. i, dsp.window.move({ workspace = tostring(i) }))
 end
+
+-- Laptop: teclas de brillo (brillo real con brightnessctl si hay retroiluminación; si no,
+-- el brillo por software de Minimo) y tapa (con monitor externo apaga la pantalla interna;
+-- sin él bloquea con hyprlock si está instalado; la suspensión la decide systemd).
+bind("XF86MonBrightnessUp", dsp.exec_cmd(qs .. "laptop brightness up"), repite)
+bind("XF86MonBrightnessDown", dsp.exec_cmd(qs .. "laptop brightness down"), repite)
+bind("switch:on:Lid Switch", dsp.exec_cmd(qs .. "laptop lid close"), fijo)
+bind("switch:off:Lid Switch", dsp.exec_cmd(qs .. "laptop lid open"), fijo)

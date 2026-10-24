@@ -15,6 +15,7 @@ Item {
 
     onOpenChanged: {
         if (!open) { freeArmed = false; freeDisarm.stop() }
+        if (open) ppGet.running = true
         open ? SysStatus.acquire() : SysStatus.release()
         if (open) greetLater.restart()
     }
@@ -59,6 +60,21 @@ Item {
                 freeMsgClear.restart()
             }
         }
+    }
+
+    // Perfil de energía (power-profiles-daemon). Se lee al abrir el panel; oculto si no hay servicio.
+    property string profile: ""
+    Process {
+        id: ppGet
+        command: ["sh", "-c", "command -v powerprofilesctl >/dev/null && powerprofilesctl get 2>/dev/null"]
+        stdout: StdioCollector { onStreamFinished: root.profile = text.trim() }
+    }
+    Process { id: ppSet; onExited: ppGet.running = true }
+    function setProfile(p) {
+        if (ppSet.running || p === profile) return
+        profile = p
+        ppSet.command = ["powerprofilesctl", "set", p]
+        ppSet.running = true
     }
 
     readonly property var r: SysStatus.res
@@ -175,6 +191,43 @@ Item {
                 visible: !!SysStatus.gpu
                 icon: "display"; label: SysStatus.gpu ? SysStatus.gpu.name : "GPU"
                 value: SysStatus.gpu ? SysStatus.gpu.util + "% · " + SysStatus.gpu.temp + " °C" : ""
+            }
+        }
+
+        // Perfil de energía: tres pastillas; la elegida en negro.
+        Item {
+            visible: root.profile !== ""
+            width: parent.width; height: 40
+            Rectangle { anchors.fill: parent; radius: height / 2; color: Theme.track }
+            Row {
+                anchors.fill: parent; anchors.margins: 3
+                Repeater {
+                    model: [{ id: "power-saver", label: I18n.tr("Ahorro") }, { id: "balanced", label: I18n.tr("Equilibrado") }, { id: "performance", label: I18n.tr("Rendimiento") }]
+                    Item {
+                        id: pp
+                        required property var modelData
+                        readonly property bool sel: root.profile === modelData.id
+                        width: (parent.width) / 3; height: parent.height
+                        activeFocusOnTab: true
+                        Keys.onReturnPressed: root.setProfile(modelData.id)
+                        Keys.onSpacePressed: root.setProfile(modelData.id)
+                        Rectangle {
+                            anchors.fill: parent; radius: height / 2
+                            color: pp.sel ? Theme.fill : (ppm.containsMouse ? Theme.hover : "transparent")
+                            Behavior on color { ColorAnimation { duration: Theme.durFast } }
+                        }
+                        Rectangle {      // aro de foco por teclado
+                            anchors.fill: parent; anchors.margins: -2; radius: height / 2
+                            color: "transparent"; border.width: 2; border.color: Theme.fill; visible: pp.activeFocus
+                        }
+                        Text {
+                            anchors.centerIn: parent; text: pp.modelData.label
+                            color: pp.sel ? Theme.onAccent : Theme.textSecondary
+                            font.family: Theme.font; font.pixelSize: 12; font.weight: pp.sel ? Font.DemiBold : Font.Normal
+                        }
+                        MouseArea { id: ppm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.setProfile(pp.modelData.id) }
+                    }
+                }
             }
         }
 

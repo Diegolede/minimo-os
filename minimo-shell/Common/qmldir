@@ -26,3 +26,4 @@ singleton Notes 1.0 Notes.qml
 singleton Launch 1.0 Launch.qml
 singleton I18n 1.0 I18n.qml
 singleton Updates 1.0 Updates.qml
+singleton Laptop 1.0 Laptop.qml

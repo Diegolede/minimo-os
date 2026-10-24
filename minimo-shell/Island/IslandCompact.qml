@@ -27,7 +27,10 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         y: (Theme.compactH - height) / 2
         spacing: 10
-        Character { id: chr; size: 22; active: root.active && DisplayState.characterAnimated; anchors.verticalCenter: parent.verticalCenter }
+        Character {
+            id: chr; size: 22; active: root.active && DisplayState.characterAnimated; anchors.verticalCenter: parent.verticalCenter
+            mood: Laptop.critical ? "worried" : ""      // batería crítica: preocupado (solo ojos)
+        }
         Text {
             visible: !root.notif
             enabled: false              // texto decorativo: sin interacción ni selección
@@ -38,6 +41,52 @@ Item {
             font.pixelSize: 15
             font.weight: Font.Medium
             font.features: { "tnum": 1 }
+        }
+        // Batería (solo si hay una): barrita con el nivel; roja solo en crítica. Al enchufar,
+        // el relleno late unos segundos (animación de carga).
+        Row {
+            id: batInd
+            visible: Laptop.present && !root.notif && Recorder.notice === ""
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 5
+            Rectangle {
+                anchors.verticalCenter: parent.verticalCenter
+                width: 22; height: 10; radius: 5; color: Theme.track; clip: true
+                Rectangle {
+                    id: batFill
+                    height: parent.height; radius: 5
+                    width: Math.max(height, parent.width * (Laptop.present ? Laptop.bat.pct / 100 : 0))
+                    color: Laptop.critical ? Theme.danger : Theme.fill
+                    Behavior on width { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
+                    SequentialAnimation on opacity {
+                        id: chargePulse
+                        running: false
+                        loops: 3
+                        NumberAnimation { to: 0.3; duration: 450; easing.type: Easing.InOutSine }
+                        NumberAnimation { to: 1; duration: 450; easing.type: Easing.InOutSine }
+                    }
+                }
+                Connections { target: Laptop; function onChargedAtChanged() { if (root.active) chargePulse.restart() } }
+            }
+            Text {
+                enabled: false
+                anchors.verticalCenter: parent.verticalCenter
+                text: Laptop.present ? Laptop.bat.pct + "%" : ""
+                color: Laptop.critical ? Theme.danger : Theme.textSecondary
+                font.family: Theme.font; font.pixelSize: 12; font.weight: Font.Medium; font.features: { "tnum": 1 }
+            }
+        }
+        // Aviso de batería / brillo / tapa (crítica en rojo).
+        Text {
+            enabled: false
+            visible: Laptop.notice !== "" && Recorder.notice === "" && !root.notif
+            anchors.verticalCenter: parent.verticalCenter
+            text: Laptop.notice
+            color: Laptop.noticeKind === "critical" ? Theme.danger : Laptop.noticeKind === "low" ? Theme.textPrimary : Theme.textSecondary
+            font.family: Theme.font; font.pixelSize: 12
+            font.weight: Laptop.noticeKind === "critical" || Laptop.noticeKind === "low" ? Font.DemiBold : Font.Normal
+            elide: Text.ElideRight
+            width: Math.min(implicitWidth, 260)
         }
         // Grabando: punto rojo que late + tiempo transcurrido.
         Row {
