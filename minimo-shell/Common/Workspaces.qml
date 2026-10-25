@@ -13,6 +13,8 @@ Singleton {
     readonly property int activeId: Hyprland.focusedWorkspace ? Hyprland.focusedWorkspace.id : -1
     property real lastSwitch: 0      // para el indicador de puntos
     property real lastWheel: 0
+    property real wheelAcc: 0
+    property real wheelT: 0
 
     function dispatchWs(target) {
         // Hyprland.dispatch() no entiende la sintaxis Lua: se usa hyprctl.
@@ -22,8 +24,14 @@ Singleton {
     // Una muesca de rueda = un workspace (con enfriamiento).
     function wheel(deltaY) {
         const now = Date.now()
-        if (deltaY === 0 || now - lastWheel < 220) return
-        lastWheel = now
+        if (deltaY === 0) return
+        // Touchpads mandan muchos deltas chicos: se acumulan hasta una "muesca" (120)
+        // para que un roce accidental no cambie de escritorio. Pausa o cambio de sentido: reinicia.
+        if (now - wheelT > 300 || (wheelAcc > 0) !== (deltaY > 0)) wheelAcc = 0
+        wheelT = now
+        wheelAcc += deltaY
+        if (Math.abs(wheelAcc) < 120 || now - lastWheel < 220) return
+        lastWheel = now; wheelAcc = 0
         dispatchWs(deltaY > 0 ? "r-1" : "r+1")
     }
     // Reordenar: `order` es la nueva secuencia de IDs; el contenido del escritorio que

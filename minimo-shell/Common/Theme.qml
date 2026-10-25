@@ -55,7 +55,7 @@ Singleton {
 
     readonly property int durFast: 160
     readonly property int durNormal: 360
-    readonly property int hideDelay: 600
+    readonly property int hideDelay: 900   // margen para salir un instante con el puntero sin que la isla se esconda
 
     readonly property int compactW: 96
     readonly property int compactH: 36

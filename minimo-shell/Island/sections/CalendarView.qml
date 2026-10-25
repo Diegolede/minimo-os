@@ -32,6 +32,9 @@ Item {
         signal clicked()
         width: 32; height: 32; radius: 16
         color: rbm.containsMouse ? Theme.hover : Theme.surface
+        scale: rbm.pressed ? 0.9 : 1
+        Behavior on color { ColorAnimation { duration: Theme.durFast } }
+        Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutQuad } }
         Icon { anchors.centerIn: parent; name: rb.icon; size: 18; rotation: rb.iconRotation }
         MouseArea { id: rbm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: rb.clicked() }
     }
@@ -85,6 +88,16 @@ Item {
                         visible: cell.isToday
                         color: Theme.fill
                     }
+                    // Pasar el mouse por un día lo marca con un círculo suave (mismo tamaño que "hoy").
+                    Rectangle {
+                        anchors.centerIn: parent
+                        width: 32; height: 32; radius: 16
+                        color: Theme.hover
+                        opacity: dayHover.hovered && !cell.isToday ? 1 : 0
+                        visible: opacity > 0
+                        Behavior on opacity { NumberAnimation { duration: 120 } }
+                    }
+                    HoverHandler { id: dayHover }
                     Text {
                         anchors.centerIn: parent
                         text: cell.modelData.d
@@ -106,6 +119,18 @@ Item {
             text: I18n.tr("Hoy")
             color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13; font.underline: hm.containsMouse
             MouseArea { id: hm; anchors.fill: parent; anchors.margins: -6; enabled: parent.away; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.reset() }
+        }
+    }
+
+    // Rueda o deslizar con dos dedos sobre el calendario: mes anterior/siguiente (una muesca = un mes).
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.NoButton
+        property real acc: 0
+        onWheel: w => {
+            acc += w.angleDelta.y
+            if (Math.abs(acc) < 120) return
+            root.shift(acc > 0 ? -1 : 1); acc = 0
         }
     }
 }

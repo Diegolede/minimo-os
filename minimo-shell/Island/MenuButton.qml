@@ -23,19 +23,27 @@ Item {
 
     width: 80; height: 80
     activeFocusOnTab: true
-    Keys.onReturnPressed: mouse.fire()
-    Keys.onSpacePressed: mouse.fire()
+    // Teclado: el botón se hunde al presionar y dispara al soltar (igual que con el mouse).
+    property bool keyDown: false
+    Keys.onPressed: e => { if (!e.isAutoRepeat && (e.key === Qt.Key_Return || e.key === Qt.Key_Enter || e.key === Qt.Key_Space)) { keyDown = true; e.accepted = true } }
+    Keys.onReleased: e => { if (!e.isAutoRepeat && keyDown && (e.key === Qt.Key_Return || e.key === Qt.Key_Enter || e.key === Qt.Key_Space)) { keyDown = false; mouse.fire(); e.accepted = true } }
+    onActiveFocusChanged: if (!activeFocus) keyDown = false
 
     Rectangle {
         id: circle
         anchors.horizontalCenter: parent.horizontalCenter
         width: 52; height: 52; radius: 26
         color: (btn.isArmed || btn.active) ? Theme.fill : (mouse.containsMouse ? Theme.hover : Theme.surface)
-        scale: mouse.pressed ? 0.92 : 1
+        scale: (mouse.pressed && mouse.containsMouse) || btn.keyDown ? 0.92 : 1
         Rectangle {          // aro de foco por teclado (solo con foco)
             anchors.fill: parent; anchors.margins: -4; radius: width / 2
             color: "transparent"; border.width: 2; border.color: Theme.fill
-            visible: btn.activeFocus
+            // Aparece suave (sin "pop") al llegar con Tab.
+            opacity: btn.activeFocus ? 1 : 0
+            scale: btn.activeFocus ? 1 : 0.94
+            visible: opacity > 0
+            Behavior on opacity { NumberAnimation { duration: Theme.durFast; easing.type: Easing.OutCubic } }
+            Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
         }
         Behavior on color { ColorAnimation { duration: Theme.durFast } }
         Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutQuad } }
@@ -55,7 +63,9 @@ Item {
         horizontalAlignment: Text.AlignHCenter
         elide: Text.ElideRight
         text: btn.isArmed ? I18n.tr("Confirmar") : btn.label
-        color: (btn.isArmed || btn.active) ? Theme.textPrimary : Theme.textSecondary
+        // Al pasar el mouse la etiqueta se oscurece: queda claro qué botón se va a tocar.
+        color: (btn.isArmed || btn.active || mouse.containsMouse) ? Theme.textPrimary : Theme.textSecondary
+        Behavior on color { ColorAnimation { duration: Theme.durFast } }
         font.family: Theme.font; font.pixelSize: 11; font.weight: (btn.isArmed || btn.active) ? Font.DemiBold : Font.Normal
     }
 
@@ -63,7 +73,8 @@ Item {
 
     MouseArea {
         id: mouse
-        anchors.fill: circle
+        // Toda la celda (círculo + etiqueta) es clicable: más fácil de acertar.
+        anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         function fire() {
@@ -71,6 +82,7 @@ Item {
             btn.selfArmed = false; disarm.stop()
             btn.activated()
         }
-        onClicked: fire()
+        // Si se arrastra afuera antes de soltar, no dispara (permite arrepentirse).
+        onClicked: if (containsMouse) fire()
     }
 }

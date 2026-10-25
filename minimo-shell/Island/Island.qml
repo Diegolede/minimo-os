@@ -242,13 +242,20 @@ PanelWindow {
         Behavior on color { ColorAnimation { duration: 250 } }
         clip: true
 
-        Behavior on width { NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutBack; easing.overshoot: 0.9 } }
+        // Rebote elástico solo al abrir/cerrar. Con la isla ya abierta (cambio de página: calendario,
+        // portapapeles…) el cambio de tamaño es un deslizamiento suave, sin rebote.
+        property bool settled: false
+        Timer { id: settleTimer; interval: Theme.durNormal + 80; onTriggered: pill.settled = win.open }
+        Connections { target: win; function onOpenChanged() { pill.settled = false; if (win.open) settleTimer.restart() } }
+        Behavior on width { NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutBack; easing.overshoot: pill.settled ? 0 : 0.9 } }
         // Durante el tirón la píldora sigue al dedo sin retraso (la animación vuelve al soltar).
-        Behavior on height { enabled: !hoverZone.pulling; NumberAnimation { duration: Theme.durNormal + 40; easing.type: Easing.OutBack; easing.overshoot: 0.7 } }
+        Behavior on height { enabled: !hoverZone.pulling; NumberAnimation { duration: Theme.durNormal + 40; easing.type: Easing.OutBack; easing.overshoot: pill.settled ? 0 : 0.7 } }
         Behavior on y { enabled: !hoverZone.pulling; NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutQuint } }
 
         focus: win.open
-        Keys.onEscapePressed: win.collapse()
+        // Escape en una subpágina (escritorios, portapapeles, calendario…) vuelve al menú;
+        // en el menú principal cierra la isla.
+        Keys.onEscapePressed: { if (win.expanded && menu.page !== "menu") menu.page = "menu"; else win.collapse() }
 
         IslandCompact {
             id: compact
