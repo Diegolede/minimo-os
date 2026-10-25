@@ -54,6 +54,7 @@ Singleton {
     readonly property string emojiFont: "Noto Color Emoji"   // noto-fonts-emoji (install.sh); solo en el selector de emojis
 
     readonly property int durFast: 160
+    readonly property int durHover: 300          // pausa antes de mostrar detalles al pasar el mouse
     readonly property int durNormal: 360
     readonly property int hideDelay: 900   // margen para salir un instante con el puntero sin que la isla se esconda
 

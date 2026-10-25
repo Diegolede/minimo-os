@@ -17,6 +17,13 @@ def ram_avail():
     except OSError: pass
     return None
 
+def rss(pid):
+    try:
+        for l in open("/proc/%d/status" % pid):
+            if l.startswith("VmRSS:"): return int(l.split()[1]) // 1024
+    except (OSError, ValueError, TypeError): pass
+    return 0
+
 def vram_used():
     if not shutil.which("nvidia-smi"): return None
     try:
@@ -28,10 +35,17 @@ def vram_used():
 def main():
     dry = "--dry-run" in sys.argv
     active = (json.loads(hypr("activewindow", "-j") or "{}") or {}).get("address", "")
-    targets = [c["address"] for c in json.loads(hypr("clients", "-j") or "[]")
+    clients = [c for c in json.loads(hypr("clients", "-j") or "[]")
                if c.get("mapped", True) and c.get("address") != active]
+    targets = [c["address"] for c in clients]
     if dry:
-        print(json.dumps({"closed": len(targets), "ram": None, "vram": None, "dry": True, "targets": targets})); return
+        # Para la confirmación del panel: qué apps se cierran y cuánta RAM usa cada una.
+        apps = {}
+        for c in clients:
+            name = c.get("class") or c.get("title") or "?"
+            apps.setdefault(name, set()).add(c.get("pid", 0))
+        out = sorted(({"name": k, "mb": sum(rss(p) for p in v)} for k, v in apps.items()), key=lambda a: -a["mb"])
+        print(json.dumps({"closed": len(targets), "ram": None, "vram": None, "dry": True, "targets": targets, "apps": out})); return
     r0, v0 = ram_avail(), vram_used()
     for a in targets:
         hypr("dispatch", 'hl.dsp.window.close({ window = "address:%s" })' % a)

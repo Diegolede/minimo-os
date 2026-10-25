@@ -4,6 +4,21 @@ Cada versión se divide en **Nuevas funciones**, **Correcciones** y **Optimizaci
 Ajustes › Actualizaciones muestra este archivo (y CHANGELOG.en.md en inglés). Al publicar una versión: renombrar
 «Próxima versión» con el número y la fecha, subir `minimo-shell/VERSION` y crear la etiqueta `vX.Y.Z`.
 
+## 1.2.1 beta — 2026-10-25
+
+### Nuevas funciones
+- Minimo: ojos que siguen la forma esférica del personaje en todas las animaciones, un poco más grandes, con guiño de un ojo abierto y el otro cerrado.
+- Panel de recursos rediseñado y minimalista: anillos de CPU y memoria, detalles al pasar el mouse (temperatura y apps que más consumen), fila de Wi-Fi solo con placa inalámbrica y Deshacer al cambiar el modo de energía.
+- Liberar memoria muestra qué ventanas va a cerrar antes de confirmar.
+
+### Correcciones
+- Isla: los botones se activan también tocando su texto, se cancelan arrastrando afuera, y Escape vuelve al menú desde una subpágina.
+- Un roce del touchpad ya no cambia de escritorio ni hace saltar los sliders.
+
+### Optimizaciones
+- Animaciones de Minimo más suaves: anticipación, interrupciones sin saltos y bucles continuos.
+- Transiciones, foco de teclado y estados de hover más suaves en la isla.
+
 ## 1.2.0 beta — 2026-10-24
 
 ### Nuevas funciones

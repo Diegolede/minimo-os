@@ -3,6 +3,21 @@
 Each version is split into **New features**, **Fixes** and **Optimizations**.
 Shown in Settings › Updates. The Spanish file (CHANGELOG.md) is the reference.
 
+## 1.2.1 beta — 2026-10-25
+
+### New features
+- Minimo: eyes that follow the character's spherical shape in every animation, slightly bigger, with a wink that keeps one eye open.
+- Redesigned minimalist resources panel: CPU and memory rings, details on hover (temperature and top apps), Wi-Fi row only with a wireless card, and Undo when changing power mode.
+- Free memory shows which windows it will close before confirming.
+
+### Fixes
+- Island: buttons also respond to their label, cancel when dragging off, and Escape goes back to the menu from a subpage.
+- A light touchpad brush no longer switches desktops or jumps sliders.
+
+### Optimizations
+- Smoother Minimo animations: anticipation, seamless interruptions and continuous loops.
+- Smoother transitions, keyboard focus and hover states in the island.
+
 ## 1.2.0 beta — 2026-10-24
 
 ### New features
