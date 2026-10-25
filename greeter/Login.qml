@@ -35,6 +35,10 @@ Rectangle {
     property bool reveal: false         // mostrar la contraseña (ojo)
     property bool caps: false           // Bloq Mayús (deducido de lo que se escribe)
     property int idleMs: 60000          // Minimo se duerme tras 1 min sin actividad
+    property int fails: 0               // intentos fallidos seguidos (a los 3, una pista)
+    // Idioma según el sistema (LANG): español por defecto, inglés si la PC está en inglés.
+    readonly property bool en: Qt.locale().name.indexOf("en") === 0
+    function t(es, en) { return root.en ? en : es }
 
     // ===== Actividad y sueño =====
     function activity() { idleTimer.restart(); if (IdleState.sleeping) IdleState.wake() }
@@ -58,7 +62,12 @@ Rectangle {
         }
         ScriptAction { script: root.outroDone() }
     }
-    function shake() { shakeAnim.restart(); field.text = ""; CharacterBus.react("startled"); field.forceActiveFocus() }
+    // El texto se borra ANTES de fijar el mensaje: si no, onTextChanged borraba el error recién puesto.
+    function shake() {
+        const msg = root.error
+        shakeAnim.restart(); field.text = ""; root.error = msg; root.fails++
+        CharacterBus.react("startled"); field.forceActiveFocus()
+    }
 
     color: Theme.pick("#FFFFFF", "#0A0A0B")
     Behavior on color { ColorAnimation { duration: 250 } }
@@ -67,7 +76,9 @@ Rectangle {
     MouseArea {
         anchors.fill: parent
         hoverEnabled: true
-        acceptedButtons: Qt.NoButton
+        // Clic en cualquier parte vacía: vuelve el foco a la contraseña (se puede escribir directo).
+        acceptedButtons: Qt.LeftButton
+        onPressed: { root.activity(); root.focusField() }
         onPositionChanged: m => { Cursor.move(m.x, m.y); root.activity() }
     }
 
@@ -101,7 +112,7 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             font.family: Theme.font; font.pixelSize: 17
             color: Theme.textSecondary
-            text: { const s = Qt.locale("es_AR").toString(new Date(), "dddd d 'de' MMMM"); return s.charAt(0).toUpperCase() + s.slice(1) }
+            text: { const s = root.en ? Qt.locale("en_US").toString(new Date(), "dddd, MMMM d") : Qt.locale("es_AR").toString(new Date(), "dddd d 'de' MMMM"); return s.charAt(0).toUpperCase() + s.slice(1) }
         }
         Item { width: 1; height: 64 }
         Character {
@@ -143,7 +154,7 @@ Rectangle {
                 visible: field.text.length === 0 && !root.busy
                 font.family: Theme.font; font.pixelSize: 15
                 color: Theme.textSecondary
-                text: root.prompt || "Contraseña"
+                text: root.prompt || root.t("Contraseña", "Password")
             }
             // Cursor con el campo vacío: barra fina justo antes de "Contraseña" (el texto queda
             // centrado y el cursor real caería encima). Parpadea solo con foco.
@@ -216,12 +227,15 @@ Rectangle {
                 enabled: !root.busy
                 focus: true
                 // Minimo entrecierra los ojos mientras escribís (igual que en la isla)
-                onTextChanged: { root.error = ""; if (activeFocus) CharacterBus.typed() }
+                onTextChanged: { root.error = ""; if (activeFocus) CharacterBus.typed(); if (root.reveal) revealTimer.restart() }
+                Accessible.role: Accessible.EditableText
+                Accessible.name: root.prompt || root.t("Contraseña", "Password")
+                Accessible.passwordEdit: root.secret
                 onActiveFocusChanged: if (!activeFocus) CharacterBus.typingStopped()
                 onAccepted: if (text.length && !root.busy) root.submit(text)
                 Keys.onPressed: e => {
                     root.activity()
-                    if (e.key === Qt.Key_Escape) { text = ""; root.reveal = false; root.cancelled(); e.accepted = true; return }
+                    if (e.key === Qt.Key_Escape) { power.armed = ""; text = ""; root.reveal = false; root.cancelled(); e.accepted = true; return }
                     // Bloq Mayús: letra en mayúscula sin Shift (o al revés)
                     const t = e.text
                     if (t.length === 1 && t.toLowerCase() !== t.toUpperCase()) {
@@ -239,17 +253,24 @@ Rectangle {
                 anchors.right: parent.right; anchors.rightMargin: 42; anchors.verticalCenter: parent.verticalCenter
                 opacity: eyeMa.containsMouse ? 1 : 0.7
                 Icon { anchors.centerIn: parent; name: root.reveal ? "eye" : "eye-off"; size: 18; tone: "gray" }
+                Accessible.role: Accessible.Button
+                Accessible.name: root.reveal ? root.t("Ocultar contraseña", "Hide password") : root.t("Mostrar contraseña", "Show password")
                 MouseArea { id: eyeMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
-                    onClicked: { root.reveal = !root.reveal; field.forceActiveFocus() } }
+                    onClicked: { root.reveal = !root.reveal; if (root.reveal) revealTimer.restart(); field.forceActiveFocus() } }
+                // Por seguridad, la contraseña visible se vuelve a ocultar tras 10 s sin escribir.
+                Timer { id: revealTimer; interval: 10000; onTriggered: root.reveal = false }
             }
             // Botón entrar: círculo con flecha (Fluent Arrow Right)
             Rectangle {
                 width: 32; height: 32; radius: 16
                 anchors.right: parent.right; anchors.rightMargin: 6; anchors.verticalCenter: parent.verticalCenter
-                color: field.text.length ? Theme.fill : Theme.track
+                color: field.text.length ? (goMa.containsMouse ? Theme.fillHover : Theme.fill) : Theme.track
                 Behavior on color { ColorAnimation { duration: 160 } }
+                Accessible.role: Accessible.Button
+                Accessible.name: root.t("Entrar", "Sign in")
                 Icon { anchors.centerIn: parent; name: "arrow-right"; size: 16; tone: field.text.length ? "white" : "gray" }
-                MouseArea { anchors.fill: parent; enabled: field.text.length && !root.busy; onClicked: root.submit(field.text) }
+                MouseArea { id: goMa; anchors.fill: parent; hoverEnabled: true; enabled: field.text.length && !root.busy
+                    cursorShape: Qt.PointingHandCursor; onClicked: root.submit(field.text) }
             }
         }
         Item { width: 1; height: 14 }
@@ -259,7 +280,17 @@ Rectangle {
             color: root.error ? Theme.danger : Theme.textSecondary
             opacity: root.error || (root.caps && field.activeFocus) ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: 160 } }
-            text: root.error || (root.caps ? "Bloq Mayús activado" : " ")
+            text: root.error || (root.caps ? root.t("Bloq Mayús activado", "Caps Lock is on") : " ")
+        }
+        // Tras 3 intentos fallidos: pista amable (lo más común es Bloq Mayús o la distribución).
+        Text {
+            anchors.horizontalCenter: parent.horizontalCenter
+            topPadding: 4
+            font.family: Theme.font; font.pixelSize: 12
+            color: Theme.textSecondary
+            opacity: root.fails >= 3 && !root.busy ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 220 } }
+            text: root.t("Revisá Bloq Mayús y la distribución del teclado", "Check Caps Lock and your keyboard layout")
         }
     }
 
@@ -290,15 +321,20 @@ Rectangle {
         spacing: 6
         opacity: stage.opacity
         property string armed: ""
+        property string hoverKind: ""
         id: power
         Timer { id: disarm; interval: 3000; onTriggered: power.armed = "" }
         Text {
             anchors.verticalCenter: parent.verticalCenter
             font.family: Theme.font; font.pixelSize: 12
             color: Theme.textSecondary
-            opacity: power.armed ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: 160 } }
-            text: power.armed === "reboot" ? "Reiniciar  " : power.armed === "off" ? "Apagar  " : ""
+            // Al pasar el mouse dice qué hace; armado, pide el segundo clic.
+            opacity: power.armed || power.hoverKind ? 1 : 0
+            text: power.armed === "reboot" ? root.t("Clic otra vez: reiniciar  ", "Click again: restart  ")
+                : power.armed === "off" ? root.t("Clic otra vez: apagar  ", "Click again: shut down  ")
+                : power.hoverKind === "reboot" ? root.t("Reiniciar  ", "Restart  ")
+                : power.hoverKind === "off" ? root.t("Apagar  ", "Shut down  ") : ""
         }
         Repeater {
             model: ["reboot", "off"]
@@ -310,8 +346,11 @@ Rectangle {
                 Behavior on color { ColorAnimation { duration: 160 } }
                 // Fluent Filled: Power / Arrow Clockwise; blanco sobre el negro de confirmación.
                 Icon { anchors.centerIn: parent; name: pb.modelData === "off" ? "power" : "restart"; size: 18; tone: power.armed === pb.modelData ? "white" : "gray" }
+                Accessible.role: Accessible.Button
+                Accessible.name: pb.modelData === "off" ? root.t("Apagar", "Shut down") : root.t("Reiniciar", "Restart")
                 MouseArea {
                     id: ma; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
+                    onContainsMouseChanged: power.hoverKind = containsMouse ? pb.modelData : (power.hoverKind === pb.modelData ? "" : power.hoverKind)
                     onClicked: {
                         root.activity()
                         if (power.armed === pb.modelData) { power.armed = ""; pb.modelData === "off" ? root.powerOff() : root.reboot() }

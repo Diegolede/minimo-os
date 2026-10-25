@@ -10,6 +10,8 @@ After=graphical-session.target
 Requisite=graphical-session.target
 
 [Service]
+# Solo dentro de Hyprland: si la PC también tiene KDE Plasma (u otro escritorio), allí no arranca.
+ExecCondition=/bin/sh -c 'test -S "$${XDG_RUNTIME_DIR}/hypr/$${HYPRLAND_INSTANCE_SIGNATURE}/.socket.sock"'
 ExecStart=/bin/sh -c 'wl-paste --type text --watch cliphist -max-items 200 store & wl-paste --type image --watch cliphist -max-items 200 store & wait'
 Restart=on-failure
 RestartSec=2

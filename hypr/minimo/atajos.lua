@@ -10,6 +10,12 @@ bind("SUPER + T", dsp.exec_cmd("ghostty"))
 bind("SUPER + space", dsp.exec_cmd("fuzzel"))
 bind("SUPER + comma", dsp.exec_cmd(qs .. "settings toggle"))
 bind("SUPER + X", dsp.exec_cmd(qs .. "island open"))
+-- Ayuda: todos los atajos (Super + F1 o Super + /)
+bind("SUPER + F1", dsp.exec_cmd(qs .. "settings section atajos"))
+bind("SUPER + slash", dsp.exec_cmd(qs .. "settings section atajos"))
+-- Avisos: No molestar y descartar todos
+bind("SUPER + N", dsp.exec_cmd(qs .. "notifs dnd"))
+bind("SUPER + SHIFT + N", dsp.exec_cmd(qs .. "notifs clear"))
 bind("SUPER + SHIFT + R", dsp.exec_cmd(qs .. "recorder toggle"))
 
 -- Sesión
@@ -18,10 +24,10 @@ bind("SUPER + SHIFT + P", dsp.dpms({ action = "toggle" }))
 
 -- Volumen y música (funcionan también con la pantalla bloqueada)
 local fijo, repite = { locked = true }, { locked = true, repeating = true }
-bind("XF86AudioRaiseVolume", dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 3%+"), repite)
-bind("XF86AudioLowerVolume", dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 3%-"), repite)
-bind("XF86AudioMute", dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"), fijo)
-bind("XF86AudioMicMute", dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), fijo)
+bind("XF86AudioRaiseVolume", dsp.exec_cmd("wpctl set-volume -l 1 @DEFAULT_AUDIO_SINK@ 3%+; " .. qs .. "laptop volume sink"), repite)
+bind("XF86AudioLowerVolume", dsp.exec_cmd("wpctl set-volume @DEFAULT_AUDIO_SINK@ 3%-; " .. qs .. "laptop volume sink"), repite)
+bind("XF86AudioMute", dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle; " .. qs .. "laptop volume sink"), fijo)
+bind("XF86AudioMicMute", dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle; " .. qs .. "laptop volume mic"), fijo)
 bind("XF86AudioPlay", dsp.exec_cmd("playerctl play-pause"), fijo)
 bind("XF86AudioPause", dsp.exec_cmd("playerctl play-pause"), fijo)
 bind("XF86AudioNext", dsp.exec_cmd("playerctl next"), fijo)

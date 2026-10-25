@@ -17,6 +17,33 @@ Estados: uptodate | available | offline | error | unknown.
 import json, os, re, shlex, shutil, subprocess, sys, urllib.request
 
 TIMEOUT = 15
+# "1.2.1", "1.2.1 beta", "1.3.0-rc1": número de versión legible (sin saltos de línea ni basura).
+VERSION_RE = re.compile(r"[0-9][0-9A-Za-z.+-]{0,30}(?: [0-9A-Za-z.+-]{1,15})?")
+CACHE = os.path.join(os.environ.get("XDG_CACHE_HOME") or os.path.expanduser("~/.cache"), "minimo-os")
+
+
+def tilde(path):
+    """Ruta para mostrar y copiar: ~/… si está en la carpeta personal (el shell la expande)."""
+    home = os.path.expanduser("~").rstrip("/")
+    if home and (path == home or path.startswith(home + "/")):
+        rest = path[len(home) + 1:]
+        return "~/" + shlex.quote(rest) if rest and shlex.quote(rest) != rest else ("~/" + rest if rest else "~")
+    return shlex.quote(path)
+
+
+def remote_file(top, slug, rsha, rel, limit=200000):
+    """Archivo de la versión remota: GitHub (raw) o, si el commit ya está en el clon, git show."""
+    if slug:
+        try:
+            with urllib.request.urlopen(f"https://raw.githubusercontent.com/{slug}/{rsha}/{rel}", timeout=8) as f:
+                return f.read(limit).decode("utf-8", "replace")
+        except Exception:
+            pass
+    try:
+        r = git(top, "show", f"{rsha}:{rel}")
+        return r.stdout[:limit] if ok(r) else None
+    except (OSError, subprocess.TimeoutExpired):
+        return None
 
 
 def git(top, *args, timeout=TIMEOUT):
@@ -35,7 +62,8 @@ def offline_msg(err):
 
 def check_minimo(path):
     out = {"state": "unknown", "reason": "", "repo": "", "version": "", "branch": "", "commit": "",
-           "remoteCommit": "", "remoteVersion": "", "ahead": False, "dirty": False, "pull": ""}
+           "remoteCommit": "", "remoteVersion": "", "ahead": False, "dirty": False, "pull": "",
+           "notes": "", "notesEn": ""}
     try:
         r = git(path, "rev-parse", "--show-toplevel")
     except (OSError, subprocess.TimeoutExpired):
@@ -59,8 +87,8 @@ def check_minimo(path):
     merge = git(top, "config", "--get", f"branch.{branch}.merge").stdout.strip()
     if not remote or not merge:
         out["reason"] = "no-upstream"; return out
-    q = shlex.quote(top)          # rutas con espacios: el comando copiado sigue funcionando
-    out["pull"] = f"git -C {q} pull --ff-only && {shlex.quote(top + '/install.sh')}"
+    q = tilde(top)                # ~/… y rutas con espacios: el comando copiado sigue funcionando
+    out["pull"] = f"git -C {q} pull --ff-only && {tilde(top + '/install.sh')} --update"
     try:
         ls = git(top, "ls-remote", "--exit-code", remote, merge)
     except subprocess.TimeoutExpired:
@@ -86,15 +114,24 @@ def check_minimo(path):
     out["state"] = "available"
     url = git(top, "remote", "get-url", remote).stdout.strip()
     m = re.match(r"(?:https://github\.com/|git@github\.com:)([^/]+/[^/]+?)(?:\.git)?/?$", url)
-    if m:
-        ref = merge.replace("refs/heads/", "")
-        try:
-            with urllib.request.urlopen(f"https://raw.githubusercontent.com/{m.group(1)}/{rsha}/minimo-shell/VERSION", timeout=8) as f:
-                v = f.read(64).decode("utf-8", "replace").strip()
-                if re.fullmatch(r"[0-9][0-9A-Za-z.+-]{0,30}", v):
-                    out["remoteVersion"] = v
-        except Exception:
-            pass
+    slug = m.group(1) if m else ""
+    v = (remote_file(top, slug, rsha, "minimo-shell/VERSION", 64) or "").strip()
+    if VERSION_RE.fullmatch(v):
+        out["remoteVersion"] = v
+    # Novedades de la versión nueva (antes de actualizar): se guardan en ~/.cache/minimo-os y
+    # la shell muestra solo las versiones que todavía no están instaladas.
+    for key, rel, name in (("notes", "minimo-shell/CHANGELOG.md", "CHANGELOG.remoto.md"),
+                           ("notesEn", "minimo-shell/CHANGELOG.en.md", "CHANGELOG.remoto.en.md")):
+        text = remote_file(top, slug, rsha, rel)
+        if text:
+            try:
+                os.makedirs(CACHE, exist_ok=True)
+                p = os.path.join(CACHE, name)
+                with open(p, "w") as f:
+                    f.write(text)
+                out[key] = p
+            except OSError:
+                pass
     return out
 
 

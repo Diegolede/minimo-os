@@ -99,11 +99,22 @@ PanelWindow {
                     Keys.onDownPressed: win.selected = Math.min(win.selected + 1, win.results.length - 1)
                     Keys.onUpPressed: win.selected = Math.max(win.selected - 1, 0)
                     Keys.onTabPressed: win.selected = (win.selected + 1) % Math.max(1, win.results.length)
-                    onAccepted: win.launch(win.results[win.selected])
+                    // Shift+Tab: hacia atrás (antes no hacía nada)
+                    Keys.onBacktabPressed: win.selected = (win.selected - 1 + Math.max(1, win.results.length)) % Math.max(1, win.results.length)
+                    onAccepted: if (win.results.length > 0) win.launch(win.results[win.selected])
                 }
             }
 
             Item { width: 1; height: 4; visible: win.results.length > 0 }
+            // Sin resultados: lo dice en vez de quedar en blanco.
+            Text {
+                visible: field.text.trim() !== "" && win.results.length === 0
+                width: parent.width; height: 44
+                verticalAlignment: Text.AlignVCenter; leftPadding: 20
+                elide: Text.ElideRight
+                text: I18n.tr("Sin resultados para «%1»", field.text.trim())
+                color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 14
+            }
 
             Repeater {
                 model: win.results

@@ -3,6 +3,27 @@
 Each version is split into **New features**, **Fixes** and **Optimizations**.
 Shown in Settings › Updates. The Spanish file (CHANGELOG.md) is the reference.
 
+## 1.2.3 beta — 2026-10-25
+
+### New features
+- Update from Settings › Updates: shows the new version and its notes before updating, with a progress bar, log and "Restart interface" without logging out.
+- Robust installer: pre-checks, retries, official mirror fallback, per-package install, AUR via yay, clear summary of anything missing and a log at ~/.cache/minimo-install.log.
+- Coexists with KDE Plasma: keeps SDDM, adds a Minimo OS session and the island only starts inside Hyprland.
+- Accessibility: "Reduce motion" and "More contrast".
+- Do Not Disturb with Super+N, clear notifications with Super+Shift+N and shortcuts with Super+/.
+- First-run welcome.
+- Level bar for volume and brightness, mute and microphone states.
+
+### Fixes
+- Login: the password error is no longer erased by the shake.
+- Updates: beta versions are read correctly and stale status is cleared after updating.
+- Launcher: Enter with no results no longer fails.
+
+### Optimizations
+- Clearer installer: upfront plan, percentage, timings and "First steps" at the end.
+- More comfortable touchpad gestures: shorter swipe, cancel with a short swipe, two-finger tap for right click.
+- Long notifications stay longer and show how many are queued.
+
 ## 1.2.1 beta — 2026-10-25
 
 ### New features

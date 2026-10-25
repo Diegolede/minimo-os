@@ -45,8 +45,19 @@ before = snapshot(clone)
 m = run(shell)["minimo"]
 case("remoto con commit nuevo → available", m["state"] == "available" and m["remoteCommit"] == sh(other, "git", "rev-parse", "HEAD"))
 case("la comprobación no toca el repo (sin fetch, HEAD y refs iguales)", snapshot(clone) == before)
-case("comando sugerido: pull --ff-only + install.sh", m["pull"] == f"git -C {clone} pull --ff-only && {clone}/install.sh")
+case("comando sugerido: pull --ff-only + install.sh --update", m["pull"] == f"git -C {clone} pull --ff-only && {clone}/install.sh --update")
 
+# Versión beta (con espacio) y novedades remotas: el commit ya está en el clon (git show).
+open(os.path.join(other, "minimo-shell", "VERSION"), "w").write("1.3.0 beta\n")
+open(os.path.join(other, "minimo-shell", "CHANGELOG.md"), "w").write("## 1.3.0 beta — 2026-11-01\n\n### Nuevas funciones\n- Algo nuevo.\n\n## 1.1.0\n### Correcciones\n- x\n")
+sh(other, "git", "add", "-A"); sh(other, "git", "commit", "-qm", "1.3.0 beta"); sh(other, "git", "push", "-q", "origin", "main")
+sh(clone, "git", "fetch", "-q")
+cache = tempfile.mkdtemp()
+m = run(shell, env=dict(ENV, XDG_CACHE_HOME=cache))["minimo"]
+case("versión remota con espacio (1.3.0 beta) se muestra", m["remoteVersion"] == "1.3.0 beta")
+case("novedades remotas guardadas en caché", m["notes"].startswith(cache) and "Algo nuevo" in open(m["notes"]).read())
+m = run(shell, env=dict(ENV, HOME=t, XDG_CACHE_HOME=cache))["minimo"]
+case("comando con ~ si el repo está en la carpeta personal", m["pull"] == "git -C ~/clone pull --ff-only && ~/clone/install.sh --update")
 sh(clone, "git", "pull", "-q", "--ff-only")
 open(os.path.join(clone, "local.txt"), "w").write("x"); sh(clone, "git", "add", "-A"); sh(clone, "git", "commit", "-qm", "local")
 m = run(shell)["minimo"]

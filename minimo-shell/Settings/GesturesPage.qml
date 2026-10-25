@@ -19,7 +19,9 @@ Column {
         { kind: "close", title: I18n.tr("Deslizar con un panel abierto"), detail: I18n.tr("Hacia la izquierda o la derecha, cierra el panel de recursos, de apps o de la mascota.") },
         { kind: "right", title: I18n.tr("Clic derecho en un aviso"), detail: I18n.tr("Descarta el aviso sin abrirlo.") },
         { kind: "wheel", title: I18n.tr("Rueda del mouse"), detail: I18n.tr("Sobre la isla compacta, pasa al escritorio anterior o siguiente.") },
-        { kind: "esc", title: I18n.tr("Escape o clic afuera"), detail: I18n.tr("Cierra el menú o el panel abierto.") }
+        { kind: "esc", title: I18n.tr("Escape o clic afuera"), detail: I18n.tr("Cierra el menú o el panel abierto.") },
+        { kind: "swipeL", title: I18n.tr("Tres dedos en el panel táctil"), detail: I18n.tr("Hacia la izquierda o la derecha, cambia de escritorio. Sin soltar, sigue pasando; un desliz corto se cancela.") },
+        { kind: "tap", title: I18n.tr("Dos dedos en el panel táctil"), detail: I18n.tr("Un toque con dos dedos es clic derecho. Mientras escribís, la palma no mueve el puntero.") }
     ]
 
     Text {

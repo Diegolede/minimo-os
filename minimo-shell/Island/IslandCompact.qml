@@ -76,6 +76,17 @@ Item {
                 font.family: Theme.font; font.pixelSize: 12; font.weight: Font.Medium; font.features: { "tnum": 1 }
             }
         }
+        // OSD de volumen/brillo: barrita fina con el nivel, junto al texto del aviso.
+        Rectangle {
+            visible: Laptop.notice !== "" && Laptop.level >= 0 && Recorder.notice === "" && !root.notif
+            anchors.verticalCenter: parent.verticalCenter
+            width: 64; height: 6; radius: 3; color: Theme.track
+            Rectangle {
+                height: parent.height; radius: 3; color: Theme.fill
+                width: Math.max(height, parent.width * Math.max(0, Laptop.level))
+                Behavior on width { NumberAnimation { duration: Theme.durFast; easing.type: Easing.OutCubic } }
+            }
+        }
         // Aviso de batería / brillo / tapa (crítica en rojo).
         Text {
             enabled: false
@@ -161,6 +172,20 @@ Item {
                     MouseArea { id: am; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: Notifs.invoke(modelData) }
                 }
             }
+        }
+        // Más avisos en cola: "+2" discreto (se ven de a uno, así sabés que hay más).
+        Text {
+            enabled: false
+            visible: root.notif !== null && Recorder.notice === "" && Notifs.queue.length > 1
+            anchors.verticalCenter: parent.verticalCenter
+            text: "+" + (Notifs.queue.length - 1)
+            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12; font.features: { "tnum": 1 }
+        }
+        // No molestar activo: luna chica (sabés por qué no llegan avisos).
+        Icon {
+            visible: Notifs.dnd && !root.notif && Recorder.notice === "" && Laptop.notice === ""
+            anchors.verticalCenter: parent.verticalCenter
+            name: "moon"; size: 14; tone: "gray"
         }
         Rectangle {
             visible: SysStatus.known && !SysStatus.online

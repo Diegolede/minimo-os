@@ -48,7 +48,7 @@ PanelWindow {
     Timer {
         id: hideTimer
         interval: Theme.hideDelay
-        onTriggered: if (win.hideWanted && !win.hovered && !win.open && !menu.searchFocused && Recorder.notice === "" && Notifs.current === null) win.shown = false
+        onTriggered: if (win.hideWanted && !win.hovered && !win.open && !menu.searchFocused && Recorder.notice === "" && Laptop.notice === "" && Notifs.current === null) win.shown = false
     }
     onHoveredChanged: {
         Notifs.hovers = Math.max(0, Notifs.hovers + (hovered ? 1 : -1))
@@ -102,6 +102,14 @@ PanelWindow {
         }
     }
 
+    // Avisos de batería, volumen y brillo: la isla oculta aparece mientras duran.
+    Connections {
+        target: Laptop
+        function onNoticeChanged() {
+            if (Laptop.notice !== "") { win.shown = true; hideTimer.stop() }
+            else if (!win.hovered && !win.open) hideTimer.restart()
+        }
+    }
     // Notificaciones: la isla aparece mientras haya una en pantalla; el mouse encima pausa el tiempo.
     Connections {
         target: Notifs

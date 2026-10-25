@@ -214,5 +214,32 @@ Column {
         }
     }
 
+    SectionTitle { text: I18n.tr("Accesibilidad") }
+    Rectangle {
+        width: parent.width
+        height: a11y.implicitHeight
+        radius: 20
+        color: Theme.surface
+        Column {
+            id: a11y
+            width: parent.width
+            SwitchRow {
+                width: parent.width
+                text: I18n.tr("Reducir animaciones")
+                detail: I18n.tr("Menús y paneles cambian al instante. Minimo sigue igual.")
+                checked: DisplayState.reduceMotion
+                onToggled: v => DisplayState.setReduceMotion(v)
+            }
+            Rectangle { x: 18; width: parent.width - 36; height: 1; color: Theme.track }
+            SwitchRow {
+                width: parent.width
+                text: I18n.tr("Más contraste")
+                detail: I18n.tr("Textos secundarios más marcados, más fáciles de leer.")
+                checked: DisplayState.highContrast
+                onToggled: v => DisplayState.setHighContrast(v)
+            }
+        }
+    }
+
     PinsEditor { width: parent.width }
 }

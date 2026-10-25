@@ -19,7 +19,10 @@ Column {
 
     readonly property string script: Qt.resolvedUrl("../scripts/atajos.py").toString().replace("file://", "")
     function refresh() { reader.running = false; reader.running = true }
-    onShownChanged: if (shown) refresh()
+    onShownChanged: if (shown) { refresh(); focusLater.restart() }
+    // Al abrir la página se puede escribir directo para filtrar (sin clic en el buscador).
+    Timer { id: focusLater; interval: 120; onTriggered: input.forceActiveFocus() }
+    readonly property int shownCount: shownGroups.reduce((n, g) => n + g.items.length, 0)
 
     Process {
         id: reader
@@ -64,6 +67,12 @@ Column {
         }
     }
 
+    // Cuántos atajos coinciden con el filtro (solo mientras se filtra).
+    Text {
+        visible: root.filter.trim() !== "" && root.shownCount > 0
+        text: root.shownCount === 1 ? I18n.tr("1 atajo") : I18n.tr("%1 atajos", root.shownCount)
+        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
+    }
     Text {
         visible: root.failed || (root.groups.length > 0 && root.shownGroups.length === 0)
         width: parent.width

@@ -38,7 +38,7 @@ for i = 1, #arg do dofile(arg[i]) end
 '''
 
 SPECIAL = {
-    "space": "Espacio", "comma": ",", "minus": "-", "equal": "=", "bracketleft": "[",
+    "space": "Espacio", "comma": ",", "slash": "/", "minus": "-", "equal": "=", "bracketleft": "[",
     "bracketright": "]", "Home": "Inicio", "End": "Fin", "Page_Up": "RePág", "Page_Down": "AvPág",
     "left": "←", "right": "→", "up": "↑", "down": "↓", "Print": "ImprPant", "Return": "Intro",
     "Tab": "Tab", "Escape": "Esc", "mouse:272": "Clic izq.", "mouse:273": "Clic der.",
@@ -59,13 +59,15 @@ MEDIA = {
     "XF86AudioPrev": ("Pista anterior", "Multimedia"),
 }
 DIR = {"l": "a la izquierda", "r": "a la derecha", "u": "arriba", "d": "abajo"}
-ORDER = ["Aplicaciones", "Ventanas", "Foco", "Escritorios", "Capturas", "Multimedia", "Sesión", "Otros"]
+ORDER = ["Aplicaciones", "Ventanas", "Foco", "Escritorios", "Capturas", "Multimedia", "Avisos", "Sesión", "Otros"]
 
 # Idioma: `--lang en` traduce SOLO los textos generados aquí (acciones, grupos, teclas);
 # las descripciones escritas en la configuración (description = ...) quedan como están.
 LANG = "es"
 EN = {
     # grupos
+    "Avisos": "Notifications", "Ver todos los atajos": "Show all shortcuts", "No molestar": "Do not disturb",
+    "Descartar todos los avisos": "Dismiss all notifications",
     "Aplicaciones": "Apps", "Ventanas": "Windows", "Foco": "Focus", "Escritorios": "Desktops",
     "Capturas": "Screenshots", "Multimedia": "Media", "Sesión": "Session", "Otros": "Other",
     # teclas
@@ -116,6 +118,9 @@ def describe(key, act, arg, desc):
     if act == "exec_cmd":
         c = arg
         if "settings toggle" in c: return T("Ajustes"), "Aplicaciones"
+        if "settings section atajos" in c: return T("Ver todos los atajos"), "Aplicaciones"
+        if "notifs dnd" in c: return T("No molestar"), "Avisos"
+        if "notifs clear" in c: return T("Descartar todos los avisos"), "Avisos"
         if "island open" in c: return T("Abrir la isla"), "Aplicaciones"
         if "island clipboard" in c: return T("Portapapeles"), "Aplicaciones"
         if "launcher toggle" in c: return T("Lanzador de Minimo"), "Aplicaciones"

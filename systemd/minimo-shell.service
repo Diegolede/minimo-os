@@ -7,6 +7,8 @@ After=graphical-session.target
 Requisite=graphical-session.target
 
 [Service]
+# Solo dentro de Hyprland: si la PC también tiene KDE Plasma (u otro escritorio), allí no arranca.
+ExecCondition=/bin/sh -c 'test -S "$${XDG_RUNTIME_DIR}/hypr/$${HYPRLAND_INSTANCE_SIGNATURE}/.socket.sock"'
 # El driver NVIDIA (explicit sync) consume muchos descriptores: margen amplio.
 LimitNOFILE=65536
 ExecStart=/usr/bin/qs -p %h/Proyectos/minimo-os/minimo-shell

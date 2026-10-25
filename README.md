@@ -4,12 +4,12 @@
 
 <h1 align="center">Minimo OS</h1>
 
-<p align="center">Hyprland minimalista para Arch Linux: una isla dinámica flotante y Minimo, un personaje que reacciona a lo que hacés.</p>
+<p align="center">Hyprland minimalista para Arch Linux y derivadas como CachyOS: una isla dinámica flotante y Minimo, un personaje que reacciona a lo que hacés.</p>
 
 <p align="center">
-  <a href="https://github.com/Diegolede/minimo-os/releases/latest"><img src="https://img.shields.io/badge/versi%C3%B3n-1.2.1%20beta-000000?style=flat-square" alt="Versión 1.2.1 beta"></a>
+  <a href="https://github.com/Diegolede/minimo-os/releases/latest"><img src="https://img.shields.io/badge/versi%C3%B3n-1.2.3%20beta-000000?style=flat-square" alt="Versión 1.2.3 beta"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-000000?style=flat-square" alt="Licencia MIT"></a>
-  <img src="https://img.shields.io/badge/Arch%20Linux-000000?style=flat-square&logo=archlinux&logoColor=white" alt="Arch Linux">
+  <img src="https://img.shields.io/badge/Arch%20Linux%20%C2%B7%20CachyOS-000000?style=flat-square&logo=archlinux&logoColor=white" alt="Arch Linux y CachyOS">
   <img src="https://img.shields.io/badge/Hyprland-0.56-000000?style=flat-square" alt="Hyprland 0.56">
   <img src="https://img.shields.io/badge/Quickshell-QML-000000?style=flat-square" alt="Quickshell">
 </p>
@@ -32,6 +32,7 @@
 
 - [Descripción](#descripción)
 - [Características](#características)
+- [Compatibilidad](#compatibilidad)
 - [Requisitos](#requisitos)
 - [Instalación](#instalación)
 - [Actualización](#actualización)
@@ -66,9 +67,13 @@ en lugar de hacer sondeos periódicos y pausa sus animaciones durante la inactiv
 - Notas, calendario del mes y selector de emojis con categorías, búsqueda y tono de piel.
 - Escritorios: arrastrar una app a otro escritorio, cerrarla o enfocarla con un clic.
 - Wi-Fi con la red actual, la señal y las redes cercanas.
+- Panel de recursos minimalista: anillos de CPU y memoria, detalles al pasar el mouse (temperatura y apps que más consumen), fila de Wi-Fi solo en equipos con placa inalámbrica y Deshacer al cambiar el modo de energía.
+- Liberar memoria: muestra qué ventanas va a cerrar, pide confirmación e indica cuánta memoria se liberó.
+- Botones que se activan también desde su texto y se cancelan arrastrando afuera; Escape vuelve al menú desde una subpágina.
 
 ### Minimo
 
+- Ojos que siguen la forma esférica del personaje en todas las animaciones, con movimientos suaves y guiño de un ojo.
 - Personaje animado: parpadea, respira, mira al cursor, reacciona al abrir la isla y baila con la música.
 - Se duerme cuando el equipo queda inactivo y despierta al volver a usarlo.
 - Modo mascota con comida, ánimo y energía, y avisos de hambre, aburrimiento y sueño; se puede apagar en Ajustes.
@@ -85,8 +90,16 @@ en lugar de hacer sondeos periódicos y pausa sus animaciones durante la inactiv
 - Reproductor con carátula circular que gira mientras suena la música.
 - Fondos de pantalla, incluido fondo animado (video o GIF) que se pausa con ventanas encima o en inactividad.
 - Modo oscuro.
+- Los escritorios se reacomodan solos cuando uno queda vacío.
+- Atajo de rescate `Super + Shift + Escape`: reinicia la interfaz si se tilda, sin cerrar apps.
 - Diálogo de contraseña (polkit) con los colores, la fuente y el redondeo de Minimo.
 - Iconos Fluent UI System Icons (Filled).
+
+### Laptop
+
+- Batería en la isla, avisos de batería baja (20 %) y crítica (5 %) y aviso al enchufar o desenchufar el cargador.
+- Teclas de brillo, manejo de la tapa (apaga la pantalla interna con monitor externo) y modos de energía Ahorro, Equilibrado y Rendimiento.
+- Sin batería no corre ningún proceso extra.
 
 ### Ajustes
 
@@ -96,9 +109,14 @@ en lugar de hacer sondeos periódicos y pausa sus animaciones durante la inactiv
 
 - Basada en greetd, cage y Quickshell: Minimo en el inicio de sesión, aviso de Bloq Mayús, mostrar contraseña, selector de sesión, apagado y reinicio con confirmación y desbloqueo del llavero de GNOME.
 
+## Compatibilidad
+
+- Compatible con Arch Linux y derivadas como CachyOS (un usuario lo instaló en CachyOS y funciona correctamente).
+- Si ya usás otro gestor de sesión (por ejemplo SDDM), `--no-greeter` lo conserva.
+
 ## Requisitos
 
-- Arch Linux, con un usuario normal que tenga permisos de `sudo`.
+- Arch Linux o una derivada como CachyOS, con un usuario normal que tenga permisos de `sudo`.
 - Hyprland 0.56 o superior (configuración en Lua).
 - Paquetes de los repositorios oficiales (el instalador los instala):
 
@@ -222,6 +240,7 @@ pantalla de inicio está activa, el script indica cómo volver al gestor anterio
 | `Super + Re Pág` / `Av Pág` (o `I` / `U`) | Escritorio anterior / siguiente |
 | `Super + rueda del mouse` | Escritorio anterior / siguiente |
 | `Super + Shift + P` | Encender o apagar la pantalla |
+| `Super + Shift + Escape` | Reiniciar la interfaz si se tilda |
 | `Super + Shift + E` | Salir de Hyprland |
 
 Las teclas multimedia (volumen, silencio, micrófono, reproducir, siguiente y anterior) funcionan

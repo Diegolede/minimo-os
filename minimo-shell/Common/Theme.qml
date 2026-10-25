@@ -10,7 +10,9 @@ import Quickshell
 // Sin dependencias a otros singletons: DisplayState empuja `dark` acá.
 Singleton {
     id: t
-    property bool dark: false              // lo fija DisplayState al cargar/cambiar
+    property bool dark: false
+    property bool reduceMotion: false       // Accesibilidad: sin transiciones de la interfaz (lo fija DisplayState)
+    property bool highContrast: false       // Accesibilidad: texto secundario más oscuro/claro              // lo fija DisplayState al cargar/cambiar
 
     function pick(light, darkc) { return t.dark ? darkc : light }
 
@@ -32,7 +34,7 @@ Singleton {
     // Texto y acento
     // Contraste WCAG AA (≥4.5:1) verificado contra card/field/raised/subtle/hover/track.
     property color textPrimary: pick("#0A0A0B", "#F5F5F7")
-    property color textSecondary: pick("#636366", "#AEAEB2")             // ≥4.7:1 en todos los fondos
+    property color textSecondary: highContrast ? pick("#3A3A3C", "#D1D1D6") : pick("#636366", "#AEAEB2")             // ≥4.7:1 en todos los fondos
     readonly property color text: textPrimary
     readonly property color textDim: textSecondary
     property color fill: pick("#0A0A0B", "#F5F5F7")                    // relleno fuerte (activo)
@@ -53,9 +55,9 @@ Singleton {
     readonly property string font: "Adwaita Sans"
     readonly property string emojiFont: "Noto Color Emoji"   // noto-fonts-emoji (install.sh); solo en el selector de emojis
 
-    readonly property int durFast: 160
+    readonly property int durFast: reduceMotion ? 0 : 160
     readonly property int durHover: 300          // pausa antes de mostrar detalles al pasar el mouse
-    readonly property int durNormal: 360
+    readonly property int durNormal: reduceMotion ? 0 : 360
     readonly property int hideDelay: 900   // margen para salir un instante con el puntero sin que la isla se esconda
 
     readonly property int compactW: 96

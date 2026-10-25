@@ -28,8 +28,41 @@ Singleton {
     property bool warnedLow: false
     property bool warnedCritical: false
 
-    function say(msg, kind, ms) { notice = msg; noticeKind = kind; noticeTimer.interval = ms || 3500; noticeTimer.restart() }
-    Timer { id: noticeTimer; onTriggered: { root.notice = ""; root.noticeKind = "" } }
+    property real level: -1                // OSD: nivel 0–1 (volumen/brillo) como barrita; -1 = sin barra
+    function say(msg, kind, ms, lvl) {
+        notice = msg; noticeKind = kind; level = lvl === undefined ? -1 : Math.max(0, Math.min(1, lvl))
+        noticeTimer.interval = ms || 3500; noticeTimer.restart()
+    }
+    Timer { id: noticeTimer; onTriggered: { root.notice = ""; root.noticeKind = ""; root.level = -1 } }
+
+    // OSD de volumen: el atajo ya cambió el volumen con wpctl (funciona aunque la shell no
+    // corra); acá solo se lee el valor una vez y se muestra en la isla con una barrita.
+    property string volTarget: "@DEFAULT_AUDIO_SINK@"
+    function volume(which) { volTarget = which === "mic" ? "@DEFAULT_AUDIO_SOURCE@" : "@DEFAULT_AUDIO_SINK@"; volRead.running = false; volRead.running = true }
+    Process {
+        id: volRead
+        command: ["wpctl", "get-volume", root.volTarget]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const m = /Volume:\s*([\d.]+)/.exec(text)
+                if (!m) return
+                const v = parseFloat(m[1]), muted = text.indexOf("MUTED") >= 0, mic = root.volTarget.indexOf("SOURCE") >= 0
+                if (mic) root.say(muted ? I18n.tr("Micrófono silenciado") : I18n.tr("Micrófono activo"), "info", 1400)
+                else root.say(muted ? I18n.tr("Silenciado") : I18n.tr("Volumen %1%", Math.round(v * 100)), "info", 1400, muted ? undefined : v)
+            }
+        }
+    }
+    // Brillo real: brightnessctl -m → "dev,class,actual,pct%,max"
+    Process {
+        id: briRead
+        command: ["brightnessctl", "-m"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const m = /,(\d+)%,/.exec(text)
+                if (m) root.say(I18n.tr("Brillo %1%", m[1]), "info", 1400, parseInt(m[1]) / 100)
+            }
+        }
+    }
 
     function update(b) {
         const prev = bat
@@ -67,13 +100,14 @@ Singleton {
     function brightness(dir) {
         const up = dir === "up"
         if (backlight) {
-            Quickshell.execDetached(["brightnessctl", "-q", "set", up ? "5%+" : "5%-"])
-            say(up ? I18n.tr("Brillo +") : I18n.tr("Brillo −"), "info", 1200)
+            briSet.command = ["brightnessctl", "-q", "set", up ? "5%+" : "5%-"]
+            briSet.running = true                 // al terminar lee el porcentaje real
         } else {
             DisplayState.set(DisplayState.saturation, DisplayState.brightness + (up ? 0.05 : -0.05))
-            say(I18n.tr("Brillo %1%", Math.round(DisplayState.brightness * 100)), "info", 1200)
+            say(I18n.tr("Brillo %1%", Math.round(DisplayState.brightness * 100)), "info", 1400, DisplayState.brightness)
         }
     }
+    Process { id: briSet; onExited: briRead.running = true }
 
     // Tapa. Con monitor externo: apaga la pantalla interna. Sin él: bloquea con hyprlock
     // si está instalado (la suspensión la maneja systemd como siempre). En simulación solo
@@ -102,6 +136,7 @@ Singleton {
         function rescan(): void { root.rescan() }
         function brightness(dir: string): void { root.brightness(dir) }
         function lid(state: string): void { root.lid(state) }
+        function volume(which: string): void { root.volume(which) }
         function state(): string { return JSON.stringify({ battery: root.bat, backlight: root.backlight, notice: root.notice }) }
     }
 }

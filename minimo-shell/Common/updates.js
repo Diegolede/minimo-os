@@ -50,3 +50,47 @@ function autoDelay(now, last) {
 // Estado mostrado: un error o una comprobación fallida jamás se muestra como "al día".
 var STATES = ["unknown", "checking", "uptodate", "available", "offline", "error"]
 function sane(s) { return STATES.indexOf(s) >= 0 ? s : "unknown" }
+
+// Novedades de la versión remota que todavía no están instaladas: las entradas del CHANGELOG
+// remoto anteriores a la versión instalada (sin "Próxima versión"). Si la instalada no
+// aparece, solo la primera (la más nueva), para no repetir el historial completo.
+function newerNotes(remote, installed) {
+    var v = parseChangelog(remote).filter(function (x) { return !x.next })
+    var cur = String(installed || "").trim(), out = []
+    for (var i = 0; i < v.length; i++) {
+        if (v[i].version === cur) return out
+        out.push(v[i])
+    }
+    return v.slice(0, 1)
+}
+
+// Una comprobación guardada deja de valer si la versión instalada cambió desde entonces
+// (p. ej. después de actualizar): "disponible" no puede quedar pegado.
+function stale(saved, installed) {
+    if (!saved || !saved.version || !installed) return false
+    return String(saved.version).trim() !== String(installed).trim()
+}
+
+// Líneas "@@..." de scripts/update-run.sh e install.sh --update.
+// → { kind: "step"|"needsSudo"|"error"|"pulled"|"version"|"done"|"finished"|"", ... }
+function parseLine(line) {
+    var l = String(line || "")
+    if (l.indexOf("@@") !== 0) return { kind: "" }
+    var p = l.slice(2).split(" ")
+    switch (p[0]) {
+    case "STEP": return { kind: "step", step: Number(p[1]) || 0, total: Number(p[2]) || 0, title: p.slice(3).join(" ") }
+    case "NEEDS_SUDO": return { kind: "needsSudo", packages: p.slice(1).filter(function (x) { return x !== "" }) }
+    case "ERROR": return { kind: "error", reason: p[1] || "unknown" }
+    case "PULLED": return { kind: "pulled", from: p[1] || "", to: p[2] || "" }
+    case "VERSION": return { kind: "version", version: p.slice(1).join(" ") }
+    case "DONE": return { kind: "done", ok: p[1] === "ok" }
+    case "FINISHED": return { kind: "finished" }
+    }
+    return { kind: "" }
+}
+
+// Progreso 0..1: la descarga cuenta como un paso más que los del instalador.
+function progress(step, total) {
+    if (!total) return 0
+    return Math.max(0, Math.min(1, (step + 1) / (total + 1)))
+}

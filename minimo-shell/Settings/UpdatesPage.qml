@@ -8,29 +8,45 @@ import "../Common"
 import "../Common/updates.js" as U
 
 // Actualizaciones: versión instalada, estado de Minimo (clon git) y del sistema (pacman),
-// y notas de versión (CHANGELOG.md / CHANGELOG.en.md). Nada se instala desde aquí: si hay
-// una versión nueva se muestra el comando para ejecutarlo en una terminal.
+// y notas de versión (CHANGELOG.md / CHANGELOG.en.md). Si hay una versión nueva se muestran
+// sus novedades (CHANGELOG remoto) y el botón "Actualizar" (git pull --ff-only + install.sh
+// --update en segundo plano, con progreso); al terminar, "Reiniciar interfaz".
 Column {
     id: root
     spacing: 18
     property bool shown: false
-    property string version: ""
+    readonly property string version: Updates.installed       // VERSION (se vigila al actualizar)
     property string notesText: ""
     property bool copiedCmd: false
     readonly property var notes: U.parseChangelog(notesText)
     readonly property var m: Updates.minimo || ({})
+    property string remoteText: ""
+    readonly property var remoteNotes: Updates.state === "available" ? U.newerNotes(remoteText, root.version) : []
+    readonly property string remotePath: I18n.lang === "en" && m.notesEn ? m.notesEn : (m.notes || "")
+    FileView { path: root.remotePath; blockLoading: false; printErrors: false; onLoaded: root.remoteText = text() }
+    readonly property bool updating: Updates.phase === "running"
+    function errorText(r) {
+        switch (r) {
+        case "dirty": return I18n.tr("Hay cambios locales en el repositorio que impiden actualizar. No se tocó nada.")
+        case "offline": return I18n.tr("No se pudo descargar la versión nueva. Revisá la conexión y probá de nuevo.")
+        case "pull": return I18n.tr("La copia local se separó de la publicada (git pull --ff-only no pudo avanzar). No se tocó nada.")
+        case "pkexec": return I18n.tr("No se instalaron los paquetes nuevos (autorización cancelada).")
+        case "repo": return I18n.tr("Esta instalación no es un clon git del repositorio.")
+        default: return I18n.tr("El instalador terminó con errores. La versión nueva ya está descargada; revisá el registro.")
+        }
+    }
 
     // Notas y versión: se leen al mostrar la página (y al cambiar de idioma).
     readonly property string notesPath: shown || notesText ? Qt.resolvedUrl(I18n.lang === "en" ? "../CHANGELOG.en.md" : "../CHANGELOG.md").toString().replace("file://", "") : ""
     FileView { path: root.notesPath; blockLoading: false; printErrors: false; onLoaded: root.notesText = text() }
-    FileView { path: Qt.resolvedUrl("../VERSION").toString().replace("file://", ""); onLoaded: root.version = text().trim() }
+
     Timer { id: copiedTimer; interval: 1800; onTriggered: root.copiedCmd = false }
 
     function when(t) { return t ? Qt.formatDateTime(new Date(t), "dd/MM/yyyy HH:mm") : I18n.tr("nunca") }
     function minimoText() {
         switch (Updates.state) {
         case "checking": return I18n.tr("Comprobando…")
-        case "uptodate": return I18n.tr("Actualizado")
+        case "uptodate": return Updates.phase === "done" ? I18n.tr("Actualizado a %1", root.version) : I18n.tr("Actualizado")
         case "available": return root.m.remoteVersion && root.m.remoteVersion !== root.version ? I18n.tr("Actualización disponible: %1", root.m.remoteVersion) : I18n.tr("Actualización disponible")
         case "offline": return I18n.tr("Sin conexión")
         case "error": return I18n.tr("Error al comprobar")
@@ -65,7 +81,7 @@ Column {
         if (Updates.systemState === "unknown") return I18n.tr("Se comprueba con «Comprobar ahora».")
         return ""
     }
-    readonly property bool canCheck: !Updates.running && Updates.state !== "checking" && U.canCheck(clock.date.getTime(), Updates.lastCheck, false, true)
+    readonly property bool canCheck: !root.updating && !Updates.running && Updates.state !== "checking" && U.canCheck(clock.date.getTime(), Updates.lastCheck, false, true)
     SystemClock { id: clock; precision: SystemClock.Seconds; enabled: root.shown }
 
     component Card: Rectangle {
@@ -104,22 +120,86 @@ Column {
         Line { text: I18n.tr("Última comprobación: %1", root.when(Updates.lastCheck)) }
     }
 
-    // Versión nueva: solo el comando (no se descarga ni ejecuta nada desde aquí).
+    // Versión nueva: novedades y botón "Actualizar".
     Card {
-        visible: Updates.state === "available" && (root.m.pull || "") !== ""
-        Text { width: parent.width; wrapMode: Text.WordWrap; text: I18n.tr("Para actualizar, ejecutá en una terminal:"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 14 }
-        Rectangle {
-            width: parent.width; height: cmd.implicitHeight + 20; radius: 12; color: Theme.field
-            Text { id: cmd; x: 12; y: 10; width: parent.width - 24; wrapMode: Text.WrapAnywhere; text: root.m.pull || ""; color: Theme.textPrimary; font.family: "monospace"; font.pixelSize: 12 }
+        visible: Updates.state === "available" && Updates.phase === "idle"
+        Text { width: parent.width; wrapMode: Text.WordWrap; text: root.m.remoteVersion ? I18n.tr("Novedades de %1", root.m.remoteVersion) : I18n.tr("Novedades de la versión nueva"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 15; font.weight: Font.DemiBold }
+        Repeater {
+            model: root.remoteNotes
+            delegate: Column {
+                id: rv
+                required property var modelData
+                width: parent.width; spacing: 4
+                Text { visible: root.remoteNotes.length > 1; width: parent.width; text: I18n.tr("Versión %1", rv.modelData.version); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13; font.weight: Font.DemiBold; topPadding: 6 }
+                Repeater {
+                    model: rv.modelData.sections
+                    delegate: Column {
+                        id: rs
+                        required property var modelData
+                        width: rv.width; spacing: 3; topPadding: 6
+                        Text { width: parent.width; text: rs.modelData.title; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.DemiBold }
+                        Repeater {
+                            model: rs.modelData.items
+                            delegate: Text { required property string modelData; width: rs.width; wrapMode: Text.WordWrap; leftPadding: 12; text: "•  " + modelData; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13 }
+                        }
+                    }
+                }
+            }
         }
+        Line { visible: root.remoteNotes.length === 0; text: I18n.tr("Las novedades no están disponibles todavía.") }
+        Item { width: 1; height: 6 }
         Line { visible: !!root.m.dirty; text: I18n.tr("Hay cambios locales en el repositorio: «git pull --ff-only» no los pisa y se detiene si no puede avanzar.") }
-        Line { text: I18n.tr("Nada se instala ni se reinicia solo. El instalador vuelve a enlazar todo y agrega los paquetes nuevos.") }
+        Line { text: I18n.tr("Se descarga la versión nueva y se vuelve a enlazar la configuración. No se cierra la sesión.") }
         Item { width: 1; height: 4 }
-        PillButton {
-            icon: "clipboard"
-            primary: true
-            text: root.copiedCmd ? I18n.tr("Copiado") : I18n.tr("Copiar comando")
-            onClicked: { Clipboard.copyText(root.m.pull); root.copiedCmd = true; copiedTimer.restart() }
+        Row {
+            spacing: 10
+            PillButton { icon: "update"; primary: true; text: I18n.tr("Actualizar"); onClicked: Updates.update() }
+            PillButton {
+                icon: "clipboard"
+                text: root.copiedCmd ? I18n.tr("Copiado") : I18n.tr("Copiar comando")
+                onClicked: { Clipboard.copyText(root.m.pull); root.copiedCmd = true; copiedTimer.restart() }
+            }
+        }
+    }
+
+    // Actualización en curso / resultado.
+    Card {
+        visible: Updates.phase !== "idle"
+        Text {
+            width: parent.width; wrapMode: Text.WordWrap
+            text: Updates.phase === "running" ? I18n.tr("Actualizando…")
+                : Updates.phase === "done" ? I18n.tr("Actualización lista")
+                : Updates.phase === "needsudo" ? I18n.tr("Faltan paquetes nuevos")
+                : I18n.tr("No se pudo actualizar")
+            color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 15; font.weight: Font.DemiBold
+        }
+        Rectangle {
+            visible: Updates.phase === "running" || Updates.phase === "done"
+            width: parent.width; height: 6; radius: 3; color: Theme.field
+            Rectangle { width: parent.width * Updates.progress; height: parent.height; radius: 3; color: Theme.textPrimary; Behavior on width { NumberAnimation { duration: 250 } } }
+        }
+        Line { visible: Updates.phase === "running" && Updates.stepTitle !== ""; color: Theme.textPrimary; text: I18n.tr("Paso %1 de %2: %3", Updates.step + 1, Updates.total + 1, I18n.tr(Updates.stepTitle)) }
+        Repeater {
+            model: Updates.phase === "running" || Updates.phase === "done" ? Updates.steps : []
+            delegate: Row {
+                required property string modelData
+                spacing: 6
+                Icon { name: "check"; size: 14; tone: "gray"; anchors.verticalCenter: parent.verticalCenter }
+                Text { text: I18n.tr(parent.modelData); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12 }
+            }
+        }
+        Line { visible: Updates.phase === "done"; text: I18n.tr("Para ver los cambios, reiniciá la interfaz. Las ventanas abiertas no se cierran.") }
+        Line { visible: Updates.phase === "error"; color: Theme.textPrimary; text: root.errorText(Updates.errorReason) }
+        Line { visible: Updates.phase === "needsudo"; text: I18n.tr("Esta versión necesita instalar: %1. El sistema te va a pedir la contraseña en su propia ventana; Minimo no la ve ni la guarda.", Updates.sudoPackages.join(", ")) }
+        Item { width: 1; height: 4 }
+        Row {
+            spacing: 10
+            PillButton { visible: Updates.phase === "done"; icon: "restart"; primary: true; text: I18n.tr("Reiniciar interfaz"); onClicked: Updates.restartShell() }
+            PillButton { visible: Updates.phase === "needsudo"; primary: true; text: I18n.tr("Instalar paquetes"); onClicked: Updates.installPackages() }
+            PillButton { visible: Updates.phase === "needsudo"; icon: "terminal"; text: I18n.tr("Abrir en terminal"); onClicked: Updates.openTerminal() }
+            PillButton { visible: Updates.phase === "error"; primary: true; text: I18n.tr("Reintentar"); onClicked: Updates.update() }
+            PillButton { visible: Updates.phase === "error" || Updates.phase === "done" || Updates.phase === "needsudo"; text: I18n.tr("Ver registro"); onClicked: Updates.showLog() }
+            PillButton { visible: Updates.phase === "error"; text: I18n.tr("Cerrar"); onClicked: Updates.dismiss() }
         }
     }
 

@@ -1,7 +1,7 @@
 // node tests/updates.test.js — notas de versión y reglas de comprobación.
 const fs = require("fs"), path = require("path"), assert = require("assert")
 const src = fs.readFileSync(path.join(__dirname, "../minimo-shell/Common/updates.js"), "utf8").replace(".pragma library", "")
-const U = new Function(src + "; return { MIN_MANUAL, AUTO_EVERY, AUTO_FIRST, parseChangelog, canCheck, autoDelay, sane }")()
+const U = new Function(src + "; return { MIN_MANUAL, AUTO_EVERY, AUTO_FIRST, parseChangelog, canCheck, autoDelay, sane, newerNotes, stale, parseLine, progress }")()
 
 for (const [file, titles] of [["CHANGELOG.md", ["Nuevas funciones", "Correcciones", "Optimizaciones"]], ["CHANGELOG.en.md", ["New features", "Fixes", "Optimizations"]]]) {
     const v = U.parseChangelog(fs.readFileSync(path.join(__dirname, "../minimo-shell", file), "utf8"))
@@ -35,4 +35,20 @@ assert.strictEqual(U.autoDelay(now, now + 1e9), U.AUTO_EVERY, "reloj hacia atrá
 assert.strictEqual(U.canCheck(now, now + 1e9, false, true), true, "reloj hacia atrás: la manual sigue disponible")
 assert.strictEqual(U.canCheck(now, now + 1e9, false, false), false, "reloj hacia atrás: la automática espera")
 assert.strictEqual(U.sane("uptodate"), "uptodate"); assert.strictEqual(U.sane("raro"), "unknown"); assert.strictEqual(U.sane(undefined), "unknown")
+// Novedades remotas: solo lo que no está instalado.
+const remote = "## Próxima versión\n### X\n- p\n## 1.2.1 beta — 2026-10-25\n### Nuevas funciones\n- ojos\n## 1.2.0 beta — 2026-10-24\n### Nuevas funciones\n- laptop\n"
+assert.deepStrictEqual(U.newerNotes(remote, "1.2.0 beta").map(v => v.version), ["1.2.1 beta"])
+assert.deepStrictEqual(U.newerNotes(remote, "1.2.1 beta"), [])
+assert.deepStrictEqual(U.newerNotes(remote, "0.9").map(v => v.version), ["1.2.1 beta"], "versión desconocida: solo la más nueva")
+// Estado guardado viejo tras actualizar.
+assert.strictEqual(U.stale({ version: "1.2.0 beta", state: "available" }, "1.2.1 beta"), true)
+assert.strictEqual(U.stale({ version: "1.2.1 beta" }, "1.2.1 beta"), false)
+assert.strictEqual(U.stale({}, "1.2.1 beta"), false)
+// Líneas de progreso.
+assert.deepStrictEqual(U.parseLine("@@STEP 3 9 Configuración de Hyprland"), { kind: "step", step: 3, total: 9, title: "Configuración de Hyprland" })
+assert.deepStrictEqual(U.parseLine("@@NEEDS_SUDO cava ghostty").packages, ["cava", "ghostty"])
+assert.strictEqual(U.parseLine("@@ERROR dirty").reason, "dirty")
+assert.strictEqual(U.parseLine("@@VERSION 1.2.1 beta").version, "1.2.1 beta")
+assert.strictEqual(U.parseLine("hola").kind, "")
+assert.strictEqual(U.progress(9, 9), 1); assert.strictEqual(U.progress(0, 0), 0)
 console.log("updates: changelog (es/en) y reglas OK")

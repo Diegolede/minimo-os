@@ -17,6 +17,11 @@ Singleton {
     property bool islandAutoHide: true      // ocultar la isla automáticamente
     property bool islandSmartHide: false    // ocultar solo si hay ventanas en el escritorio
     property bool characterAnimated: true   // personaje animado (si no, quieto)
+    property bool reduceMotion: false       // Accesibilidad: reducir animaciones
+    property bool highContrast: false       // Accesibilidad: más contraste en textos secundarios
+    property bool welcomed: false           // primer inicio ya mostrado
+    onReduceMotionChanged: Theme.reduceMotion = reduceMotion
+    onHighContrastChanged: Theme.highContrast = highContrast
     property bool petEnabled: true          // mascota (necesidades, avisos y panel al deslizar hacia abajo)
     property bool updateAutoCheck: false    // comprobar versiones nuevas de Minimo una vez por día (solo lectura, sin instalar)
     property var updateLast: ({})           // última comprobación: { t, minimo: {...}, system: {...}, systemT }
@@ -49,6 +54,9 @@ Singleton {
     // Excluyentes: activar uno apaga el otro.
     function setIslandSmartHide(v) { islandSmartHide = v; if (v) islandAutoHide = false; save() }
     function setCharacterAnimated(v) { characterAnimated = v; save() }
+    function setReduceMotion(v) { reduceMotion = v; save() }
+    function setHighContrast(v) { highContrast = v; save() }
+    function setWelcomed() { welcomed = true; save() }
     function setPetEnabled(v) { petEnabled = v; save() }
     function setEmojiTone(v) { emojiTone = v; save() }
     function setUpdateAutoCheck(v) { updateAutoCheck = v; save() }
@@ -68,7 +76,7 @@ Singleton {
     function syncDialogTheme() { Quickshell.execDetached([dialogThemeScript, theme === "dark" ? "oscuro" : "claro"]) }
     function save() {
         file.setText(JSON.stringify({ saturation: root.saturation, brightness: root.brightness, wallpaper: root.wallpaper, wallpaperHistory: root.wallpaperHistory,
-                                     islandAutoHide: root.islandAutoHide, islandSmartHide: root.islandSmartHide, characterAnimated: root.characterAnimated, petEnabled: root.petEnabled, emojiTone: root.emojiTone, updateAutoCheck: root.updateAutoCheck, updateLast: root.updateLast,
+                                     islandAutoHide: root.islandAutoHide, islandSmartHide: root.islandSmartHide, characterAnimated: root.characterAnimated, petEnabled: root.petEnabled, reduceMotion: root.reduceMotion, highContrast: root.highContrast, welcomed: root.welcomed, emojiTone: root.emojiTone, updateAutoCheck: root.updateAutoCheck, updateLast: root.updateLast,
                                      sleepMinutes: root.sleepMinutes, theme: root.theme, language: root.language,
                                      pins: root.pins, pinOrder: root.pinOrder, customItems: root.customItems,
                                      liveWallpaper: root.liveWallpaper, livePauseCovered: root.livePauseCovered }, null, 2))
@@ -111,6 +119,9 @@ Singleton {
                 root.islandSmartHide = (s.islandSmartHide ?? false) && !root.islandAutoHide
                 root.characterAnimated = s.characterAnimated ?? true
                 root.petEnabled = s.petEnabled ?? true
+                root.reduceMotion = s.reduceMotion ?? false
+                root.highContrast = s.highContrast ?? false
+                root.welcomed = s.welcomed ?? false
                 root.updateAutoCheck = s.updateAutoCheck ?? false
                 root.updateLast = (s.updateLast && typeof s.updateLast === "object") ? s.updateLast : ({})
                 root.emojiTone = Math.max(0, Math.min(5, Math.round(Number(s.emojiTone) || 0)))

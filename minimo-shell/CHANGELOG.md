@@ -4,6 +4,27 @@ Cada versión se divide en **Nuevas funciones**, **Correcciones** y **Optimizaci
 Ajustes › Actualizaciones muestra este archivo (y CHANGELOG.en.md en inglés). Al publicar una versión: renombrar
 «Próxima versión» con el número y la fecha, subir `minimo-shell/VERSION` y crear la etiqueta `vX.Y.Z`.
 
+## 1.2.3 beta — 2026-10-25
+
+### Nuevas funciones
+- Actualizar desde Ajustes › Actualizaciones: muestra la versión nueva y sus novedades antes de actualizar, con barra de progreso, registro y «Reiniciar interfaz» sin cerrar sesión.
+- Instalador robusto: chequeos previos, reintentos, servidor oficial de respaldo, instalación paquete por paquete, AUR con yay, resumen claro de lo que faltó y registro en ~/.cache/minimo-install.log.
+- Convive con KDE Plasma: conserva SDDM, agrega la sesión Minimo OS y la isla solo arranca dentro de Hyprland.
+- Accesibilidad: «Reducir animaciones» y «Más contraste».
+- No molestar con Super+N, borrar avisos con Super+Shift+N y atajos visibles con Super+/.
+- Bienvenida en el primer inicio.
+- Barra de nivel para volumen y brillo, estados de silencio y micrófono.
+
+### Correcciones
+- Inicio de sesión: el error de contraseña ya no se borra con la sacudida.
+- Actualizaciones: se lee bien la versión beta y el estado viejo se limpia al actualizar.
+- Buscador: Enter sin resultados ya no falla.
+
+### Optimizaciones
+- Instalador más claro: plan previo, porcentaje, tiempos y «Primeros pasos» al final.
+- Gestos de touchpad más cómodos: deslizar más corto, cancelar con un gesto corto, toque con dos dedos para clic derecho.
+- Notificaciones largas duran más y se indica cuántas hay en cola.
+
 ## 1.2.1 beta — 2026-10-25
 
 ### Nuevas funciones
