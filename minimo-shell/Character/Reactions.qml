@@ -73,8 +73,8 @@ Item {
     SequentialAnimation {
         id: settle
         ParallelAnimation {
-            NumberAnimation { target: rx.c; properties: "rScale,squashX,squashY,eyeHMul,eyeWMul,openL,openR,half"; to: 1; duration: 160; easing.type: Easing.OutCubic }
-            NumberAnimation { target: rx.c; properties: "rX,rY,rRot,roll,bounceY,lookOverride,oX,oY,smile,wobble"; to: 0; duration: 160; easing.type: Easing.OutCubic }
+            NumberAnimation { target: rx.c; properties: "rScale,squashX,squashY,eyeHMul,eyeWMul,openL,openR,half"; to: 1; duration: 200; easing.type: Easing.InOutSine }
+            NumberAnimation { target: rx.c; properties: "rX,rY,rRot,roll,bounceY,lookOverride,oX,oY,smile,wobble"; to: 0; duration: 200; easing.type: Easing.InOutSine }
         }
         ScriptAction { script: { rx.reset(); if (rx.pending) { rx.current = rx.pending; rx.pending = null; rx.current.start() } } }
     }
@@ -141,10 +141,14 @@ Item {
     // ---------- sorpresa ----------
     SequentialAnimation {
         id: surprise
-        ParallelAnimation {
-            NumberAnimation { target: rx.c; property: "eyeHMul"; to: 1.18; duration: 140; easing.type: Easing.OutCubic }
-            NumberAnimation { target: rx.c; property: "eyeWMul"; to: 1.15; duration: 140; easing.type: Easing.OutCubic }
-            Squash { who: rx.c; sx: 0.95; sy: 1.05; toY: -rx.s * 0.08; ms: 160; ease: Easing.OutCubic }
+        ParallelAnimation {          // anticipación: se encoge y aprieta los ojos
+            Squash { who: rx.c; sx: 1.04; sy: 0.96; ms: 110; ease: Easing.InOutSine }
+            NumberAnimation { target: rx.c; property: "eyeHMul"; to: 0.9; duration: 100; easing.type: Easing.InOutSine }
+        }
+        ParallelAnimation {          // ojos primero, el cuerpo 40 ms después (acción superpuesta)
+            NumberAnimation { target: rx.c; property: "eyeHMul"; to: 1.18; duration: 150; easing.type: Easing.OutBack; easing.overshoot: 1.0 }
+            NumberAnimation { target: rx.c; property: "eyeWMul"; to: 1.15; duration: 150; easing.type: Easing.OutBack; easing.overshoot: 1.0 }
+            SequentialAnimation { PauseAnimation { duration: 40 } Squash { who: rx.c; sx: 0.95; sy: 1.05; toY: -rx.s * 0.08; ms: 160; ease: Easing.OutCubic } }
         }
         Squash { who: rx.c; sx: 1; sy: 1; toY: 0; ms: 260; ease: Easing.OutBack }
         PauseAnimation { duration: 520 }
@@ -172,7 +176,7 @@ Item {
         }
         PauseAnimation { duration: 180 }
         ParallelAnimation {
-            NumberAnimation { target: rx.c; properties: "openR,openL"; to: 1; duration: 260; easing.type: Easing.OutBack; easing.overshoot: 1.2 }
+            NumberAnimation { target: rx.c; properties: "openR,openL"; to: 1; duration: 260; easing.type: Easing.OutBack; easing.overshoot: 1.0 }
             NumberAnimation { target: rx.c; property: "eyeWMul"; to: 1; duration: 260; easing.type: Easing.OutCubic }
             Squash { who: rx.c; sx: 1; sy: 1; ms: 300; ease: Easing.OutBack }
             NumberAnimation { target: rx.c; property: "rRot"; to: 0; duration: 380; easing.type: Easing.OutBack; easing.overshoot: 1.0 }
@@ -182,23 +186,31 @@ Item {
     // ---------- mareo (más corto y suave) ----------
     SequentialAnimation {
         id: dizzy
-        NumberAnimation { target: rx.c; property: "roll"; from: 0; to: 360; duration: 620; easing.type: Easing.InOutCubic }
-        PropertyAction { target: rx.c; property: "roll"; value: 0 }
+        // La mirada da una vuelta completa alrededor de la esfera (radio grande), y el
+        // giro se va amortiguando en espiral; el cuerpo acompaña con retraso.
         ParallelAnimation {
-            NumberAnimation { target: rx.c; property: "wobble"; to: 0.28; duration: 200; easing.type: Easing.OutCubic }
-            NumberAnimation { target: rx.c; property: "wobblePh"; from: 0; to: Math.PI * 4; duration: 1200; easing.type: Easing.OutSine }
+            NumberAnimation { target: rx.c; property: "lookOverride"; to: 1; duration: 200; easing.type: Easing.InOutSine }
+            NumberAnimation { target: rx.c; property: "wobble"; to: 0.75; duration: 260; easing.type: Easing.OutCubic }
+            NumberAnimation { target: rx.c; property: "wobblePh"; from: -Math.PI / 2; to: Math.PI * 1.5; duration: 640; easing.type: Easing.InOutCubic }
+            SequentialAnimation { PauseAnimation { duration: 120 } NumberAnimation { target: rx.c; property: "rRot"; to: -5; duration: 400; easing.type: Easing.InOutSine } }
+        }
+        ParallelAnimation {
+            NumberAnimation { target: rx.c; property: "wobble"; to: 0.28; duration: 360; easing.type: Easing.InOutSine }
+            NumberAnimation { target: rx.c; property: "wobblePh"; to: Math.PI * 5.5; duration: 1200; easing.type: Easing.OutSine }
             SequentialAnimation {
                 NumberAnimation { target: rx.c; property: "rRot"; to: 6; duration: 320; easing.type: Easing.InOutSine }
                 NumberAnimation { target: rx.c; property: "rRot"; to: -4; duration: 400; easing.type: Easing.InOutSine }
                 NumberAnimation { target: rx.c; property: "rRot"; to: 0; duration: 420; easing.type: Easing.InOutSine }
             }
-            SequentialAnimation { PauseAnimation { duration: 800 } NumberAnimation { target: rx.c; property: "wobble"; to: 0; duration: 400; easing.type: Easing.InOutSine } }
+            SequentialAnimation { PauseAnimation { duration: 700 } NumberAnimation { target: rx.c; property: "wobble"; to: 0; duration: 500; easing.type: Easing.InOutSine } }
+            SequentialAnimation { PauseAnimation { duration: 800 } NumberAnimation { target: rx.c; property: "lookOverride"; to: 0; duration: 400; easing.type: Easing.InOutSine } }
         }
     }
 
     // ---------- bostezo / estirarse ----------
     SequentialAnimation {
         id: yawn
+        Squash { who: rx.c; sx: 1.03; sy: 0.97; ms: 220; ease: Easing.InOutSine }   // anticipación
         ParallelAnimation {
             NumberAnimation { target: rx.c; property: "half"; to: 0.45; duration: 500; easing.type: Easing.InOutSine }
             Squash { who: rx.c; sx: 0.94; sy: 1.07; toY: -rx.s * 0.02; ms: 760; ease: Easing.InOutSine }
@@ -242,9 +254,11 @@ Item {
     // ---------- saludo (al abrir): saltito con sonrisa y un "sí" de cabeza ----------
     SequentialAnimation {
         id: greet
-        Squash { who: rx.c; sx: 1.05; sy: 0.95; ms: 110; ease: Easing.OutCubic }
         ParallelAnimation {
-            NumberAnimation { target: rx.c; property: "smile"; to: 1; duration: 220; easing.type: Easing.OutCubic }
+            Squash { who: rx.c; sx: 1.05; sy: 0.95; ms: 120; ease: Easing.InOutSine }
+            SequentialAnimation { PauseAnimation { duration: 60 } NumberAnimation { target: rx.c; property: "smile"; to: 1; duration: 240; easing.type: Easing.OutCubic } }
+        }
+        ParallelAnimation {
             Squash { who: rx.c; sx: 0.97; sy: 1.04; toY: -rx.s * 0.1; ms: 220; ease: Easing.OutCubic }
         }
         ParallelAnimation {
@@ -279,11 +293,15 @@ Item {
     SequentialAnimation {
         id: startled
         ParallelAnimation {
-            NumberAnimation { target: rx.c; property: "eyeHMul"; to: 1.14; duration: 100; easing.type: Easing.OutCubic }
-            NumberAnimation { target: rx.c; property: "eyeWMul"; to: 1.12; duration: 100; easing.type: Easing.OutCubic }
-            Squash { who: rx.c; sx: 0.96; sy: 1.04; toY: -rx.s * 0.06; ms: 120; ease: Easing.OutCubic }
+            NumberAnimation { target: rx.c; property: "eyeHMul"; to: 1.14; duration: 90; easing.type: Easing.OutCubic }
+            NumberAnimation { target: rx.c; property: "eyeWMul"; to: 1.12; duration: 90; easing.type: Easing.OutCubic }
+            SequentialAnimation { PauseAnimation { duration: 30 } Squash { who: rx.c; sx: 0.96; sy: 1.04; toY: -rx.s * 0.06; ms: 120; ease: Easing.OutCubic } }
+            SequentialAnimation { PauseAnimation { duration: 30 } NumberAnimation { target: rx.c; property: "rRot"; to: -3; duration: 140; easing.type: Easing.OutCubic } }
         }
-        Squash { who: rx.c; sx: 1; sy: 1; toY: 0; ms: 260; ease: Easing.OutBack }
+        ParallelAnimation {
+            Squash { who: rx.c; sx: 1; sy: 1; toY: 0; ms: 260; ease: Easing.OutBack }
+            NumberAnimation { target: rx.c; property: "rRot"; to: 0; duration: 380; easing.type: Easing.OutBack; easing.overshoot: 1.0 }
+        }
         ParallelAnimation {
             NumberAnimation { target: rx.c; property: "eyeHMul"; to: 1; duration: 320; easing.type: Easing.InOutSine }
             NumberAnimation { target: rx.c; property: "eyeWMul"; to: 1; duration: 320; easing.type: Easing.InOutSine }
@@ -303,7 +321,7 @@ Item {
         }
         SequentialAnimation {        // 5 bocados
             loops: 5
-            Squash { who: rx.c; sx: 1.05; sy: 0.95; ms: 130; ease: Easing.OutQuad }
+            Squash { who: rx.c; sx: 1.05; sy: 0.95; ms: 130; ease: Easing.InOutSine }
             Squash { who: rx.c; sx: 0.98; sy: 1.02; ms: 150; ease: Easing.InOutSine }
         }
         ParallelAnimation {
@@ -340,7 +358,7 @@ Item {
             NumberAnimation { target: rx.c; property: "rRot"; to: 0; duration: 420; easing.type: Easing.OutBack; easing.overshoot: 1.0 }
             NumberAnimation { target: rx.c; property: "oX"; to: 0; duration: 420; easing.type: Easing.InOutSine }
             SequentialAnimation { PauseAnimation { duration: 200 } NumberAnimation { target: rx.c; property: "smile"; to: 0; duration: 300; easing.type: Easing.InOutSine } }
-            SequentialAnimation { PauseAnimation { duration: 200 } NumberAnimation { target: rx.c; property: "lookOverride"; to: 0; duration: 300 } }
+            SequentialAnimation { PauseAnimation { duration: 200 } NumberAnimation { target: rx.c; property: "lookOverride"; to: 0; duration: 300; easing.type: Easing.InOutSine } }
         }
     }
     // Contoneo: estremecimiento alegre rápido (squash alternado, sin despegar del suelo).
@@ -349,8 +367,8 @@ Item {
         NumberAnimation { target: rx.c; property: "smile"; to: 1; duration: 160; easing.type: Easing.OutCubic }
         SequentialAnimation {
             loops: 4
-            Squash { who: rx.c; sx: 1.06; sy: 0.94; ms: 90; ease: Easing.OutQuad }
-            Squash { who: rx.c; sx: 0.95; sy: 1.05; ms: 90; ease: Easing.OutQuad }
+            Squash { who: rx.c; sx: 1.06; sy: 0.94; ms: 90; ease: Easing.InOutSine }
+            Squash { who: rx.c; sx: 0.95; sy: 1.05; ms: 90; ease: Easing.InOutSine }
         }
         Squash { who: rx.c; sx: 1; sy: 1; ms: 260; ease: Easing.OutBack }
         NumberAnimation { target: rx.c; property: "smile"; to: 0; duration: 320; easing.type: Easing.InOutSine }
