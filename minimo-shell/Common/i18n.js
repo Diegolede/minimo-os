@@ -199,6 +199,8 @@ var en = {
     "Ahorra GPU y batería: se mueve solo con el escritorio libre. Siempre se pausa en inactividad.": "Saves GPU and battery: it only moves when the desktop is clear. Always pauses when idle.",
     "Ajustes": "Settings",
     "Apagar": "Shut down",
+    "Apagar monitor": "Turn off monitor",
+    "Monitor off": "Monitor off",
     "Apariencia": "Appearance",
     "Archivos": "Files",
     "Atajos": "Shortcuts",

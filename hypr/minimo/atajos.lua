@@ -21,6 +21,8 @@ bind("SUPER + SHIFT + R", dsp.exec_cmd(qs .. "recorder toggle"))
 -- Sesión
 bind("SUPER + SHIFT + E", dsp.exit())
 bind("SUPER + SHIFT + P", dsp.dpms({ action = "toggle" }))
+-- Apagar pantalla (DPMS): todo sigue andando; se enciende con el mouse o una tecla
+bind("SUPER + SHIFT + M", dsp.exec_cmd(os.getenv("HOME") .. "/Proyectos/minimo-os/minimo-shell/scripts/pantalla-off.sh"))
 
 -- Volumen y música (funcionan también con la pantalla bloqueada)
 local fijo, repite = { locked = true }, { locked = true, repeating = true }

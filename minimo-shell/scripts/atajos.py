@@ -89,6 +89,7 @@ EN = {
     "Fuzzel (lanzador)": "Fuzzel (launcher)", "Abrir": "Open",
     "Mover con el mouse": "Move with the mouse", "Redimensionar con el mouse": "Resize with the mouse",
     "Cerrar sesión": "Log out", "Apagar / encender pantalla": "Turn display off / on",
+    "Apagar monitor": "Turn off monitor",
     "Cerrar ventana": "Close window", "Pantalla completa": "Fullscreen", "Maximizar": "Maximize",
     "Maximizar / restaurar": "Maximize / restore", "Ventana flotante": "Floating window",
     "Agrupar ventanas (pestañas)": "Group windows (tabs)", "Cambiar división": "Toggle split",
@@ -117,6 +118,7 @@ def describe(key, act, arg, desc):
         return T(MEDIA[key][0]), MEDIA[key][1]
     if act == "exec_cmd":
         c = arg
+        if "pantalla-off" in c: return T("Apagar monitor"), "Sesión"
         if "settings toggle" in c: return T("Ajustes"), "Aplicaciones"
         if "settings section atajos" in c: return T("Ver todos los atajos"), "Aplicaciones"
         if "notifs dnd" in c: return T("No molestar"), "Avisos"

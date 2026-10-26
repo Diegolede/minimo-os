@@ -29,7 +29,9 @@ Singleton {
     property string theme: "light"          // "light" | "dark"
     property int sleepMinutes: 1            // dormir tras inactividad (1, 2 o 5 min)
     // Menú de la isla: elementos fijados (en orden) y accesos propios { id, label, cmd }.
-    property var pins: ["volume", "brightness", "vibrance", "terminal", "record", "capture", "desktops", "notes", "browser", "files"]
+    property var pins: ["volume", "brightness", "vibrance", "terminal", "record", "capture", "desktops", "notes", "browser", "files", "screenoff"]
+    // "Apagar monitor" se agregó después de 1.2.3: se fija una sola vez en estados guardados de antes.
+    property bool screenOffOffered: true
     property var customItems: []
     // Idioma: el guardado; si no hay, el del sistema (LANG en… → inglés, si no español).
     property string language: (Quickshell.env("LANG") || "").startsWith("en") ? "en" : "es"
@@ -79,7 +81,7 @@ Singleton {
                                      islandAutoHide: root.islandAutoHide, islandSmartHide: root.islandSmartHide, characterAnimated: root.characterAnimated, petEnabled: root.petEnabled, reduceMotion: root.reduceMotion, highContrast: root.highContrast, welcomed: root.welcomed, emojiTone: root.emojiTone, updateAutoCheck: root.updateAutoCheck, updateLast: root.updateLast,
                                      sleepMinutes: root.sleepMinutes, theme: root.theme, language: root.language,
                                      pins: root.pins, pinOrder: root.pinOrder, customItems: root.customItems,
-                                     liveWallpaper: root.liveWallpaper, livePauseCovered: root.livePauseCovered }, null, 2))
+                                     liveWallpaper: root.liveWallpaper, livePauseCovered: root.livePauseCovered, screenOffOffered: root.screenOffOffered }, null, 2))
     }
 
     readonly property string stateDir: Quickshell.env("HOME") + "/.config/minimo-os"
@@ -129,6 +131,11 @@ Singleton {
                 root.theme = s.theme === "dark" ? "dark" : "light"
                 if (s.language === "es" || s.language === "en") root.language = s.language
                 if (Array.isArray(s.pins)) root.pins = s.pins.filter(p => typeof p === "string")
+                // Estados de antes de "Apagar monitor": se fija una vez si hay lugar (después se respeta).
+                if (!s.screenOffOffered && root.pins.indexOf("screenoff") < 0
+                        && root.pins.filter(p => p !== "volume" && p !== "brightness" && p !== "vibrance").length < 12)
+                    root.pins = root.pins.concat(["screenoff"])
+                root.screenOffOffered = true
                 if (Array.isArray(s.pinOrder)) root.pinOrder = s.pinOrder.filter(p => typeof p === "string")
                 root.liveWallpaper = typeof s.liveWallpaper === "string" ? s.liveWallpaper : ""
                 root.livePauseCovered = s.livePauseCovered ?? true

@@ -19,6 +19,7 @@ Column {
 
     readonly property var sliders: QuickItems.pinnedSliders
     readonly property var buttons: QuickItems.pinnedButtons
+    readonly property string screenOffScript: Qt.resolvedUrl("../../scripts/pantalla-off.sh").toString().replace("file://", "")
     readonly property string shotScript: Qt.resolvedUrl("../../scripts/screenshot.sh").toString().replace("file://", "")
 
     function activate(id) {
@@ -26,6 +27,9 @@ Column {
         // Grabar: cierra la isla y arranca a los 0,4 s (para no grabarla abierta).
         else if (id === "record") { if (Recorder.recording) Recorder.stop(); else Recorder.start(400); root.done() }
         else if (id === "capture") { Quickshell.execDetached(["sh", "-c", 'sleep 0.3; exec "$0" area', root.shotScript]); root.done() }
+        // Apagar monitor: Minimo duerme (sin animaciones continuas), la isla se cierra y el
+        // script apaga por DPMS tras 1 s. Nada se cierra ni se mueve.
+        else if (id === "screenoff") { IdleState.sleepNow(); Quickshell.execDetached([root.screenOffScript]); root.done() }
         else if (id === "desktops") root.desktops()
         else if (id === "clipboard") root.clipboard()
         else if (id === "notes") root.notes()
@@ -72,7 +76,7 @@ Column {
                 readonly property bool rec: modelData === "record" && Recorder.recording
                 icon: rec ? "stop" : (item && item.icon ? item.icon : "")
                 letter: item && !item.icon ? item.label.charAt(0).toUpperCase() : ""
-                label: rec ? I18n.tr("Detener") : modelData === "record" ? I18n.tr("Grabar") : (item ? item.label : "")
+                label: rec ? I18n.tr("Detener") : modelData === "record" ? I18n.tr("Grabar") : modelData === "screenoff" ? I18n.tr("Monitor off") : (item ? item.label : "")
                 active: rec
                 onActivated: root.activate(b.modelData)
             }

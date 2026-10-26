@@ -25,7 +25,9 @@ Singleton {
         { id: "notes", label: I18n.tr("Notas"), icon: "note", slider: false },
         { id: "emoji", label: I18n.tr("Emojis"), icon: "emoji", slider: false },
         { id: "browser", label: I18n.tr("Navegador"), icon: "globe", slider: false },
-        { id: "files", label: I18n.tr("Archivos"), icon: "folder", slider: false }
+        { id: "files", label: I18n.tr("Archivos"), icon: "folder", slider: false },
+        // Apaga solo el monitor (DPMS): juegos y apps siguen andando; vuelve con mouse o tecla.
+        { id: "screenoff", label: I18n.tr("Apagar monitor"), icon: "display", slider: false }
     ]
 
     function isSlider(id) { return id === "volume" || id === "brightness" || id === "vibrance" }
