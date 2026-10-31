@@ -42,7 +42,7 @@ Item {
                 width: cl.implicitWidth + 24; height: 32; radius: 16
                 color: root.armed ? Theme.fill : (cm.containsMouse ? Theme.hover : Theme.surface)
                 Behavior on color { ColorAnimation { duration: Theme.durFast } }
-                Text { id: cl; anchors.centerIn: parent; text: root.armed ? I18n.tr("Confirmar") : I18n.tr("Borrar"); color: root.armed ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: root.armed ? Font.DemiBold : Font.Normal }
+                Text { id: cl; anchors.centerIn: parent; text: root.armed ? I18n.tr("Confirmar") : I18n.tr("Borrar"); color: root.armed ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontCaption; font.weight: root.armed ? Font.DemiBold : Font.Normal }
                 MouseArea {
                     id: cm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
                     onClicked: { if (!root.armed) { root.armed = true; disarm.restart() } else { root.armed = false; Clipboard.clear() } }
@@ -67,7 +67,7 @@ Item {
                 Text {
                     visible: Clipboard.pins.length > 0
                     leftPadding: 14; bottomPadding: 2
-                    text: I18n.tr("Fijados"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.DemiBold
+                    text: I18n.tr("Fijados"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption; font.weight: Font.DemiBold
                 }
                 Repeater {
                     model: Clipboard.pins
@@ -85,7 +85,7 @@ Item {
                 Text {
                     visible: Clipboard.pins.length > 0 && root.history.length > 0
                     leftPadding: 14; bottomPadding: 2
-                    text: I18n.tr("Recientes"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.DemiBold
+                    text: I18n.tr("Recientes"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption; font.weight: Font.DemiBold
                 }
                 Repeater {
                     model: root.history

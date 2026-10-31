@@ -44,10 +44,10 @@ Item {
             scale: btn.activeFocus ? 1 : 0.94
             visible: opacity > 0
             Behavior on opacity { NumberAnimation { duration: Theme.durFast; easing.type: Easing.OutCubic } }
-            Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+            Behavior on scale { NumberAnimation { duration: Theme.durFast + 40; easing.type: Easing.OutCubic } }
         }
         Behavior on color { ColorAnimation { duration: Theme.durFast } }
-        Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutQuad } }
+        Behavior on scale { NumberAnimation { duration: Theme.durMicro; easing.type: Easing.OutQuad } }
         // Centrado óptico: iconos de línea suelen verse 1 px altos.
         Icon { anchors.centerIn: parent; anchors.verticalCenterOffset: 1; name: btn.icon; visible: btn.letter === ""; size: Theme.iconMd; tone: (btn.isArmed || btn.active) ? "white" : "dark" }
         Text {

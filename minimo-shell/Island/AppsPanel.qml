@@ -92,9 +92,9 @@ Item {
 
         Title { text: I18n.tr("En segundo plano") }
         Rectangle {
-            width: parent.width; radius: 18; color: Theme.surface
+            width: parent.width; radius: Theme.radiusPill - 2; color: Theme.surface
             height: (root.items.length === 0 ? empty.height : list.implicitHeight) + 8
-            Behavior on height { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } }
+            Behavior on height { NumberAnimation { duration: Theme.durFast + 100; easing.type: Easing.OutCubic } }
             clip: true
             Text {
                 id: empty
@@ -114,9 +114,9 @@ Item {
                         readonly property bool menuOpen: root.menuFor === modelData
                         width: list.width; height: 40 + menuBox.height
                         Rectangle {
-                            x: 6; y: 2; width: parent.width - 12; height: 36; radius: 18
+                            x: 6; y: 2; width: parent.width - 12; height: Theme.controlH + 4; radius: Theme.radiusPill - 2
                             color: ma.containsMouse || row.menuOpen ? Theme.hover : "transparent"
-                            Behavior on color { ColorAnimation { duration: 120 } }
+                            Behavior on color { ColorAnimation { duration: Theme.durMicro } }
                         }
                         Image {
                             x: 16; y: 10; width: 20; height: 20
@@ -128,7 +128,7 @@ Item {
                         Text {
                             x: 46; y: 0; height: 40; width: parent.width - 60; verticalAlignment: Text.AlignVCenter; elide: Text.ElideRight
                             text: root.nameOf(row.modelData)
-                            color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13
+                            color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontLabel
                         }
                         MouseArea {
                             id: ma
@@ -144,14 +144,14 @@ Item {
                         // Menú de la app, desplegado bajo la fila.
                         Rectangle {
                             id: menuBox
-                            x: 12; y: 40; width: parent.width - 24; radius: 16
+                            x: 12; y: 40; width: parent.width - 24; radius: Theme.radiusChip
                             color: Theme.field
                             height: row.menuOpen ? menuCol.implicitHeight + 8 : 0
                             opacity: row.menuOpen ? 1 : 0
                             visible: height > 0
                             clip: true
-                            Behavior on height { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
-                            Behavior on opacity { NumberAnimation { duration: 160 } }
+                            Behavior on height { NumberAnimation { duration: Theme.durFast + 60; easing.type: Easing.OutCubic } }
+                            Behavior on opacity { NumberAnimation { duration: Theme.durFast } }
                             QsMenuOpener { id: opener; menu: row.menuOpen && row.modelData.hasMenu ? row.modelData.menu : null }
                             Column {
                                 id: menuCol
@@ -180,12 +180,12 @@ Item {
                                     visible: !row.modelData.hasMenu
                                     width: parent.width; height: visible ? 32 : 0
                                     Rectangle {
-                                        x: 4; width: parent.width - 8; height: 28; radius: 14; anchors.verticalCenter: parent.verticalCenter
+                                        x: 4; width: parent.width - 8; height: Theme.controlH - 4; radius: Theme.radiusChip - 2; anchors.verticalCenter: parent.verticalCenter
                                         color: qMa.containsMouse ? Theme.hover : "transparent"
                                     }
                                     Text {
                                         x: 16; anchors.verticalCenter: parent.verticalCenter
-                                        text: I18n.tr("Cerrar"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13
+                                        text: I18n.tr("Cerrar"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontLabel
                                     }
                                     MouseArea { id: qMa; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.quit(row.modelData) }
                                 }

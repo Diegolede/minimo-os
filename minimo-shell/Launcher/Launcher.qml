@@ -12,7 +12,7 @@ PanelWindow {
     id: win
     readonly property bool open: LauncherState.open
     property real t: open ? 1 : 0          // progreso de la animación
-    Behavior on t { NumberAnimation { duration: 260; easing.type: Easing.OutQuint } }
+    Behavior on t { NumberAnimation { duration: Theme.durFast + 100; easing.type: Easing.OutQuint } }
 
     visible: open || t > 0.01
     anchors { top: true; bottom: true; left: true; right: true }
@@ -67,7 +67,7 @@ PanelWindow {
         opacity: win.t
         scale: 0.96 + 0.04 * win.t
         clip: true
-        Behavior on height { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+        Behavior on height { NumberAnimation { duration: Theme.durFast + 40; easing.type: Easing.OutCubic } }
 
         MouseArea { anchors.fill: parent }   // no cerrar al hacer clic dentro
 
@@ -90,7 +90,7 @@ PanelWindow {
                     anchors.right: parent.right; anchors.rightMargin: 24
                     anchors.verticalCenter: parent.verticalCenter
                     color: Theme.textPrimary
-                    font.family: Theme.font; font.pixelSize: 21
+                    font.family: Theme.font; font.pixelSize: Theme.fontTitle - 5
                     selectionColor: Theme.track; selectedTextColor: Theme.textPrimary
                     cursorDelegate: Rectangle { width: 2; radius: 1; color: Theme.textPrimary; visible: field.activeFocus }
                     clip: true
@@ -113,7 +113,7 @@ PanelWindow {
                 verticalAlignment: Text.AlignVCenter; leftPadding: 20
                 elide: Text.ElideRight
                 text: I18n.tr("Sin resultados para «%1»", field.text.trim())
-                color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 14
+                color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontBody
             }
 
             Repeater {
@@ -139,8 +139,8 @@ PanelWindow {
                         anchors.left: ic.right; anchors.leftMargin: 14
                         anchors.right: parent.right; anchors.rightMargin: 14
                         anchors.verticalCenter: parent.verticalCenter
-                        Text { width: parent.width; elide: Text.ElideRight; text: modelData.name; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 15 }
-                        Text { width: parent.width; elide: Text.ElideRight; text: modelData.genericName || modelData.comment || ""; visible: text !== ""; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12 }
+                        Text { width: parent.width; elide: Text.ElideRight; text: modelData.name; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontClock }
+                        Text { width: parent.width; elide: Text.ElideRight; text: modelData.genericName || modelData.comment || ""; visible: text !== ""; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption }
                     }
                     MouseArea {
                         id: rm

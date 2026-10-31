@@ -34,15 +34,15 @@ Item {
     // Carátula circular (recorte real con máscara), gira como un vinilo al reproducir.
     Item {
         id: art
-        width: 48; height: 48
+        width: Theme.space8 + Theme.space4; height: Theme.space8 + Theme.space4
         anchors.verticalCenter: parent.verticalCenter
         readonly property bool hasArt: cover.status === Image.Ready
         property real angle: 0
 
         NumberAnimation {
             target: art; property: "angle"
-            running: root.visible && root.player !== null && art.hasArt
-            paused: running && !root.player.isPlaying
+            // Solo gira al reproducir; con reduceMotion queda fija (menos CPU en idle del menú).
+            running: root.visible && root.player !== null && art.hasArt && root.player.isPlaying && !Theme.reduceMotion
             from: art.angle; to: art.angle + 360
             duration: 8000; loops: Animation.Infinite
         }
@@ -53,7 +53,7 @@ Item {
             radius: width / 2
             color: Theme.field
             visible: !art.hasArt
-            Icon { anchors.centerIn: parent; name: "music"; tone: "gray"; size: 20 }
+            Icon { anchors.centerIn: parent; name: "music"; tone: "gray"; size: Theme.iconSm + 4 }
         }
 
         // La carátula gira DENTRO de una capa (a 2x); la máscara circular no gira.
@@ -116,12 +116,12 @@ Item {
         Text {
             width: parent.width; elide: Text.ElideRight
             text: root.player ? (root.player.trackTitle || I18n.tr("Sin título")) : ""
-            color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13; font.weight: Font.DemiBold
+            color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontLabel; font.weight: Font.DemiBold
         }
         Text {
             width: parent.width; elide: Text.ElideRight
             text: root.player ? (root.player.trackArtist || root.player.identity) : ""
-            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
+            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption
         }
         Item { width: 1; height: 6 }
         Rectangle {

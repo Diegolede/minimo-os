@@ -214,7 +214,7 @@ PanelWindow {
         x: pill.x; y: pill.y; width: pill.width; height: pill.height
         radius: pill.radius
         color: Theme.card
-        Behavior on color { ColorAnimation { duration: 250 } }
+        Behavior on color { ColorAnimation { duration: Theme.durColor } }
         opacity: win.shown ? 1 : 0
         Behavior on opacity { NumberAnimation { duration: Theme.durFast } }
         layer.enabled: true
@@ -243,7 +243,7 @@ PanelWindow {
         y: win.shown ? Theme.topMargin + pull * 0.35 : -height - 64
         radius: Math.min(height / 2, Theme.radiusCard)
         color: Theme.card
-        Behavior on color { ColorAnimation { duration: 250 } }
+        Behavior on color { ColorAnimation { duration: Theme.durColor } }
         clip: true
 
         // Rebote elástico solo al abrir/cerrar. Con la isla ya abierta (cambio de página: calendario,

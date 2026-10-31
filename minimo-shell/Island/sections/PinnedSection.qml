@@ -94,6 +94,6 @@ Column {
         horizontalAlignment: Text.AlignHCenter
         wrapMode: Text.WordWrap
         text: Launch.error
-        color: Theme.danger; font.family: Theme.font; font.pixelSize: 12
+        color: Theme.danger; font.family: Theme.font; font.pixelSize: Theme.fontCaption
     }
 }

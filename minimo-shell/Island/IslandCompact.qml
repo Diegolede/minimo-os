@@ -38,7 +38,7 @@ Item {
             text: Qt.formatDateTime(clock.date, "HH:mm")
             color: Theme.textPrimary
             font.family: Theme.font
-            font.pixelSize: 15
+            font.pixelSize: Theme.fontClock
             font.weight: Font.Medium
             font.features: { "tnum": 1 }
         }
@@ -48,7 +48,7 @@ Item {
             id: batInd
             visible: Laptop.present && !root.notif && Recorder.notice === ""
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 5
+            spacing: Theme.space1 + 1
             Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 width: 22; height: 10; radius: 5; color: Theme.track; clip: true
@@ -57,23 +57,23 @@ Item {
                     height: parent.height; radius: 5
                     width: Math.max(height, parent.width * (Laptop.present ? Laptop.bat.pct / 100 : 0))
                     color: Laptop.critical ? Theme.danger : Theme.fill
-                    Behavior on width { NumberAnimation { duration: 400; easing.type: Easing.OutCubic } }
+                    Behavior on width { NumberAnimation { duration: Theme.durColor + 150; easing.type: Easing.OutCubic } }
                     SequentialAnimation on opacity {
                         id: chargePulse
                         running: false
                         loops: 3
-                        NumberAnimation { to: 0.3; duration: 450; easing.type: Easing.InOutSine }
-                        NumberAnimation { to: 1; duration: 450; easing.type: Easing.InOutSine }
+                        NumberAnimation { to: 0.3; duration: Theme.reduceMotion ? 0 : 450; easing.type: Easing.InOutSine }
+                        NumberAnimation { to: 1; duration: Theme.reduceMotion ? 0 : 450; easing.type: Easing.InOutSine }
                     }
                 }
-                Connections { target: Laptop; function onChargedAtChanged() { if (root.active) chargePulse.restart() } }
+                Connections { target: Laptop; function onChargedAtChanged() { if (root.active && !Theme.reduceMotion) chargePulse.restart() } }
             }
             Text {
                 enabled: false
                 anchors.verticalCenter: parent.verticalCenter
                 text: Laptop.present ? Laptop.bat.pct + "%" : ""
                 color: Laptop.critical ? Theme.danger : Theme.textSecondary
-                font.family: Theme.font; font.pixelSize: 12; font.weight: Font.Medium; font.features: { "tnum": 1 }
+                font.family: Theme.font; font.pixelSize: Theme.fontCaption; font.weight: Font.Medium; font.features: { "tnum": 1 }
             }
         }
         // OSD de volumen/brillo: barrita fina con el nivel, junto al texto del aviso.
@@ -94,7 +94,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             text: Laptop.notice
             color: Laptop.noticeKind === "critical" ? Theme.danger : Laptop.noticeKind === "low" ? Theme.textPrimary : Theme.textSecondary
-            font.family: Theme.font; font.pixelSize: 12
+            font.family: Theme.font; font.pixelSize: Theme.fontCaption
             font.weight: Laptop.noticeKind === "critical" || Laptop.noticeKind === "low" ? Font.DemiBold : Font.Normal
             elide: Text.ElideRight
             width: Math.min(implicitWidth, 260)
@@ -103,13 +103,14 @@ Item {
         Row {
             visible: Recorder.recording && Recorder.notice === ""
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 6
+            spacing: Theme.space2 - 2
             Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 width: 8; height: 8; radius: 4
                 color: Theme.recording
                 SequentialAnimation on opacity {
-                    running: Recorder.recording && root.active
+                    // Con reduceMotion el punto queda fijo (sin latido continuo → menos CPU).
+                    running: Recorder.recording && root.active && !Theme.reduceMotion
                     loops: Animation.Infinite
                     NumberAnimation { to: 0.35; duration: 900; easing.type: Easing.InOutSine }
                     NumberAnimation { to: 1; duration: 900; easing.type: Easing.InOutSine }
@@ -119,7 +120,7 @@ Item {
                 enabled: false              // texto decorativo: sin interacción ni selección
                 anchors.verticalCenter: parent.verticalCenter
                 text: Recorder.elapsedText
-                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13
+                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontLabel
                 font.features: { "tnum": 1 }
             }
         }
@@ -129,7 +130,7 @@ Item {
             visible: Recorder.notice !== ""
             anchors.verticalCenter: parent.verticalCenter
             text: Recorder.notice
-            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
+            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption
             elide: Text.ElideMiddle
             width: Math.min(implicitWidth, 230)
         }
@@ -157,7 +158,7 @@ Item {
                 text: !root.notif ? "" : (root.notif.summary || root.notif.appName)
                       + (!root.notifQuiet && root.notif.body ? "  ·  " + root.notif.body.replace(/\s+/g, " ") : "")
                 color: root.notifQuiet ? Theme.textSecondary : Theme.textPrimary
-                font.family: Theme.font; font.pixelSize: 13; font.weight: root.notifQuiet ? Font.Normal : Font.Medium
+                font.family: Theme.font; font.pixelSize: Theme.fontLabel; font.weight: root.notifQuiet ? Font.Normal : Font.Medium
             }
             Repeater {
                 // Hasta 2 acciones como píldoras (la "default" es el clic en el aviso).
@@ -167,8 +168,8 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                     width: at.implicitWidth + 20; height: 24; radius: 12
                     color: am.containsMouse ? Theme.hover : Theme.surface
-                    Behavior on color { ColorAnimation { duration: 120 } }
-                    Text { id: at; anchors.centerIn: parent; text: modelData.text; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.Medium }
+                    Behavior on color { ColorAnimation { duration: Theme.durMicro } }
+                    Text { id: at; anchors.centerIn: parent; text: modelData.text; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontCaption; font.weight: Font.Medium }
                     MouseArea { id: am; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: Notifs.invoke(modelData) }
                 }
             }
@@ -179,7 +180,7 @@ Item {
             visible: root.notif !== null && Recorder.notice === "" && Notifs.queue.length > 1
             anchors.verticalCenter: parent.verticalCenter
             text: "+" + (Notifs.queue.length - 1)
-            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12; font.features: { "tnum": 1 }
+            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption; font.features: { "tnum": 1 }
         }
         // No molestar activo: luna chica (sabés por qué no llegan avisos).
         Icon {

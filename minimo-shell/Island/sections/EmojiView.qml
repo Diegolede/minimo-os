@@ -61,7 +61,7 @@ Item {
             Text {
                 anchors.centerIn: parent
                 text: I18n.tr("Emojis")
-                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 15; font.weight: Font.DemiBold
+                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontClock; font.weight: Font.DemiBold
             }
             Rectangle {
                 anchors.right: parent.right
@@ -90,7 +90,7 @@ Item {
                 color: Theme.textPrimary
                 selectionColor: Theme.hover; selectedTextColor: Theme.textPrimary
                 cursorDelegate: Rectangle { width: 2; radius: 1; color: Theme.textPrimary; visible: field.activeFocus && field.cursorVisible }
-                font.family: Theme.font; font.pixelSize: 14
+                font.family: Theme.font; font.pixelSize: Theme.fontBody
                 clip: true
                 onTextChanged: flick.contentY = 0
                 Keys.onReturnPressed: if (root.shown.length > 0) root.pick(root.shown[0])
@@ -127,7 +127,7 @@ Item {
         Text {
             width: parent.width; leftPadding: 4
             text: root.searching ? (root.shown.length ? I18n.tr("Resultados") : I18n.tr("Sin resultados")) : (root.current ? root.current.label : (root.raw ? "" : I18n.tr("Cargando…")))
-            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.DemiBold
+            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption; font.weight: Font.DemiBold
         }
 
         Flickable {
@@ -163,8 +163,8 @@ Item {
             width: parent.width; height: 20
             Row {
                 anchors.centerIn: parent; spacing: 6
-                Text { anchors.verticalCenter: parent.verticalCenter; text: root.copied ? I18n.tr("Copiado") : I18n.tr("Clic para copiar · Ctrl+V para pegar"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12 }
-                Text { anchors.verticalCenter: parent.verticalCenter; visible: root.copied !== ""; text: E.glyph(root.copied); font.family: Theme.emojiFont; font.pixelSize: 14 }
+                Text { anchors.verticalCenter: parent.verticalCenter; text: root.copied ? I18n.tr("Copiado") : I18n.tr("Clic para copiar · Ctrl+V para pegar"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption }
+                Text { anchors.verticalCenter: parent.verticalCenter; visible: root.copied !== ""; text: E.glyph(root.copied); font.family: Theme.emojiFont; font.pixelSize: Theme.fontBody }
             }
         }
     }

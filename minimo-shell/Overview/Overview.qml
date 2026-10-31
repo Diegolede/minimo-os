@@ -14,7 +14,7 @@ PanelWindow {
     id: win
     readonly property bool open: OverviewState.open
     property real t: open ? 1 : 0
-    Behavior on t { NumberAnimation { duration: 220; easing.type: Easing.OutQuint } }
+    Behavior on t { NumberAnimation { duration: Theme.durFast + 60; easing.type: Easing.OutQuint } }
 
     screen: Quickshell.screens.find(s => s.name === (Hyprland.focusedMonitor ? Hyprland.focusedMonitor.name : "")) ?? Quickshell.screens[0]
     visible: open || t > 0.01
@@ -111,7 +111,7 @@ PanelWindow {
             anchors.centerIn: parent
             visible: win.windows.length === 0
             text: I18n.tr("No hay ventanas abiertas")
-            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 15
+            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontClock
         }
     }
 }

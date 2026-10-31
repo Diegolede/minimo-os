@@ -24,7 +24,7 @@ Rectangle {
     implicitHeight: Math.max(44, label.implicitHeight + 22)
     radius: 12
     color: hov.hovered ? Theme.hover : "transparent"
-    Behavior on color { ColorAnimation { duration: 120 } }
+    Behavior on color { ColorAnimation { duration: Theme.durMicro } }
 
     HoverHandler { id: hov }
     MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: row.picked() }
@@ -39,7 +39,7 @@ Rectangle {
         wrapMode: Text.Wrap
         elide: Text.ElideRight
         color: row.binary ? Theme.textSecondary : Theme.textPrimary
-        font.family: Theme.font; font.pixelSize: 13
+        font.family: Theme.font; font.pixelSize: Theme.fontLabel
     }
     Row {
         id: tools
