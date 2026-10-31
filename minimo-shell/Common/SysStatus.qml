@@ -10,7 +10,7 @@ import Quickshell.Io
 //   Ante cada cambio se lee el último estado que conoce NetworkManager (`nmcli networking
 //   connectivity`, sin forzar una comprobación HTTP); solo al arrancar y al abrir el panel se
 //   fuerza una (`... check`). Antes: `check` cada 10 s = un proceso y una petición HTTP cada 10 s.
-// - Solo con el panel abierto (acquire/release): recursos cada 2 s y red/dispositivos cada 8 s,
+// - Solo con el panel abierto (acquire/release): recursos cada 3 s y red/dispositivos cada 10 s,
 //   con scripts/sysstatus.py (un proceso corto por consulta, nada fijo).
 // No lee otros singletons.
 Singleton {
@@ -75,6 +75,6 @@ Singleton {
             }
         }
     }
-    Timer { running: root.users > 0; repeat: true; interval: 2000; onTriggered: resP.go() }
-    Timer { running: root.users > 0; repeat: true; interval: 8000; onTriggered: full.go() }
+    Timer { running: root.users > 0; repeat: true; interval: 3000; onTriggered: resP.go() }
+    Timer { running: root.users > 0; repeat: true; interval: 10000; onTriggered: full.go() }
 }

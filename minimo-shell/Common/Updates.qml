@@ -177,9 +177,13 @@ Singleton {
     function schedule() {
         autoTimer.stop()
         if (!DisplayState.updateAutoCheck || !DisplayState.loaded) return
-        autoTimer.interval = U.autoDelay(Date.now(), lastCheck)
+        // Aplaza el primer armado tras arrancar (menos trabajo al iniciar la shell).
+        const delay = U.autoDelay(Date.now(), lastCheck)
+        autoTimer.interval = root._firstSchedule ? Math.max(delay, 12000) : delay
+        root._firstSchedule = false
         autoTimer.start()
     }
+    property bool _firstSchedule: true
     Connections { target: DisplayState; function onUpdateAutoCheckChanged() { root.schedule() } }
     Timer { id: autoTimer; repeat: false; onTriggered: { if (!root.check(false)) root.schedule() } }
 }

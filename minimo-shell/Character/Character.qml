@@ -78,7 +78,7 @@ Item {
 
     Timer {
         // mirada distraída ocasional cuando el mouse está quieto (despierto)
-        running: c.active && !c.asleep; repeat: true; interval: 3000
+        running: c.active && !c.asleep && !Theme.reduceMotion; repeat: true; interval: 3000
         onTriggered: {
             interval = 2500 + Math.random() * 2500
             if (Math.random() < 0.5) { const t = Math.random() * Math.PI * 2, m = 0.25 + Math.random() * 0.4; c.idleX = Math.cos(t) * m; c.idleY = Math.sin(t) * m }
@@ -101,7 +101,7 @@ Item {
     Behavior on microX { NumberAnimation { duration: 110; easing.type: Easing.OutCubic } }
     Behavior on microY { NumberAnimation { duration: 110; easing.type: Easing.OutCubic } }
     Timer {
-        running: c.active && !c.asleep && !c.dancing && !c.petting; repeat: true; interval: 1800
+        running: c.active && !c.asleep && !c.dancing && !c.petting && !Theme.reduceMotion; repeat: true; interval: 1800
         onTriggered: {
             interval = 1200 + Math.random() * 1800
             const t = Math.random() * 2 * Math.PI, m = Math.random() < 0.3 ? 0 : 0.015 + Math.random() * 0.02
@@ -537,7 +537,7 @@ Item {
 
     Timer {
         // truco espontáneo cada 45–120 s (despierto, visible, sin música ni ánimo)
-        running: c.active && !c.asleep && !c.dancing && !c.petting && c.mood === ""; repeat: true
+        running: c.active && !c.asleep && !c.dancing && !c.petting && c.mood === "" && !Theme.reduceMotion; repeat: true
         interval: 60000
         onTriggered: {
             interval = 45000 + Math.random() * 75000
