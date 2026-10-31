@@ -81,9 +81,9 @@ Singleton {
                                       n.desktopEntry || "", n.appName || ""])
         finish(n)
     }
-    // Avisos propios de Minimo OS (p. ej. la mascota) por el mismo camino que los de las apps:
+    // Avisos propios de Minimo OS por el mismo camino que los de las apps:
     // misma cola, mismo tiempo en pantalla, respetan "No molestar". `tag` identifica el aviso
-    // (uno por tag a la vez) y `action` es el comando de isla al hacer clic (p. ej. "pet").
+    // (uno por tag a la vez) y `action` es el comando de isla al hacer clic.
     function post(o) {
         if (root.dnd) return
         withdraw(o.tag)
@@ -94,7 +94,7 @@ Singleton {
         while (q.length > 8) { const old = q.splice(1, 1)[0]; old.expire() }
         root.queue = q
     }
-    // Retira un aviso propio que ya no corresponde (necesidad atendida, mascota apagada).
+    // Retira un aviso propio que ya no corresponde.
     function withdraw(tag) { if (tag) root.queue = root.queue.filter(n => !(n.minimo && n.tag === tag)) }
     function invoke(action) { const n = current; action.invoke(); if (n) finish(n) }
 

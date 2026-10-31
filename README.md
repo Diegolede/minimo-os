@@ -61,7 +61,7 @@ en lugar de hacer sondeos periódicos y pausa sus animaciones durante la inactiv
 
 - Hora, escritorios y estado en una píldora compacta que se oculta sola y aparece al acercar el mouse.
 - Menú con buscador, música, volumen, brillo, saturación y accesos rápidos; los elementos se pueden fijar y reordenar desde Ajustes.
-- Gestos: deslizar a la derecha muestra los recursos del sistema (internet, batería, CPU, memoria, disco y dispositivos); a la izquierda, las apps en segundo plano de la bandeja del sistema; hacia abajo, la mascota. La rueda del mouse cambia de escritorio.
+- Gestos: deslizar a la derecha muestra los recursos del sistema (internet, batería, CPU, memoria, disco y dispositivos); a la izquierda, las apps en segundo plano de la bandeja del sistema; hacia abajo, el menú (igual que un clic). La rueda del mouse cambia de escritorio.
 - Notificaciones con servidor propio, cola y acciones; se pausan al pasar el mouse.
 - Portapapeles con historial, imágenes y elementos fijados (`Super + V`).
 - Notas, calendario del mes y selector de emojis con categorías, búsqueda y tono de piel.
@@ -76,7 +76,6 @@ en lugar de hacer sondeos periódicos y pausa sus animaciones durante la inactiv
 - Ojos que siguen la forma esférica del personaje en todas las animaciones, con movimientos suaves y guiño de un ojo.
 - Personaje animado: parpadea, respira, mira al cursor, reacciona al abrir la isla y baila con la música.
 - Se duerme cuando el equipo queda inactivo y despierta al volver a usarlo.
-- Modo mascota con comida, ánimo y energía, y avisos de hambre, aburrimiento y sueño; se puede apagar en Ajustes.
 
 ### Capturas y grabación
 
@@ -251,7 +250,7 @@ y [hypr/minimo.lua](hypr/minimo.lua).
 
 Lo habitual se cambia desde **Ajustes** (botón en la isla o `Super + ,`):
 
-- **Personalización:** fondo de pantalla, idioma, ocultar la isla automáticamente, personaje animado, mascota y tiempo para dormir.
+- **Personalización:** fondo de pantalla, idioma, ocultar la isla automáticamente, personaje animado y tiempo para dormir.
 - **Pantalla:** resolución, frecuencia y escala por monitor (se revierte en 15 s si no se confirma), brillo y saturación.
 - **Atajos, Gestos, Actualizaciones y Acerca de.**
 

@@ -15,8 +15,8 @@ PanelWindow {
 
     property bool expanded: false
     property bool panel: false            // panel deslizable abierto
-    // Qué panel: izquierda→derecha = "status" (recursos), derecha→izquierda = "apps" (apps en segundo plano),
-    // hacia abajo = "pet" (Minimo como mascota).
+    // Qué panel: izquierda→derecha = "status" (recursos), derecha→izquierda = "apps" (apps en segundo plano).
+    // Hacia abajo abre el menú normal (igual que un clic).
     property string panelKind: "status"
     readonly property bool open: expanded || panel
     // Mientras se arrastra el puntero puede salir de la zona: sigue contando como encima
@@ -41,8 +41,6 @@ PanelWindow {
     mask: Region { x: win.open ? 0 : hoverZone.x; y: 0; width: win.open ? win.width : hoverZone.width; height: win.open ? win.height : hoverZone.height }
 
     function collapse() { expanded = false; panel = false }
-    // Mascota apagada con su panel abierto: se cierra (no queda nada de la mascota en pantalla).
-    Connections { target: DisplayState; function onPetEnabledChanged() { if (!DisplayState.petEnabled && win.panel && win.panelKind === "pet") win.collapse() } }
 
     // Auto-ocultar
     Timer {
@@ -121,12 +119,13 @@ PanelWindow {
     // Cada isla suma/resta su hover (con varios monitores no se pisan entre sí).
     Component.onDestruction: if (hovered) Notifs.hovers = Math.max(0, Notifs.hovers - 1)
 
-    // Clic afuera de la isla mientras está expandida: colapsa.
+    // Clic afuera de la isla mientras está expandida: colapsa al soltar (no al presionar),
+    // así un arrastre que empieza fuera y entra no dispara un cierre accidental a medias.
     MouseArea {
         anchors.fill: parent
         enabled: win.open
-        acceptedButtons: Qt.AllButtons
-        onPressed: win.collapse()
+        acceptedButtons: Qt.LeftButton
+        onClicked: win.collapse()
     }
 
     // Región única de hover/input. Nunca se reemplaza por otro item.
@@ -151,7 +150,7 @@ PanelWindow {
         property real pressX: 0
         property real pressY: 0
         property bool dragging: false
-        property bool pulling: false     // arrastre hacia abajo (mascota)
+        property bool pulling: false     // arrastre hacia abajo (menú)
         property real dragDy: 0
         property real dragDx: 0
         // Velocidad (px/ms, suavizada) para decidir con un gesto rápido y corto.
@@ -172,7 +171,7 @@ PanelWindow {
             }
             const dx = p.x - pressX, dy = p.y - pressY
             // La dirección se decide una sola vez, por el eje dominante, al pasar 6 px:
-            // horizontal → paneles; hacia abajo → mascota (hacia arriba no hace nada).
+            // horizontal → paneles; hacia abajo → menú (hacia arriba no hace nada).
             if (!dragging && !pulling && Math.hypot(dx, dy) > 6) {
                 if (Math.abs(dx) > Math.abs(dy)) dragging = true
                 else if (dy > 0 && !win.panel) pulling = true
@@ -189,11 +188,8 @@ PanelWindow {
             if (m.button === Qt.RightButton) return
             if (pulling) {
                 if (Date.now() - lastT > 80) velY = 0
-                // Hacia abajo: panel de la mascota; con la mascota apagada, el mismo menú que un clic.
-                if (dragDy > 24 || (velY > 0.5 && dragDy > 10)) {
-                    if (DisplayState.petEnabled) { win.panelKind = "pet"; win.panel = true }
-                    else win.expanded = true
-                }
+                // Hacia abajo: menú normal (mismo resultado que un clic).
+                if (dragDy > 24 || (velY > 0.5 && dragDy > 10)) win.expanded = true
                 pulling = false; dragDy = 0; return
             }
             if (dragging) {
@@ -225,9 +221,9 @@ PanelWindow {
         layer.effect: MultiEffect {
             shadowEnabled: true
             shadowColor: Theme.shadow
-            shadowBlur: 1.0
-            blurMax: 40
-            shadowVerticalOffset: 8
+            shadowBlur: 0.85
+            blurMax: 28
+            shadowVerticalOffset: 6
             autoPaddingEnabled: true
         }
     }
@@ -241,7 +237,7 @@ PanelWindow {
              : win.panel ? Theme.expandedW
              : Math.max(Theme.compactW, compact.implicitWidth + Theme.compactPadX * 2) + Math.abs(rubber) * 1.2
         height: win.expanded ? Math.min(menu.implicitHeight, Theme.maxExpandedH)
-              : win.panel ? Math.min(win.panelKind === "apps" ? apps.implicitHeight : win.panelKind === "pet" ? pet.implicitHeight : status.implicitHeight, Theme.maxExpandedH)
+              : win.panel ? Math.min(win.panelKind === "apps" ? apps.implicitHeight : status.implicitHeight, Theme.maxExpandedH)
               : compact.implicitHeight + pull * 0.65   // al tirar hacia abajo: se estira y baja un poco
         x: (win.width - width) / 2 + rubber * 0.5
         y: win.shown ? Theme.topMargin + pull * 0.35 : -height - 64
@@ -255,9 +251,9 @@ PanelWindow {
         property bool settled: false
         Timer { id: settleTimer; interval: Theme.durNormal + 80; onTriggered: pill.settled = win.open }
         Connections { target: win; function onOpenChanged() { pill.settled = false; if (win.open) settleTimer.restart() } }
-        Behavior on width { NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutBack; easing.overshoot: pill.settled ? 0 : 0.9 } }
+        Behavior on width { NumberAnimation { duration: Theme.durNormal; easing.type: pill.settled || Theme.reduceMotion ? Easing.OutCubic : Theme.easeOpen; easing.overshoot: pill.settled ? 0 : Theme.overshootOpen } }
         // Durante el tirón la píldora sigue al dedo sin retraso (la animación vuelve al soltar).
-        Behavior on height { enabled: !hoverZone.pulling; NumberAnimation { duration: Theme.durNormal + 40; easing.type: Easing.OutBack; easing.overshoot: pill.settled ? 0 : 0.7 } }
+        Behavior on height { enabled: !hoverZone.pulling; NumberAnimation { duration: Theme.durNormal + 40; easing.type: pill.settled || Theme.reduceMotion ? Easing.OutCubic : Theme.easeOpen; easing.overshoot: pill.settled ? 0 : Theme.overshootClose } }
         Behavior on y { enabled: !hoverZone.pulling; NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutQuint } }
 
         focus: win.open
@@ -309,17 +305,6 @@ PanelWindow {
             visible: opacity > 0
             Behavior on opacity { NumberAnimation { duration: Theme.durFast } }
         }
-        PetPanel {
-            id: pet
-            width: Theme.expandedW
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: parent.top
-            open: win.panel && win.panelKind === "pet"
-            opacity: win.panel && win.panelKind === "pet" ? 1 : 0
-            visible: opacity > 0
-            Behavior on opacity { NumberAnimation { duration: Theme.durFast } }
-            onDone: win.collapse()
-        }
     }
 
     // Control externo (ipc "island"): show/hide/open/close.
@@ -335,8 +320,8 @@ PanelWindow {
                 else { win.panel = false; win.expanded = true; menu.showClipboard() }
             }
             else if (cmd === "close") win.collapse()
-            else if (cmd === "pet" && !DisplayState.petEnabled) { win.panel = false; win.expanded = true }
-            else if (cmd === "status" || cmd === "apps" || cmd === "pet") {
+            else if (cmd === "pet") { win.panel = false; win.expanded = true }  // legado: IPC "pet" abre el menú
+            else if (cmd === "status" || cmd === "apps") {
                 // Si ya está abierto el otro panel, cambiar a este en vez de cerrar.
                 win.panel = !(win.panel && win.panelKind === cmd)
                 win.panelKind = cmd
