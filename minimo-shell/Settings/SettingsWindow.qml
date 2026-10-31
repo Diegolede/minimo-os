@@ -54,7 +54,7 @@ PanelWindow {
         layer.enabled: true
         layer.effect: MultiEffect {
             shadowEnabled: true; shadowColor: Theme.shadow
-            shadowBlur: 0.9; blurMax: 40; shadowVerticalOffset: 12; autoPaddingEnabled: true
+            shadowBlur: 0.75; blurMax: 24; shadowVerticalOffset: 8; autoPaddingEnabled: true
         }
     }
 

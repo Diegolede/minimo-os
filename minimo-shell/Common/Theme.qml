@@ -104,7 +104,7 @@ Singleton {
     readonly property real overshootClose: 0.35
 
     // Tokens de la ronda 2 (aplicados en Ajustes / isla / tipografía compacta)
-    readonly property int sidebarW: 232       // ancho de la barra lateral de Ajustes (propuesta P2: 200)
+    readonly property int sidebarW: 200       // barra lateral de Ajustes (ronda 2 P2)
     readonly property color knob: "#FFFFFF"   // perilla del switch (siempre blanca, contraste en claro/oscuro)
     readonly property int radiusSection: 20     // tarjetas de sección en Ajustes
     readonly property int fontClock: 15         // reloj de la isla compacta

@@ -121,7 +121,6 @@ Column {
                     }
                 }
             }
-            Rectangle { x: Theme.padSection; width: parent.width - Theme.padSection; height: 1; color: Theme.track }
             // Idioma de la interfaz (los nombres van en su propio idioma).
             Item {
                 width: parent.width; height: Theme.rowH
@@ -165,7 +164,6 @@ Column {
                 checked: DisplayState.islandAutoHide
                 onToggled: v => DisplayState.setIslandAutoHide(v)
             }
-            Rectangle { x: Theme.padSection; width: parent.width - Theme.padSection * 2; height: 1; color: Theme.track }
             SwitchRow {
                 width: parent.width
                 text: I18n.tr("Ocultamiento inteligente")
@@ -173,7 +171,6 @@ Column {
                 checked: DisplayState.islandSmartHide
                 onToggled: v => DisplayState.setIslandSmartHide(v)
             }
-            Rectangle { x: Theme.padSection; width: parent.width - Theme.padSection * 2; height: 1; color: Theme.track }
             SwitchRow {
                 width: parent.width
                 text: I18n.tr("Personaje animado")
@@ -181,7 +178,6 @@ Column {
                 checked: DisplayState.characterAnimated
                 onToggled: v => DisplayState.setCharacterAnimated(v)
             }
-            Rectangle { x: Theme.padSection; width: parent.width - Theme.padSection * 2; height: 1; color: Theme.track }
             // Dormir tras inactividad (segmentado 1/2/5 min).
             Item {
                 width: parent.width; height: Theme.rowH + Theme.space2
@@ -230,7 +226,6 @@ Column {
                 checked: DisplayState.reduceMotion
                 onToggled: v => DisplayState.setReduceMotion(v)
             }
-            Rectangle { x: Theme.padSection; width: parent.width - Theme.padSection * 2; height: 1; color: Theme.track }
             SwitchRow {
                 width: parent.width
                 text: I18n.tr("Más contraste")
