@@ -39,7 +39,7 @@ Item {
     component Reveal: Item {
         property int step: 0
         opacity: root.stage > step ? 1 : 0
-        transform: Translate { y: root.stage > step ? 0 : (Theme.durStagger === 0 ? 0 : 8); Behavior on y { NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutQuint } } }
+        transform: Translate { y: root.stage > step ? 0 : (Theme.durStagger === 0 ? 0 : 4); Behavior on y { NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutQuint } } }
         Behavior on opacity { NumberAnimation { duration: Theme.durFast + 100 } }
     }
 

@@ -222,7 +222,7 @@ PanelWindow {
             shadowEnabled: true
             shadowColor: Theme.shadow
             shadowBlur: 0.85
-            blurMax: 28
+            blurMax: 20
             shadowVerticalOffset: 6
             autoPaddingEnabled: true
         }

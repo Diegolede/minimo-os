@@ -209,7 +209,7 @@ PanelWindow {
                 anchors.centerIn: parent
                 width: 380; height: cc.implicitHeight + Theme.space8 + Theme.space4; radius: Theme.radiusCard
                 color: Theme.cardSolid
-                border.width: 1; border.color: Theme.track
+                border.width: 0
                 Column {
                     id: cc
                     anchors.centerIn: parent
