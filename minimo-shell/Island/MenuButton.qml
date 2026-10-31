@@ -20,8 +20,9 @@ Item {
     property bool active: false        // estado "encendido": negro con icono blanco
     property string letter: ""         // accesos propios: inicial en lugar de icono
     signal activated()
+    property real lastFire: 0
 
-    width: 80; height: 80
+    width: Theme.menuBtnSize; height: Theme.menuBtnSize
     activeFocusOnTab: true
     // Teclado: el botón se hunde al presionar y dispara al soltar (igual que con el mouse).
     property bool keyDown: false
@@ -32,7 +33,7 @@ Item {
     Rectangle {
         id: circle
         anchors.horizontalCenter: parent.horizontalCenter
-        width: 52; height: 52; radius: 26
+        width: Theme.menuBtnCircle; height: Theme.menuBtnCircle; radius: Theme.menuBtnCircle / 2
         color: (btn.isArmed || btn.active) ? Theme.fill : (mouse.containsMouse ? Theme.hover : Theme.surface)
         scale: (mouse.pressed && mouse.containsMouse) || btn.keyDown ? 0.92 : 1
         Rectangle {          // aro de foco por teclado (solo con foco)
@@ -47,17 +48,18 @@ Item {
         }
         Behavior on color { ColorAnimation { duration: Theme.durFast } }
         Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutQuad } }
-        Icon { anchors.centerIn: parent; name: btn.icon; visible: btn.letter === ""; size: 22; tone: (btn.isArmed || btn.active) ? "white" : "dark" }
+        // Centrado óptico: iconos de línea suelen verse 1 px altos.
+        Icon { anchors.centerIn: parent; anchors.verticalCenterOffset: 1; name: btn.icon; visible: btn.letter === ""; size: Theme.iconMd; tone: (btn.isArmed || btn.active) ? "white" : "dark" }
         Text {
             anchors.centerIn: parent
             visible: btn.letter !== ""
             text: btn.letter
             color: (btn.isArmed || btn.active) ? Theme.onAccent : Theme.textPrimary
-            font.family: Theme.font; font.pixelSize: 19; font.weight: Font.Medium
+            font.family: Theme.font; font.pixelSize: Theme.fontHeading; font.weight: Font.Medium
         }
     }
     Text {
-        anchors.top: circle.bottom; anchors.topMargin: 8
+        anchors.top: circle.bottom; anchors.topMargin: Theme.space2
         anchors.horizontalCenter: parent.horizontalCenter
         width: btn.width - 4
         horizontalAlignment: Text.AlignHCenter
@@ -66,7 +68,7 @@ Item {
         // Al pasar el mouse la etiqueta se oscurece: queda claro qué botón se va a tocar.
         color: (btn.isArmed || btn.active || mouse.containsMouse) ? Theme.textPrimary : Theme.textSecondary
         Behavior on color { ColorAnimation { duration: Theme.durFast } }
-        font.family: Theme.font; font.pixelSize: 11; font.weight: (btn.isArmed || btn.active) ? Font.DemiBold : Font.Normal
+        font.family: Theme.font; font.pixelSize: Theme.fontTiny; font.weight: (btn.isArmed || btn.active) ? Font.DemiBold : Font.Normal
     }
 
     Timer { id: disarm; interval: 3000; onTriggered: btn.selfArmed = false }
@@ -78,8 +80,11 @@ Item {
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
         function fire() {
+            const now = Date.now()
+            if (now - btn.lastFire < 280) return   // evita doble activación por clics rápidos
             if (btn.confirm && !btn.selfArmed) { btn.selfArmed = true; disarm.restart(); return }
             btn.selfArmed = false; disarm.stop()
+            btn.lastFire = now
             btn.activated()
         }
         // Si se arrastra afuera antes de soltar, no dispara (permite arrepentirse).

@@ -14,7 +14,7 @@ Item {
     readonly property bool searchFocused: search.hasFocus
     property alias character: chr
     property string page: "menu"   // "menu" | "desks" | "clip" | "cal" | "notes" | "emoji"
-    implicitHeight: (page === "desks" ? desks.implicitHeight : page === "clip" ? clip.implicitHeight : page === "cal" ? cal.implicitHeight : page === "notes" ? notes.implicitHeight : page === "emoji" ? emoji.implicitHeight : col.implicitHeight) + 40
+    implicitHeight: (page === "desks" ? desks.implicitHeight : page === "clip" ? clip.implicitHeight : page === "cal" ? cal.implicitHeight : page === "notes" ? notes.implicitHeight : page === "emoji" ? emoji.implicitHeight : col.implicitHeight) + Theme.padPanel * 2
 
     function showClipboard() { clip.refresh(); page = "clip" }
 
@@ -35,26 +35,26 @@ Item {
     component Reveal: Item {
         property int step: 0
         opacity: root.stage > step ? 1 : 0
-        transform: Translate { y: root.stage > step ? 0 : 8; Behavior on y { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } } }
-        Behavior on opacity { NumberAnimation { duration: 260 } }
+        transform: Translate { y: root.stage > step ? 0 : (Theme.reduceMotion ? 0 : 8); Behavior on y { NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutQuint } } }
+        Behavior on opacity { NumberAnimation { duration: Theme.durFast + 100 } }
     }
 
     Column {
         id: col
-        x: root.page === "menu" ? 20 : -root.width * 0.3
-        y: 20
+        x: root.page === "menu" ? Theme.padPanel : -root.width * 0.3
+        y: Theme.padPanel
         opacity: root.page === "menu" ? 1 : 0
         visible: opacity > 0
         enabled: root.page === "menu"
         Behavior on x { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
         Behavior on opacity { NumberAnimation { duration: 220 } }
-        width: parent.width - 40
-        spacing: 22
+        width: parent.width - Theme.padPanel * 2
+        spacing: Theme.space6 - 2
 
         Reveal {
             step: 0; width: parent.width; height: 48
             Row {
-                spacing: 16
+                spacing: Theme.space4
                 Character {
                     id: chr; size: 44; active: root.open && DisplayState.characterAnimated; anchors.verticalCenter: parent.verticalCenter
                     // Clic en el personaje: guiño, risita… (4+ clics rápidos: caricias)
@@ -66,13 +66,13 @@ Item {
                     Text {
                         text: Qt.formatDateTime(clock.date, "HH:mm")
                         color: Theme.textPrimary; font.family: Theme.font
-                        font.pixelSize: 26; font.weight: Font.Medium
+                        font.pixelSize: Theme.fontTitle; font.weight: Font.Medium
                         font.features: { "tnum": 1 }
                     }
                     // Clic en la fecha → calendario.
                     Text {
                         text: I18n.longDate(clock.date)
-                        color: dateMouse.containsMouse ? Theme.textPrimary : Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
+                        color: dateMouse.containsMouse ? Theme.textPrimary : Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption
                         MouseArea { id: dateMouse; anchors.fill: parent; anchors.margins: -4; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
                             onClicked: { cal.reset(); root.page = "cal" } }
                     }
