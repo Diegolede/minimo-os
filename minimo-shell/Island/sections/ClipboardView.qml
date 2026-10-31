@@ -21,7 +21,7 @@ Item {
     Column {
         id: col
         width: parent.width
-        spacing: 12
+        spacing: Theme.space3
 
         Item {
             width: parent.width; height: 32
@@ -29,12 +29,12 @@ Item {
                 width: 32; height: 32; radius: 16
                 color: bm.containsMouse ? Theme.hover : Theme.surface
                 Icon { anchors.centerIn: parent; name: "back"; size: 18 }
-                MouseArea { id: bm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.back() }
+                MouseArea { id: bm; anchors.fill: parent; anchors.margins: -6; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.back() }
             }
             Text {
                 anchors.centerIn: parent
                 text: I18n.tr("Portapapeles")
-                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 15; font.weight: Font.DemiBold
+                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontHeading; font.weight: Font.DemiBold
             }
             Rectangle {
                 anchors.right: parent.right
@@ -109,7 +109,7 @@ Item {
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.WordWrap
             text: Clipboard.available ? I18n.tr("Lo que copies aparece acá.") : I18n.tr("Falta cliphist para guardar el historial.")
-            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13
+            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontBody - 1
         }
     }
 }

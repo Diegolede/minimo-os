@@ -11,7 +11,7 @@ Rectangle {
     property bool outlined: false
     property bool primary: false
     signal clicked()
-    width: r.implicitWidth + 32; height: 36; radius: 18
+    width: r.implicitWidth + Theme.space8; height: Theme.controlH + 4; radius: (Theme.controlH + 4) / 2
     color: primary ? (m.containsMouse ? Theme.fillHover : Theme.fill) : (m.containsMouse ? Theme.hover : (outlined ? "transparent" : Theme.surface))
     border.width: 0
     activeFocusOnTab: true
@@ -24,9 +24,11 @@ Rectangle {
     }
     Row {
         id: r
-        anchors.centerIn: parent; spacing: 8
-        Icon { name: b.icon; visible: b.icon !== ""; size: 16; tone: b.primary ? "white" : "dark"; anchors.verticalCenter: parent.verticalCenter }
-        Text { text: b.text; color: b.primary ? Theme.onAccent : (b.outlined ? Theme.textSecondary : Theme.textPrimary); font.family: Theme.font; font.pixelSize: 13; font.weight: b.primary ? Font.DemiBold : Font.Normal; anchors.verticalCenter: parent.verticalCenter }
+        anchors.centerIn: parent; spacing: Theme.space2
+        Icon { name: b.icon; visible: b.icon !== ""; size: Theme.iconSm; tone: b.primary ? "white" : "dark"; anchors.verticalCenter: parent.verticalCenter }
+        Text { text: b.text; color: b.primary ? Theme.onAccent : (b.outlined ? Theme.textSecondary : Theme.textPrimary); font.family: Theme.font; font.pixelSize: Theme.fontBody - 1; font.weight: b.primary ? Font.DemiBold : Font.Normal; anchors.verticalCenter: parent.verticalCenter }
     }
+    scale: m.pressed ? 0.97 : 1
+    Behavior on scale { NumberAnimation { duration: Theme.durFast; easing.type: Easing.OutQuad } }
     MouseArea { id: m; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: b.clicked() }
 }

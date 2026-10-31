@@ -32,7 +32,7 @@ Item {
         return ks[ks.length - 1]
     }
     function playRandom(idleMs) { play(pick(idleWeights(idleMs))) }
-    // Mascota: "Jugar" elige entre juegos variados sin repetir los dos últimos.
+    // Juegos del personaje (reacciones al interactuar): sin repetir los dos últimos.
     readonly property var playWeights: ({ sway: 1.3, wiggle: 1.2, peekaboo: 1.1, giggle: 1, curious: 0.7, wink: 0.6 })
     function playGame() { play(pick(playWeights)) }
     function playOpen() { play(pick({ greet: 1.3, happyBounce: 1.1 })) }
@@ -308,7 +308,7 @@ Item {
         }
     }
 
-    // ---------- mascota: comer y jugar (sin saltos ni giros; ojos siempre pastillas) ----------
+    // ---------- reacciones: masticar y juegos (sin saltos ni giros; ojos siempre pastillas) ----------
     // Masticar: mira hacia abajo, entrecierra los ojos con gusto y el cuerpo "mastica"
     // con squash & stretch rítmico (5 bocados); al final, satisfecho.
     SequentialAnimation {

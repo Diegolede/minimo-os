@@ -12,7 +12,7 @@ import "../Character"
 Item {
     id: root
     property bool open: false
-    implicitHeight: col.implicitHeight + 32
+    implicitHeight: col.implicitHeight + Theme.space8
 
     onOpenChanged: { menuFor = null; if (open) greetLater.restart() }
 
@@ -70,14 +70,14 @@ Item {
     }
 
     component Title: Text {
-        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.DemiBold
+        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption; font.weight: Font.DemiBold
         leftPadding: 4
     }
 
     Column {
         id: col
-        x: 16; y: 16; width: parent.width - 32
-        spacing: 8
+        x: Theme.padPanel - 4; y: Theme.padPanel - 4; width: parent.width - (Theme.padPanel - 4) * 2
+        spacing: Theme.space2
 
         Item {
             width: parent.width; height: 76
@@ -101,7 +101,7 @@ Item {
                 visible: root.items.length === 0
                 y: 4; width: parent.width; height: 44
                 horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
-                text: I18n.tr("No hay apps en segundo plano"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13
+                text: I18n.tr("No hay apps en segundo plano"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontBody
             }
             Column {
                 id: list

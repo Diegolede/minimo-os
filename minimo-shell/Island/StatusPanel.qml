@@ -11,7 +11,7 @@ import Quickshell.Io
 Item {
     id: root
     property bool open: false
-    implicitHeight: col.implicitHeight + 32
+    implicitHeight: col.implicitHeight + Theme.padPanel * 2
     // La isla limita el alto (Theme.maxExpandedH): si el contenido no entra, se desplaza
     // dentro del panel con bordes difuminados en vez de cortarse.
     height: Math.min(implicitHeight, Theme.maxExpandedH)
@@ -34,7 +34,7 @@ Item {
             kids[i].opacity = 1 - Math.pow(1 - t, 3)
         }
     }
-    Timer { id: greetLater; interval: 280; onTriggered: chr.react("greet") }
+    Timer { id: greetLater; interval: 280; onTriggered: { if (root.open && DisplayState.characterAnimated) chr.react("greet") } }
 
     // Ánimo del personaje según el estado: sin internet → preocupado; CPU >85 % o
     // temperatura alta (≥85 °C CPU / ≥85 °C GPU) → cansado; si no, feliz.
@@ -130,7 +130,7 @@ Item {
     property real txRate: -1
     property var lastNet: null
     function rate(b) { return b >= 1048576 ? (b / 1048576).toFixed(1).replace(".", ",") + " MB/s" : Math.round(b / 1024) + " KB/s" }
-    Timer { interval: 2000; repeat: true; triggeredOnStart: true; running: root.open && Network.hasWifi && Network.ssid !== ""; onTriggered: if (!netStat.running) netStat.running = true
+    Timer { interval: 3000; repeat: true; triggeredOnStart: true; running: root.open && Network.hasWifi && Network.ssid !== ""; onTriggered: if (!netStat.running) netStat.running = true
             onRunningChanged: if (!running) { root.lastNet = null; root.rxRate = -1; root.txRate = -1 } }
     Process {
         id: netStat
@@ -159,7 +159,7 @@ Item {
     property bool procWanted: false
     property var topCpu: []
     property var topMem: []
-    Timer { interval: 2500; repeat: true; triggeredOnStart: true; running: root.open && root.procWanted; onTriggered: if (!procs.running) procs.running = true }
+    Timer { interval: 3500; repeat: true; triggeredOnStart: true; running: root.open && root.procWanted; onTriggered: if (!procs.running) procs.running = true }
     Process {
         id: procs
         command: [Qt.resolvedUrl("../scripts/top-procs.sh").toString().replace("file://", "")]
@@ -429,8 +429,8 @@ Item {
         }
     Column {
         id: col
-        x: 16; y: 16; width: flick.width - 32
-        spacing: 8
+        x: Theme.padPanel; y: Theme.padPanel; width: flick.width - Theme.padPanel * 2
+        spacing: Theme.space2
 
         // Personaje: sigue el mouse solo con el panel abierto (activo = visible).
         Item {
@@ -733,7 +733,7 @@ Item {
                     Rectangle {      // brillo mientras libera
                         visible: freeBar.busy
                         width: 90; height: parent.height; color: Theme.onAccent; opacity: 0.10; radius: height / 2
-                        NumberAnimation on x { running: freeBar.busy; loops: Animation.Infinite; from: -90; to: freeBar.width; duration: 1500; easing.type: Easing.InOutSine }
+                        NumberAnimation on x { running: freeBar.busy && root.open; loops: Animation.Infinite; from: -90; to: freeBar.width; duration: 1500; easing.type: Easing.InOutSine }
                     }
                 }
                 Rectangle {

@@ -11,7 +11,7 @@ Column {
     property alias query: field.text
     readonly property bool hasFocus: field.activeFocus
     property int selected: 0
-    spacing: 4
+    spacing: Theme.space1
 
     function focusField() { field.text = ""; field.forceActiveFocus() }
     function reset() { field.text = ""; field.focus = false }
@@ -23,7 +23,7 @@ Column {
 
     Rectangle {
         id: box
-        width: Math.round(parent.width); height: 40
+        width: Math.round(parent.width); height: Theme.controlH + 8
         radius: height / 2               // píldora
         // Estilo Spotlight: hilo fino semitransparente; con foco, superficie elevada,
         // borde más marcado y un aro suave alrededor (sin blur ni transparencia del panel).
@@ -31,8 +31,8 @@ Column {
         color: on ? Theme.raised : Theme.field
         border.width: 1
         border.color: Qt.rgba(Theme.textPrimary.r, Theme.textPrimary.g, Theme.textPrimary.b, on ? 0.40 : 0.20)
-        Behavior on color { ColorAnimation { duration: 180; easing.type: Easing.OutCubic } }
-        Behavior on border.color { ColorAnimation { duration: 180; easing.type: Easing.OutCubic } }
+        Behavior on color { ColorAnimation { duration: Theme.durFast; easing.type: Easing.OutCubic } }
+        Behavior on border.color { ColorAnimation { duration: Theme.durFast; easing.type: Easing.OutCubic } }
         antialiasing: true
         Rectangle {
             anchors.fill: parent; anchors.margins: -3
@@ -56,7 +56,7 @@ Column {
         Icon {
             id: lupa
             x: 16; anchors.verticalCenter: parent.verticalCenter
-            name: "search"; tone: "gray"; size: 16
+            name: "search"; tone: "gray"; size: Theme.iconSm
         }
         TextInput {
             id: field
@@ -71,7 +71,7 @@ Column {
             selectedTextColor: Theme.textPrimary
             // El cursor "|" solo se dibuja cuando el buscador tiene el foco.
             cursorDelegate: Rectangle { width: 2; radius: 1; color: Theme.textPrimary; visible: field.activeFocus && field.cursorVisible }
-            font.family: Theme.font; font.pixelSize: 14
+            font.family: Theme.font; font.pixelSize: Theme.fontBody
             clip: true
             Text {
                 visible: !field.text

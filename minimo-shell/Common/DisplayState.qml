@@ -22,7 +22,6 @@ Singleton {
     property bool welcomed: false           // primer inicio ya mostrado
     onReduceMotionChanged: Theme.reduceMotion = reduceMotion
     onHighContrastChanged: Theme.highContrast = highContrast
-    property bool petEnabled: true          // mascota (necesidades, avisos y panel al deslizar hacia abajo)
     property bool updateAutoCheck: false    // comprobar versiones nuevas de Minimo una vez por día (solo lectura, sin instalar)
     property var updateLast: ({})           // última comprobación: { t, minimo: {...}, system: {...}, systemT }
     property int emojiTone: 0               // tono de piel del selector de emojis (0 = amarillo, 1..5 = claro..oscuro)
@@ -59,7 +58,6 @@ Singleton {
     function setReduceMotion(v) { reduceMotion = v; save() }
     function setHighContrast(v) { highContrast = v; save() }
     function setWelcomed() { welcomed = true; save() }
-    function setPetEnabled(v) { petEnabled = v; save() }
     function setEmojiTone(v) { emojiTone = v; save() }
     function setUpdateAutoCheck(v) { updateAutoCheck = v; save() }
     function setUpdateLast(o) { updateLast = o; save() }
@@ -78,7 +76,7 @@ Singleton {
     function syncDialogTheme() { Quickshell.execDetached([dialogThemeScript, theme === "dark" ? "oscuro" : "claro"]) }
     function save() {
         file.setText(JSON.stringify({ saturation: root.saturation, brightness: root.brightness, wallpaper: root.wallpaper, wallpaperHistory: root.wallpaperHistory,
-                                     islandAutoHide: root.islandAutoHide, islandSmartHide: root.islandSmartHide, characterAnimated: root.characterAnimated, petEnabled: root.petEnabled, reduceMotion: root.reduceMotion, highContrast: root.highContrast, welcomed: root.welcomed, emojiTone: root.emojiTone, updateAutoCheck: root.updateAutoCheck, updateLast: root.updateLast,
+                                     islandAutoHide: root.islandAutoHide, islandSmartHide: root.islandSmartHide, characterAnimated: root.characterAnimated, reduceMotion: root.reduceMotion, highContrast: root.highContrast, welcomed: root.welcomed, emojiTone: root.emojiTone, updateAutoCheck: root.updateAutoCheck, updateLast: root.updateLast,
                                      sleepMinutes: root.sleepMinutes, theme: root.theme, language: root.language,
                                      pins: root.pins, pinOrder: root.pinOrder, customItems: root.customItems,
                                      liveWallpaper: root.liveWallpaper, livePauseCovered: root.livePauseCovered, screenOffOffered: root.screenOffOffered }, null, 2))
@@ -120,7 +118,7 @@ Singleton {
                 root.islandAutoHide = s.islandAutoHide ?? true
                 root.islandSmartHide = (s.islandSmartHide ?? false) && !root.islandAutoHide
                 root.characterAnimated = s.characterAnimated ?? true
-                root.petEnabled = s.petEnabled ?? true
+                // Migración 1.2.4: se ignora petEnabled si existía; no se vuelve a guardar.
                 root.reduceMotion = s.reduceMotion ?? false
                 root.highContrast = s.highContrast ?? false
                 root.welcomed = s.welcomed ?? false

@@ -49,21 +49,64 @@ Singleton {
     readonly property color shadow: Qt.rgba(0, 0, 0, dark ? 0.45 : 0.16)
 
 
+    // Radios por tipo de componente
     readonly property int radiusCard: 28
     readonly property int radiusField: 12
+    readonly property int radiusChip: 16
+    readonly property int radiusPill: 20
+    readonly property int radiusCircle: 999
 
+    // Escala de espaciado (múltiplos de 4)
+    readonly property int space1: 4
+    readonly property int space2: 8
+    readonly property int space3: 12
+    readonly property int space4: 16
+    readonly property int space5: 20
+    readonly property int space6: 24
+    readonly property int space8: 32
+    readonly property int padPanel: 20          // margen interno de paneles de la isla
+    readonly property int padSection: 18        // margen de tarjetas en Ajustes
+    readonly property int padRow: 16            // filas de ajustes / switches
+
+    // Tipografía
     readonly property string font: "Adwaita Sans"
     readonly property string emojiFont: "Noto Color Emoji"   // noto-fonts-emoji (install.sh); solo en el selector de emojis
+    readonly property int fontTitle: 26
+    readonly property int fontHeading: 17
+    readonly property int fontBody: 14
+    readonly property int fontCaption: 12
+    readonly property int fontTiny: 11
+    readonly property real lineBody: 1.25
+    readonly property real lineCaption: 1.15
 
+    // Iconos
+    readonly property int iconSm: 16
+    readonly property int iconMd: 22
+    readonly property int iconLg: 28
+    readonly property int hitMin: 44           // área clicable mínima recomendada
+
+    // Controles equivalentes
+    readonly property int controlH: 32
+    readonly property int menuBtnSize: 80
+    readonly property int menuBtnCircle: 52
+
+    // Animaciones centralizadas
     readonly property int durFast: reduceMotion ? 0 : 160
     readonly property int durHover: 300          // pausa antes de mostrar detalles al pasar el mouse
     readonly property int durNormal: reduceMotion ? 0 : 360
+    readonly property int durOpen: reduceMotion ? 0 : 360
+    readonly property int durClose: reduceMotion ? 0 : 280
     readonly property int hideDelay: 900   // margen para salir un instante con el puntero sin que la isla se esconda
+    readonly property int easeOpen: Easing.OutBack
+    readonly property int easeClose: Easing.OutCubic
+    readonly property int easeInOut: Easing.InOutCubic
+    readonly property real overshootOpen: 0.45
+    readonly property real overshootClose: 0.35
 
     readonly property int compactW: 96
     readonly property int compactH: 36
     readonly property int expandedW: 400
     readonly property int maxExpandedH: 900
-    readonly property int topMargin: 8          // separación de la isla con el borde superior (G1: 4 → G4: 8)
-    readonly property int compactPadX: 11       // margen lateral de la isla compacta
+    readonly property int topMargin: 8          // separación de la isla con el borde superior
+    readonly property int compactPadX: 11       // margen lateral de la isla compacta (proporción previa)
 }

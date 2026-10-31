@@ -78,7 +78,7 @@ Item {
 
     Timer {
         // mirada distraída ocasional cuando el mouse está quieto (despierto)
-        running: c.active && !c.asleep; repeat: true; interval: 3000
+        running: c.active && !c.asleep && !Theme.reduceMotion; repeat: true; interval: 3000
         onTriggered: {
             interval = 2500 + Math.random() * 2500
             if (Math.random() < 0.5) { const t = Math.random() * Math.PI * 2, m = 0.25 + Math.random() * 0.4; c.idleX = Math.cos(t) * m; c.idleY = Math.sin(t) * m }
@@ -101,7 +101,7 @@ Item {
     Behavior on microX { NumberAnimation { duration: 110; easing.type: Easing.OutCubic } }
     Behavior on microY { NumberAnimation { duration: 110; easing.type: Easing.OutCubic } }
     Timer {
-        running: c.active && !c.asleep && !c.dancing && !c.petting; repeat: true; interval: 1800
+        running: c.active && !c.asleep && !c.dancing && !c.petting && !Theme.reduceMotion; repeat: true; interval: 1800
         onTriggered: {
             interval = 1200 + Math.random() * 1800
             const t = Math.random() * 2 * Math.PI, m = Math.random() < 0.3 ? 0 : 0.015 + Math.random() * 0.02
@@ -465,7 +465,7 @@ Item {
     onHalfChanged: _kick(); onSmileChanged: _kick(); onLookOverrideChanged: _kick(); onOXChanged: _kick()
     onOYChanged: _kick(); onHappyKChanged: _kick()
     FrameAnimation {
-        running: c._moving
+        running: c._moving && c.active
         onTriggered: {
             const w = 55, dtAll = Math.min(0.05, frameTime > 0 ? frameTime : 1 / 60)
             const steps = Math.max(1, Math.ceil(dtAll * 240)), dt = dtAll / steps
@@ -537,7 +537,7 @@ Item {
 
     Timer {
         // truco espontáneo cada 45–120 s (despierto, visible, sin música ni ánimo)
-        running: c.active && !c.asleep && !c.dancing && !c.petting && c.mood === ""; repeat: true
+        running: c.active && !c.asleep && !c.dancing && !c.petting && c.mood === "" && !Theme.reduceMotion; repeat: true
         interval: 60000
         onTriggered: {
             interval = 45000 + Math.random() * 75000
@@ -556,7 +556,7 @@ Item {
     SequentialAnimation {
         // respiración (más lenta y profunda dormido); al detenerse vuelve suave a 1
         onStopped: breathRest.restart()
-        running: c.active && !(c.asleep && IdleState.unattended); loops: Animation.Infinite
+        running: c.active && !(c.asleep && IdleState.unattended) && !Theme.reduceMotion; loops: Animation.Infinite
         NumberAnimation { target: c; property: "breath"; to: c.asleep ? 1.025 : 1.012; duration: c.asleep ? 3200 : 2400; easing.type: Easing.InOutSine }
         NumberAnimation { target: c; property: "breath"; to: 1.0; duration: c.asleep ? 3200 : 2400; easing.type: Easing.InOutSine }
     }
@@ -575,7 +575,8 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            radius: width / 2
+            // Forzar círculo: radio = mitad del lado menor (body es cuadrado size×size).
+            radius: Math.min(width, height) / 2
             color: Theme.sphere
             Behavior on color { ColorAnimation { duration: 250 } }
             antialiasing: true
@@ -587,7 +588,7 @@ Item {
             visible: false
             layer.enabled: true
             layer.smooth: true
-            Rectangle { anchors.fill: parent; radius: width / 2; antialiasing: true }
+            Rectangle { anchors.fill: parent; radius: Math.min(width, height) / 2; antialiasing: true }
         }
         Item {
             anchors.fill: parent

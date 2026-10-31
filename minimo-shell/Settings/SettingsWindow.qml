@@ -12,7 +12,7 @@ PanelWindow {
     id: win
     readonly property bool open: SettingsState.open
     property real t: open ? 1 : 0
-    Behavior on t { NumberAnimation { duration: 280; easing.type: Easing.OutQuint } }
+    Behavior on t { NumberAnimation { duration: Theme.durClose; easing.type: Easing.OutQuint } }
 
     visible: open || t > 0.01
     anchors { top: true; bottom: true; left: true; right: true }
@@ -47,7 +47,7 @@ PanelWindow {
         layer.enabled: true
         layer.effect: MultiEffect {
             shadowEnabled: true; shadowColor: Theme.shadow
-            shadowBlur: 1.0; blurMax: 64; shadowVerticalOffset: 16; autoPaddingEnabled: true
+            shadowBlur: 0.9; blurMax: 40; shadowVerticalOffset: 12; autoPaddingEnabled: true
         }
     }
 
@@ -56,7 +56,7 @@ PanelWindow {
         width: Math.min(920, win.width - 80)
         height: Math.min(640, win.height - 80)
         anchors.centerIn: parent
-        radius: 28
+        radius: Theme.radiusCard
         color: Theme.card
         opacity: win.t
         scale: 0.94 + 0.06 * win.t
@@ -77,19 +77,19 @@ PanelWindow {
                 x: 14; y: 22
                 width: parent.width - 28
                 spacing: 4
-                Text { x: 12; text: I18n.tr("Ajustes"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 22; font.weight: Font.DemiBold; bottomPadding: 14 }
+                Text { x: 12; text: I18n.tr("Ajustes"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontTitle - 4; font.weight: Font.DemiBold; bottomPadding: Theme.space3 + 2 }
                 Repeater {
                     model: win.sections
                     delegate: Rectangle {
                         required property var modelData
                         readonly property bool cur: SettingsState.section === modelData.id
-                        width: parent.width; height: 42; radius: 21
+                        width: parent.width; height: Theme.hitMin - 2; radius: (Theme.hitMin - 2) / 2
                         color: cur ? Theme.fill : (sbm.containsMouse ? Theme.hover : "transparent")
                         Behavior on color { ColorAnimation { duration: 140 } }
                         Row {
                             x: 14; anchors.verticalCenter: parent.verticalCenter; spacing: 12
-                            Icon { name: modelData.icon; size: 20; tone: cur ? "white" : "dark"; anchors.verticalCenter: parent.verticalCenter }
-                            Text { text: modelData.label; color: cur ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: 14; font.weight: cur ? Font.DemiBold : Font.Normal; anchors.verticalCenter: parent.verticalCenter }
+                            Icon { name: modelData.icon; size: Theme.iconSm + 4; tone: cur ? "white" : "dark"; anchors.verticalCenter: parent.verticalCenter }
+                            Text { text: modelData.label; color: cur ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontBody; font.weight: cur ? Font.DemiBold : Font.Normal; anchors.verticalCenter: parent.verticalCenter }
                         }
                         MouseArea { id: sbm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: SettingsState.section = modelData.id }
                     }
@@ -107,52 +107,68 @@ PanelWindow {
                 id: heading
                 x: 36; y: 26
                 text: SettingsState.section === "pantalla" ? I18n.tr("Pantalla") : SettingsState.section === "atajos" ? I18n.tr("Atajos de teclado") : SettingsState.section === "gestos" ? I18n.tr("Gestos de la isla dinámica") : SettingsState.section === "actualizaciones" ? I18n.tr("Actualizaciones") : SettingsState.section === "minimo" ? I18n.tr("Acerca de") : I18n.tr("Personalización")
-                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 22; font.weight: Font.DemiBold
+                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontTitle - 4; font.weight: Font.DemiBold
             }
             Flickable {
                 id: flick
                 anchors.top: heading.bottom; anchors.topMargin: 18
                 anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
                 anchors.leftMargin: 36; anchors.rightMargin: 36
-                contentHeight: (SettingsState.section === "pantalla" ? display.implicitHeight : SettingsState.section === "atajos" ? shortcuts.implicitHeight : SettingsState.section === "gestos" ? gestures.implicitHeight : SettingsState.section === "actualizaciones" ? updates.implicitHeight : SettingsState.section === "minimo" ? about.implicitHeight : personal.implicitHeight) + 32
+                contentHeight: (SettingsState.section === "pantalla" ? display.implicitHeight : SettingsState.section === "atajos" ? (shortcuts.item ? shortcuts.item.implicitHeight : 0) : SettingsState.section === "gestos" ? (gestures.item ? gestures.item.implicitHeight : 0) : SettingsState.section === "actualizaciones" ? (updates.item ? updates.item.implicitHeight : 0) : SettingsState.section === "minimo" ? (about.item ? about.item.implicitHeight : 0) : personal.implicitHeight) + Theme.space8
                 clip: true
                 boundsBehavior: Flickable.StopAtBounds
                 // Volver arriba solo al cambiar de sección (no cuando la página crece al cargar).
                 Connections { target: SettingsState; function onSectionChanged() { flick.contentY = 0 } }
 
+                // Personalización y Pantalla siempre montadas (diálogos / refresh al abrir).
                 PersonalizationPage {
                     id: personal
                     width: flick.width
                     visible: SettingsState.section === "personalizacion"
                     onPickerOpened: SettingsState.hide()
                 }
-                AboutPage {
-                    id: about
-                    width: flick.width
-                    visible: SettingsState.section === "minimo"
-                    shown: visible && win.open
-                }
-                ShortcutsPage {
-                    id: shortcuts
-                    width: flick.width
-                    visible: SettingsState.section === "atajos"
-                    shown: visible && win.open
-                }
-                UpdatesPage {
-                    id: updates
-                    width: flick.width
-                    visible: SettingsState.section === "actualizaciones"
-                    shown: visible && win.open
-                }
-                GesturesPage {
-                    id: gestures
-                    width: flick.width
-                    visible: SettingsState.section === "gestos"
-                }
                 DisplayPage {
                     id: display
                     width: flick.width
                     visible: SettingsState.section === "pantalla"
+                }
+                // Páginas secundarias: Loader (RAM) — se montan al visitar la sección.
+                Loader {
+                    id: about
+                    width: flick.width
+                    active: win.open && SettingsState.section === "minimo"
+                    visible: active
+                    sourceComponent: AboutPage {
+                        width: about.width
+                        shown: about.active && win.open
+                    }
+                }
+                Loader {
+                    id: shortcuts
+                    width: flick.width
+                    active: win.open && SettingsState.section === "atajos"
+                    visible: active
+                    sourceComponent: ShortcutsPage {
+                        width: shortcuts.width
+                        shown: shortcuts.active && win.open
+                    }
+                }
+                Loader {
+                    id: updates
+                    width: flick.width
+                    active: win.open && SettingsState.section === "actualizaciones"
+                    visible: active
+                    sourceComponent: UpdatesPage {
+                        width: updates.width
+                        shown: updates.active && win.open
+                    }
+                }
+                Loader {
+                    id: gestures
+                    width: flick.width
+                    active: win.open && SettingsState.section === "gestos"
+                    visible: active
+                    sourceComponent: GesturesPage { width: gestures.width }
                 }
             }
         }
