@@ -32,7 +32,7 @@ Item {
         Text {
             anchors.centerIn: parent; visible: row.icon === ""
             text: row.text.charAt(0).toUpperCase()
-            color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 14; font.weight: Font.DemiBold
+            color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontBody; font.weight: Font.DemiBold
         }
     }
     Column {
@@ -40,22 +40,22 @@ Item {
         anchors.right: controls.left; anchors.rightMargin: 12
         anchors.verticalCenter: parent.verticalCenter
         spacing: 1
-        Text { width: parent.width; text: row.text; elide: Text.ElideRight; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 14 }
+        Text { width: parent.width; text: row.text; elide: Text.ElideRight; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontBody }
         Text {
             width: parent.width; visible: text !== ""; elide: Text.ElideMiddle
             text: row.detail
-            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
+            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption
         }
     }
     Row {
         id: controls
         anchors.right: parent.right; anchors.rightMargin: 16
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 12
+        spacing: Theme.space3
         // Reordenar: subir / bajar (deshabilitado en los extremos).
         Row {
             anchors.verticalCenter: parent.verticalCenter
-            spacing: 4
+            spacing: Theme.space1
             Repeater {
                 model: [-1, 1]
                 delegate: Rectangle {
@@ -80,7 +80,7 @@ Item {
             width: rl.implicitWidth + 24; height: 28; radius: 14
             color: row.armed ? Theme.danger : (rm.containsMouse ? Theme.hover : Theme.surface)
             Behavior on color { ColorAnimation { duration: Theme.durFast } }
-            Text { id: rl; anchors.centerIn: parent; text: row.armed ? I18n.tr("Confirmar") : I18n.tr("Eliminar"); color: row.armed ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: row.armed ? Font.DemiBold : Font.Normal }
+            Text { id: rl; anchors.centerIn: parent; text: row.armed ? I18n.tr("Confirmar") : I18n.tr("Eliminar"); color: row.armed ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontCaption; font.weight: row.armed ? Font.DemiBold : Font.Normal }
             MouseArea {
                 id: rm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
                 onClicked: { if (!row.armed) { row.armed = true; disarm.restart() } else { row.armed = false; row.removeRequested() } }

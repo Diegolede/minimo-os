@@ -14,7 +14,7 @@ Item {
     implicitHeight: Math.max(Theme.hitMin + 20, col.implicitHeight + Theme.space6)
     Column {
         id: col
-        anchors.left: parent.left; anchors.leftMargin: 18
+        anchors.left: parent.left; anchors.leftMargin: Theme.padSection
         anchors.right: sw.left; anchors.rightMargin: 12
         anchors.verticalCenter: parent.verticalCenter
         spacing: 2

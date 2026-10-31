@@ -9,14 +9,14 @@ import "../Common"
 // Personalización: fondo de pantalla + opciones de la isla y del personaje.
 Column {
     id: root
-    spacing: 20
+    spacing: Theme.space5
     signal pickerOpened()       // el selector de archivos necesita el teclado
 
     readonly property string mainDir: Quickshell.env("HOME") + "/Imágenes/Fondos"
     property var images: []
 
     function refresh() { scan.running = false; scan.running = true }
-    Component.onCompleted: refresh()
+    // Sin refresh al montar: SettingsWindow lo dispara al abrir / al mostrar Personalización.
 
     // Solo fondos reales: el actual, los elegidos antes y los que el usuario agregó a
     // ~/Imágenes/Fondos (sin los de ejemplo "minimo-*"). Se descartan archivos inexistentes.
@@ -55,10 +55,18 @@ Column {
 
     SectionTitle { text: I18n.tr("Fondo de pantalla") }
 
+    Text {
+        visible: root.images.length === 0
+        width: parent.width; wrapMode: Text.WordWrap
+        text: I18n.tr("Todavía no hay fondos. Elegí una imagen o arrastrala sobre Minimo.")
+        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption
+    }
+
     Grid {
         id: grid
+        visible: root.images.length > 0
         columns: 3
-        spacing: 14
+        spacing: Theme.space3 + 2
         width: parent.width
         readonly property real tileW: (width - spacing * (columns - 1)) / columns
 
@@ -74,29 +82,29 @@ Column {
     }
 
     Row {
-        spacing: 8
+        spacing: Theme.space2
         PillButton { icon: "folder"; text: I18n.tr("Elegir imagen…"); onClicked: if (!picker.running) { root.pickerOpened(); picker.running = true } }
         PillButton { text: I18n.tr("Sin fondo"); outlined: true; onClicked: DisplayState.setWallpaper("") }
     }
 
     LiveWallpaperCard { width: parent.width; onPickerOpened: root.pickerOpened() }
-    Text { text: I18n.tr("Carpeta: ~/Imágenes/Fondos"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 11 }
+    Text { text: I18n.tr("Carpeta: ~/Imágenes/Fondos"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontTiny }
 
     SectionTitle { text: I18n.tr("Apariencia") }
     Rectangle {
         width: parent.width
         height: ap.implicitHeight
-        radius: 20
+        radius: Theme.radiusSection
         color: Theme.surface
         Column {
             id: ap
             width: parent.width
             Item {
-                width: parent.width; height: 56
-                Text { anchors.left: parent.left; anchors.leftMargin: 18; anchors.verticalCenter: parent.verticalCenter; text: I18n.tr("Apariencia"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 14 }
+                width: parent.width; height: Theme.rowH
+                Text { anchors.left: parent.left; anchors.leftMargin: Theme.padSection; anchors.verticalCenter: parent.verticalCenter; text: I18n.tr("Apariencia"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontBody }
                 Rectangle {
                     anchors.right: parent.right; anchors.rightMargin: 16; anchors.verticalCenter: parent.verticalCenter
-                    width: 184; height: 32; radius: 16; color: Theme.field
+                    width: 184; height: Theme.controlH; radius: Theme.controlH / 2; color: Theme.field
                     Row {
                         anchors.fill: parent; anchors.margins: 3
                         Repeater {
@@ -106,21 +114,21 @@ Column {
                                 readonly property bool cur: DisplayState.theme === modelData.id
                                 width: parent.width / 2; height: parent.height; radius: height / 2
                                 color: cur ? Theme.fill : (thm.containsMouse ? Theme.hover : "transparent")
-                                Text { anchors.centerIn: parent; text: modelData.label; color: parent.cur ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: parent.cur ? Font.DemiBold : Font.Normal }
+                                Text { anchors.centerIn: parent; text: modelData.label; color: parent.cur ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontCaption; font.weight: parent.cur ? Font.DemiBold : Font.Normal }
                                 MouseArea { id: thm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: DisplayState.setTheme(modelData.id) }
                             }
                         }
                     }
                 }
             }
-            Rectangle { x: 18; width: parent.width - 18; height: 1; color: Theme.track }
+            Rectangle { x: Theme.padSection; width: parent.width - Theme.padSection; height: 1; color: Theme.track }
             // Idioma de la interfaz (los nombres van en su propio idioma).
             Item {
-                width: parent.width; height: 56
-                Text { anchors.left: parent.left; anchors.leftMargin: 18; anchors.verticalCenter: parent.verticalCenter; text: I18n.tr("Idioma"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 14 }
+                width: parent.width; height: Theme.rowH
+                Text { anchors.left: parent.left; anchors.leftMargin: Theme.padSection; anchors.verticalCenter: parent.verticalCenter; text: I18n.tr("Idioma"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontBody }
                 Rectangle {
                     anchors.right: parent.right; anchors.rightMargin: 16; anchors.verticalCenter: parent.verticalCenter
-                    width: 184; height: 32; radius: 16; color: Theme.field
+                    width: 184; height: Theme.controlH; radius: Theme.controlH / 2; color: Theme.field
                     Row {
                         anchors.fill: parent; anchors.margins: 3
                         Repeater {
@@ -131,7 +139,7 @@ Column {
                                 readonly property bool cur: I18n.lang === modelData.id
                                 width: parent.width / 2; height: parent.height; radius: height / 2
                                 color: cur ? Theme.fill : (lgm.containsMouse ? Theme.hover : "transparent")
-                                Text { anchors.centerIn: parent; text: lg.modelData.name; color: lg.cur ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: lg.cur ? Font.DemiBold : Font.Normal }
+                                Text { anchors.centerIn: parent; text: lg.modelData.name; color: lg.cur ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontCaption; font.weight: lg.cur ? Font.DemiBold : Font.Normal }
                                 MouseArea { id: lgm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: DisplayState.setLanguage(lg.modelData.id) }
                             }
                         }
@@ -145,7 +153,7 @@ Column {
     Rectangle {
         width: parent.width
         height: opts.implicitHeight
-        radius: 20
+        radius: Theme.radiusSection
         color: Theme.surface
         Column {
             id: opts
@@ -157,7 +165,7 @@ Column {
                 checked: DisplayState.islandAutoHide
                 onToggled: v => DisplayState.setIslandAutoHide(v)
             }
-            Rectangle { x: 18; width: parent.width - 36; height: 1; color: Theme.track }
+            Rectangle { x: Theme.padSection; width: parent.width - Theme.padSection * 2; height: 1; color: Theme.track }
             SwitchRow {
                 width: parent.width
                 text: I18n.tr("Ocultamiento inteligente")
@@ -165,7 +173,7 @@ Column {
                 checked: DisplayState.islandSmartHide
                 onToggled: v => DisplayState.setIslandSmartHide(v)
             }
-            Rectangle { x: 18; width: parent.width - 36; height: 1; color: Theme.track }
+            Rectangle { x: Theme.padSection; width: parent.width - Theme.padSection * 2; height: 1; color: Theme.track }
             SwitchRow {
                 width: parent.width
                 text: I18n.tr("Personaje animado")
@@ -173,20 +181,20 @@ Column {
                 checked: DisplayState.characterAnimated
                 onToggled: v => DisplayState.setCharacterAnimated(v)
             }
-            Rectangle { x: 18; width: parent.width - 36; height: 1; color: Theme.track }
+            Rectangle { x: Theme.padSection; width: parent.width - Theme.padSection * 2; height: 1; color: Theme.track }
             // Dormir tras inactividad (segmentado 1/2/5 min).
             Item {
-                width: parent.width; height: 64
+                width: parent.width; height: Theme.rowH + Theme.space2
                 Column {
-                    anchors.left: parent.left; anchors.leftMargin: 18
+                    anchors.left: parent.left; anchors.leftMargin: Theme.padSection
                     anchors.verticalCenter: parent.verticalCenter
                     spacing: 2
-                    Text { text: I18n.tr("Dormir tras inactividad"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 14 }
-                    Text { text: I18n.tr("Sin teclado ni mouse en toda la PC."); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12 }
+                    Text { text: I18n.tr("Dormir tras inactividad"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontBody }
+                    Text { text: I18n.tr("Sin teclado ni mouse en toda la PC."); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption }
                 }
                 Rectangle {
                     anchors.right: parent.right; anchors.rightMargin: 16; anchors.verticalCenter: parent.verticalCenter
-                    width: 168; height: 32; radius: 16; color: Theme.field
+                    width: 168; height: Theme.controlH; radius: Theme.controlH / 2; color: Theme.field
                     Row {
                         anchors.fill: parent; anchors.margins: 3
                         Repeater {
@@ -196,7 +204,7 @@ Column {
                                 readonly property bool cur: DisplayState.sleepMinutes === modelData
                                 width: parent.width / 3; height: parent.height; radius: height / 2
                                 color: cur ? Theme.fill : (zm.containsMouse ? Theme.hover : "transparent")
-                                Text { anchors.centerIn: parent; text: I18n.tr("%1 min", modelData); color: parent.cur ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: 12; font.weight: parent.cur ? Font.DemiBold : Font.Normal }
+                                Text { anchors.centerIn: parent; text: I18n.tr("%1 min", modelData); color: parent.cur ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontCaption; font.weight: parent.cur ? Font.DemiBold : Font.Normal }
                                 MouseArea { id: zm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: DisplayState.setSleepMinutes(modelData) }
                             }
                         }
@@ -210,7 +218,7 @@ Column {
     Rectangle {
         width: parent.width
         height: a11y.implicitHeight
-        radius: 20
+        radius: Theme.radiusSection
         color: Theme.surface
         Column {
             id: a11y
@@ -222,7 +230,7 @@ Column {
                 checked: DisplayState.reduceMotion
                 onToggled: v => DisplayState.setReduceMotion(v)
             }
-            Rectangle { x: 18; width: parent.width - 36; height: 1; color: Theme.track }
+            Rectangle { x: Theme.padSection; width: parent.width - Theme.padSection * 2; height: 1; color: Theme.track }
             SwitchRow {
                 width: parent.width
                 text: I18n.tr("Más contraste")

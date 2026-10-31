@@ -16,30 +16,30 @@ Item {
 
     Text {
         id: name
-        anchors.left: parent.left; anchors.leftMargin: 18
+        anchors.left: parent.left; anchors.leftMargin: Theme.padSection
         anchors.right: keys.left; anchors.rightMargin: 12
         anchors.verticalCenter: parent.verticalCenter
         text: row.label
         wrapMode: Text.WordWrap
-        color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 14
+        color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontBody
     }
     Row {
         id: keys
         anchors.right: parent.right; anchors.rightMargin: 14
         anchors.verticalCenter: parent.verticalCenter
-        spacing: 10
+        spacing: Theme.space3 - 2
         Repeater {
             model: row.combos
             delegate: Row {
                 id: combo
                 required property var modelData
                 required property int index
-                spacing: 4
+                spacing: Theme.space1
                 Text {
                     visible: combo.index > 0
                     anchors.verticalCenter: parent.verticalCenter
                     rightPadding: 6
-                    text: I18n.tr("o"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
+                    text: I18n.tr("o"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption
                 }
                 Repeater {
                     model: combo.modelData.mods
@@ -51,11 +51,11 @@ Item {
                         id: alt
                         required property string modelData
                         required property int index
-                        spacing: 4
+                        spacing: Theme.space1
                         Text {
                             visible: alt.index > 0
                             anchors.verticalCenter: parent.verticalCenter
-                            text: "/"; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
+                            text: "/"; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption
                         }
                         KeyCap { text: alt.modelData }
                     }
@@ -66,7 +66,7 @@ Item {
     Rectangle {
         visible: !row.last
         anchors.bottom: parent.bottom
-        x: 18; width: parent.width - 18; height: 1
+        x: Theme.padSection; width: parent.width - 18; height: 1
         color: Theme.track
     }
 }

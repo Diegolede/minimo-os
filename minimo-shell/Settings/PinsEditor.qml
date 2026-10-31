@@ -8,7 +8,7 @@ import "../Common"
 // (nombre + comando). Los botones ocupan filas de 4 y hay como máximo 3 filas.
 Column {
     id: root
-    spacing: 8
+    spacing: Theme.space2
 
     readonly property var customs: DisplayState.customItems
     readonly property int used: QuickItems.pinnedButtons.length
@@ -23,12 +23,12 @@ Column {
         Text {
             anchors.right: parent.right; anchors.baseline: title.baseline
             text: I18n.tr("%1 de %2 botones", root.used, QuickItems.maxButtons) + (QuickItems.full ? I18n.tr(" · completo") : "")
-            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
+            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption
         }
     }
 
     Rectangle {
-        width: parent.width; height: list.implicitHeight; radius: 20; color: Theme.surface
+        width: parent.width; height: list.implicitHeight; radius: Theme.radiusSection; color: Theme.surface
         Column {
             id: list
             width: parent.width
@@ -62,7 +62,7 @@ Column {
     // Nuevo acceso propio.
     Row {
         width: parent.width
-        spacing: 8
+        spacing: Theme.space2
         topPadding: 4
         Rectangle {
             id: nameBox
@@ -71,12 +71,12 @@ Column {
                 id: nameIn
                 anchors.fill: parent; anchors.leftMargin: 16; anchors.rightMargin: 16
                 verticalAlignment: TextInput.AlignVCenter
-                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13
+                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontLabel
                 clip: true; selectByMouse: true; maximumLength: 24
                 KeyNavigation.tab: cmdIn
                 onAccepted: cmdIn.forceActiveFocus()
             }
-            Text { anchors.fill: nameIn; verticalAlignment: Text.AlignVCenter; visible: !nameIn.text; text: I18n.tr("Nombre"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13 }
+            Text { anchors.fill: nameIn; verticalAlignment: Text.AlignVCenter; visible: !nameIn.text; text: I18n.tr("Nombre"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontLabel }
         }
         Rectangle {
             width: parent.width - nameBox.width - addBtn.width - 16; height: 36; radius: 18; color: Theme.field
@@ -84,11 +84,11 @@ Column {
                 id: cmdIn
                 anchors.fill: parent; anchors.leftMargin: 16; anchors.rightMargin: 16
                 verticalAlignment: TextInput.AlignVCenter
-                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13
+                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontLabel
                 clip: true; selectByMouse: true
                 onAccepted: root.add()
             }
-            Text { anchors.fill: cmdIn; verticalAlignment: Text.AlignVCenter; visible: !cmdIn.text; text: I18n.tr("Comando (p. ej. firefox)"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13 }
+            Text { anchors.fill: cmdIn; verticalAlignment: Text.AlignVCenter; visible: !cmdIn.text; text: I18n.tr("Comando (p. ej. firefox)"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontLabel }
         }
         PillButton {
             id: addBtn
@@ -101,6 +101,6 @@ Column {
         wrapMode: Text.WordWrap
         topPadding: 2
         text: QuickItems.full ? I18n.tr("Con 3 filas llenas, desactivá un botón para fijar otro.") : I18n.tr("Los accesos propios ejecutan el comando con sh y se fijan al agregarlos.")
-        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
+        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption
     }
 }

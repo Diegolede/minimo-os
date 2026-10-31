@@ -13,7 +13,7 @@ Rectangle {
     readonly property string file: DisplayState.liveWallpaper
     readonly property string fileName: file.substring(file.lastIndexOf("/") + 1)
     height: col.implicitHeight
-    radius: 20
+    radius: Theme.radiusSection
     color: Theme.surface
 
     Process {
@@ -30,24 +30,24 @@ Rectangle {
         Item {
             width: parent.width; height: 64
             Column {
-                anchors.left: parent.left; anchors.leftMargin: 18
+                anchors.left: parent.left; anchors.leftMargin: Theme.padSection
                 anchors.right: buttons.left; anchors.rightMargin: 12
                 anchors.verticalCenter: parent.verticalCenter
                 spacing: 2
-                Text { text: I18n.tr("Fondo animado"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 14 }
+                Text { text: I18n.tr("Fondo animado"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontBody }
                 Text {
                     width: parent.width; elide: Text.ElideMiddle
                     text: !LiveWallpaper.available ? I18n.tr("Necesita mpvpaper (AUR): yay -S mpvpaper")
                         : root.file !== "" ? root.fileName + (LiveWallpaper.paused ? I18n.tr(" · en pausa") : "")
                         : I18n.tr("Un video o GIF en bucle, sin sonido.")
-                    color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
+                    color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption
                 }
             }
             Row {
                 id: buttons
                 anchors.right: parent.right; anchors.rightMargin: 16
                 anchors.verticalCenter: parent.verticalCenter
-                spacing: 8
+                spacing: Theme.space2
                 PillButton {
                     visible: root.file !== ""
                     text: I18n.tr("Quitar"); outlined: true
@@ -62,7 +62,7 @@ Rectangle {
                 }
             }
         }
-        Rectangle { visible: root.file !== ""; x: 18; width: parent.width - 36; height: 1; color: Theme.track }
+        Rectangle { visible: root.file !== ""; x: Theme.padSection; width: parent.width - Theme.padSection * 2; height: 1; color: Theme.track }
         SwitchRow {
             visible: root.file !== ""
             width: parent.width
