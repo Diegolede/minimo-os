@@ -3,6 +3,18 @@
 Each version is split into **New features**, **Fixes** and **Optimizations**.
 Shown in Settings › Updates. The Spanish file (CHANGELOG.md) is the reference.
 
+## 1.2.4 beta — 2026-10-31
+
+### Fixes
+- Removed the tamagotchi; gestures that opened it now open the island menu, keeping all other settings.
+- Minimo looks round again in the island.
+- Fixed the "Island is not a type" error at startup.
+- More consistent alignment and spacing in the island, panels and Settings.
+
+### Optimizations
+- Better performance: lower idle CPU and less RAM.
+- Animations only run when needed and Settings sections load when opened.
+
 ## 1.2.3 beta — 2026-10-25
 
 ### New features

@@ -7,7 +7,7 @@
 <p align="center">Hyprland minimalista para Arch Linux y derivadas como CachyOS: una isla dinámica flotante y Minimo, un personaje que reacciona a lo que hacés.</p>
 
 <p align="center">
-  <a href="https://github.com/Diegolede/minimo-os/releases/latest"><img src="https://img.shields.io/badge/versi%C3%B3n-1.2.3%20beta-000000?style=flat-square" alt="Versión 1.2.3 beta"></a>
+  <a href="https://github.com/Diegolede/minimo-os/releases/latest"><img src="https://img.shields.io/badge/versi%C3%B3n-1.2.4%20beta-000000?style=flat-square" alt="Versión 1.2.4 beta"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/licencia-MIT-000000?style=flat-square" alt="Licencia MIT"></a>
   <img src="https://img.shields.io/badge/Arch%20Linux%20%C2%B7%20CachyOS-000000?style=flat-square&logo=archlinux&logoColor=white" alt="Arch Linux y CachyOS">
   <img src="https://img.shields.io/badge/Hyprland-0.56-000000?style=flat-square" alt="Hyprland 0.56">

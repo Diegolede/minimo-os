@@ -4,6 +4,18 @@ Cada versión se divide en **Nuevas funciones**, **Correcciones** y **Optimizaci
 Ajustes › Actualizaciones muestra este archivo (y CHANGELOG.en.md en inglés). Al publicar una versión: renombrar
 «Próxima versión» con el número y la fecha, subir `minimo-shell/VERSION` y crear la etiqueta `vX.Y.Z`.
 
+## 1.2.4 beta — 2026-10-31
+
+### Correcciones
+- Se eliminó el tamagotchi; los gestos que lo abrían ahora abren el menú de la isla, sin perder el resto de los ajustes.
+- Minimo vuelve a verse redondo en la isla.
+- Se corrigió el error «Island is not a type» al iniciar la interfaz.
+- Alineación y espaciado más consistentes en la isla, los paneles y Ajustes.
+
+### Optimizaciones
+- Mejor rendimiento: menos uso de CPU en reposo y menos RAM.
+- Las animaciones solo se ejecutan cuando hacen falta y las secciones de Ajustes se cargan al abrirlas.
+
 ## 1.2.3 beta — 2026-10-25
 
 ### Nuevas funciones
