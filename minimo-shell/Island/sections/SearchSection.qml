@@ -31,8 +31,8 @@ Column {
         color: on ? Theme.raised : Theme.field
         border.width: 1
         border.color: Qt.rgba(Theme.textPrimary.r, Theme.textPrimary.g, Theme.textPrimary.b, on ? 0.40 : 0.20)
-        Behavior on color { ColorAnimation { duration: Theme.reduceMotion ? 1 : Theme.durFast; easing.type: Easing.OutCubic } }
-        Behavior on border.color { ColorAnimation { duration: Theme.reduceMotion ? 1 : Theme.durFast; easing.type: Easing.OutCubic } }
+        Behavior on color { ColorAnimation { duration: Theme.durFast; easing.type: Easing.OutCubic } }
+        Behavior on border.color { ColorAnimation { duration: Theme.durFast; easing.type: Easing.OutCubic } }
         antialiasing: true
         Rectangle {
             anchors.fill: parent; anchors.margins: -3

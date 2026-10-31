@@ -35,8 +35,8 @@ Item {
     component Reveal: Item {
         property int step: 0
         opacity: root.stage > step ? 1 : 0
-        transform: Translate { y: root.stage > step ? 0 : (Theme.reduceMotion ? 0 : 8); Behavior on y { NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutQuint } } }
-        Behavior on opacity { NumberAnimation { duration: Theme.durFast + 100 } }
+        transform: Translate { y: root.stage > step ? 0 : 8; Behavior on y { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } } }
+        Behavior on opacity { NumberAnimation { duration: 260 } }
     }
 
     Column {

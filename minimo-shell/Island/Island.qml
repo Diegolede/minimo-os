@@ -251,9 +251,9 @@ PanelWindow {
         property bool settled: false
         Timer { id: settleTimer; interval: Theme.durNormal + 80; onTriggered: pill.settled = win.open }
         Connections { target: win; function onOpenChanged() { pill.settled = false; if (win.open) settleTimer.restart() } }
-        Behavior on width { NumberAnimation { duration: Theme.durNormal; easing.type: pill.settled || Theme.reduceMotion ? Easing.OutCubic : Theme.easeOpen; easing.overshoot: pill.settled ? 0 : Theme.overshootOpen } }
+        Behavior on width { NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutBack; easing.overshoot: pill.settled ? 0 : 0.9 } }
         // Durante el tirón la píldora sigue al dedo sin retraso (la animación vuelve al soltar).
-        Behavior on height { enabled: !hoverZone.pulling; NumberAnimation { duration: Theme.durNormal + 40; easing.type: pill.settled || Theme.reduceMotion ? Easing.OutCubic : Theme.easeOpen; easing.overshoot: pill.settled ? 0 : Theme.overshootClose } }
+        Behavior on height { enabled: !hoverZone.pulling; NumberAnimation { duration: Theme.durNormal + 40; easing.type: Easing.OutBack; easing.overshoot: pill.settled ? 0 : 0.7 } }
         Behavior on y { enabled: !hoverZone.pulling; NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutQuint } }
 
         focus: win.open

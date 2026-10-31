@@ -35,7 +35,7 @@ Item {
             y: (parent.height - height) / 2
             x: sw.checked ? parent.width - width - 3 : 3
             color: sw.checked ? Theme.onAccent : "#FFFFFF"
-            Behavior on x { NumberAnimation { duration: Theme.reduceMotion ? 0 : 180; easing.type: Easing.OutCubic } }
+            Behavior on x { NumberAnimation { duration: Theme.durFast; easing.type: Easing.OutCubic } }
         }
     }
     // Área clicable ampliada (≥ hitMin en altura táctil)

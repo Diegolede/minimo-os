@@ -465,7 +465,7 @@ Item {
     onHalfChanged: _kick(); onSmileChanged: _kick(); onLookOverrideChanged: _kick(); onOXChanged: _kick()
     onOYChanged: _kick(); onHappyKChanged: _kick()
     FrameAnimation {
-        running: c._moving
+        running: c._moving && c.active
         onTriggered: {
             const w = 55, dtAll = Math.min(0.05, frameTime > 0 ? frameTime : 1 / 60)
             const steps = Math.max(1, Math.ceil(dtAll * 240)), dt = dtAll / steps
@@ -556,7 +556,7 @@ Item {
     SequentialAnimation {
         // respiración (más lenta y profunda dormido); al detenerse vuelve suave a 1
         onStopped: breathRest.restart()
-        running: c.active && !(c.asleep && IdleState.unattended); loops: Animation.Infinite
+        running: c.active && !(c.asleep && IdleState.unattended) && !Theme.reduceMotion; loops: Animation.Infinite
         NumberAnimation { target: c; property: "breath"; to: c.asleep ? 1.025 : 1.012; duration: c.asleep ? 3200 : 2400; easing.type: Easing.InOutSine }
         NumberAnimation { target: c; property: "breath"; to: 1.0; duration: c.asleep ? 3200 : 2400; easing.type: Easing.InOutSine }
     }
@@ -575,7 +575,8 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            radius: width / 2
+            // Forzar círculo: radio = mitad del lado menor (body es cuadrado size×size).
+            radius: Math.min(width, height) / 2
             color: Theme.sphere
             Behavior on color { ColorAnimation { duration: 250 } }
             antialiasing: true
@@ -587,7 +588,7 @@ Item {
             visible: false
             layer.enabled: true
             layer.smooth: true
-            Rectangle { anchors.fill: parent; radius: width / 2; antialiasing: true }
+            Rectangle { anchors.fill: parent; radius: Math.min(width, height) / 2; antialiasing: true }
         }
         Item {
             anchors.fill: parent

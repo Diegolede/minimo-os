@@ -26,7 +26,7 @@ Item {
     }
     // Entrada escalonada y suave: cada bloque aparece ~35 ms después del anterior.
     property real enter: 1
-    NumberAnimation { id: enterAnim; target: root; property: "enter"; from: 0; to: 1; duration: Theme.reduceMotion ? 1 : 520 }
+    NumberAnimation { id: enterAnim; target: root; property: "enter"; from: 0; to: 1; duration: 520 }
     onEnterChanged: {
         const kids = col.children, n = kids.length
         for (let i = 0; i < n; i++) {

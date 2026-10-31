@@ -108,5 +108,5 @@ Singleton {
     readonly property int expandedW: 400
     readonly property int maxExpandedH: 900
     readonly property int topMargin: 8          // separación de la isla con el borde superior
-    readonly property int compactPadX: 12       // margen lateral de la isla compacta (paridad con space3)
+    readonly property int compactPadX: 11       // margen lateral de la isla compacta (proporción previa)
 }

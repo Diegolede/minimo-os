@@ -26,7 +26,7 @@ Item {
         id: row
         anchors.horizontalCenter: parent.horizontalCenter
         y: (Theme.compactH - height) / 2
-        spacing: Theme.space3 - 2
+        spacing: 10
         Character {
             id: chr; size: 22; active: root.active && DisplayState.characterAnimated; anchors.verticalCenter: parent.verticalCenter
             mood: Laptop.critical ? "worried" : ""      // batería crítica: preocupado (solo ojos)

@@ -136,7 +136,7 @@ PanelWindow {
                 Loader {
                     id: about
                     width: flick.width
-                    active: SettingsState.section === "minimo"
+                    active: win.open && SettingsState.section === "minimo"
                     visible: active
                     sourceComponent: AboutPage {
                         width: about.width
@@ -146,7 +146,7 @@ PanelWindow {
                 Loader {
                     id: shortcuts
                     width: flick.width
-                    active: SettingsState.section === "atajos"
+                    active: win.open && SettingsState.section === "atajos"
                     visible: active
                     sourceComponent: ShortcutsPage {
                         width: shortcuts.width
@@ -156,7 +156,7 @@ PanelWindow {
                 Loader {
                     id: updates
                     width: flick.width
-                    active: SettingsState.section === "actualizaciones"
+                    active: win.open && SettingsState.section === "actualizaciones"
                     visible: active
                     sourceComponent: UpdatesPage {
                         width: updates.width
@@ -166,7 +166,7 @@ PanelWindow {
                 Loader {
                     id: gestures
                     width: flick.width
-                    active: SettingsState.section === "gestos"
+                    active: win.open && SettingsState.section === "gestos"
                     visible: active
                     sourceComponent: GesturesPage { width: gestures.width }
                 }
