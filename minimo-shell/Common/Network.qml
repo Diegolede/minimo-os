@@ -42,7 +42,7 @@ Singleton {
     function refresh() { if (!devs.running) devs.running = true }
     function scan() { if (!list.running) { list.rescan = true; list.running = true } }
 
-    Timer { running: root.users > 0; interval: 5000; repeat: true; onTriggered: root.refresh() }
+    Timer { running: root.users > 0; interval: 8000; repeat: true; onTriggered: root.refresh() }
 
     // 1) Dispositivos: ¿Wi-Fi? ¿Ethernet conectada? + radio.
     Process {

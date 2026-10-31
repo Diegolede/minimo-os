@@ -75,6 +75,6 @@ Singleton {
             }
         }
     }
-    Timer { running: root.users > 0; repeat: true; interval: 3000; onTriggered: resP.go() }
+    Timer { running: root.users > 0; repeat: true; interval: 5000; onTriggered: resP.go() }
     Timer { running: root.users > 0; repeat: true; interval: 10000; onTriggered: full.go() }
 }

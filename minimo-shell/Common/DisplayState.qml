@@ -111,6 +111,7 @@ Singleton {
         blockLoading: false
         printErrors: false
         onLoaded: {
+            let hadPetKey = false
             try {
                 const s = JSON.parse(text())
                 root.wallpaper = s.wallpaper ?? ""
@@ -118,7 +119,8 @@ Singleton {
                 root.islandAutoHide = s.islandAutoHide ?? true
                 root.islandSmartHide = (s.islandSmartHide ?? false) && !root.islandAutoHide
                 root.characterAnimated = s.characterAnimated ?? true
-                // Migración 1.2.4: se ignora petEnabled si existía; no se vuelve a guardar.
+                // Migración 1.2.4/1.2.5: se ignora petEnabled; si venía en el JSON se reescribe sin esa clave.
+                hadPetKey = Object.prototype.hasOwnProperty.call(s, "petEnabled")
                 root.reduceMotion = s.reduceMotion ?? false
                 root.highContrast = s.highContrast ?? false
                 root.welcomed = s.welcomed ?? false
@@ -142,6 +144,8 @@ Singleton {
             } catch (e) {}
             root.loaded = true
             root.syncDialogTheme()
+            // Una sola reescritura limpia petEnabled residual sin tocar otros ajustes.
+            if (hadPetKey) root.save()
         }
         onLoadFailed: root.loaded = true
     }
