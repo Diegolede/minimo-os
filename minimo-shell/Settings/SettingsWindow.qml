@@ -11,6 +11,13 @@ import "../Common"
 PanelWindow {
     id: win
     readonly property bool open: SettingsState.open
+    property double lastSectionClick: 0
+    function pickSection(id) {
+        const now = Date.now()
+        if (now - lastSectionClick < 180) return
+        lastSectionClick = now
+        SettingsState.section = id
+    }
     property real t: open ? 1 : 0
     Behavior on t { NumberAnimation { duration: Theme.durClose; easing.type: Easing.OutQuint } }
 
@@ -37,7 +44,7 @@ PanelWindow {
     Rectangle {
         anchors.fill: parent
         color: Qt.rgba(0, 0, 0, 0.14 * win.t)
-        MouseArea { anchors.fill: parent; onPressed: SettingsState.hide() }
+        MouseArea { anchors.fill: parent; onClicked: { if (display.pending !== null) return; SettingsState.hide() } }
     }
 
     Rectangle {
@@ -62,21 +69,25 @@ PanelWindow {
         scale: 0.94 + 0.06 * win.t
         clip: true
         focus: true
-        Keys.onEscapePressed: SettingsState.hide()
+        Keys.onEscapePressed: {
+            if (display.pending !== null) { display.revert(); return }
+            if (SettingsState.section === "pantalla" && display.anyListOpen) { display.closeLists(); return }
+            SettingsState.hide()
+        }
 
         MouseArea { anchors.fill: parent }   // no cerrar al hacer clic dentro
 
         // Barra lateral.
         Rectangle {
             id: sidebar
-            width: 232; height: parent.height
+            width: Theme.sidebarW; height: parent.height
             color: Theme.subtle
             radius: card.radius           // esquinas izquierdas redondeadas como la tarjeta
             Rectangle { anchors.right: parent.right; width: parent.radius; height: parent.height; color: parent.color }
             Column {
-                x: 14; y: 22
-                width: parent.width - 28
-                spacing: 4
+                x: Theme.space3 + 2; y: Theme.space5 + 2
+                width: parent.width - Theme.space6 - 4
+                spacing: Theme.space1
                 Text { x: 12; text: I18n.tr("Ajustes"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontTitle - 4; font.weight: Font.DemiBold; bottomPadding: Theme.space3 + 2 }
                 Repeater {
                     model: win.sections
@@ -85,13 +96,17 @@ PanelWindow {
                         readonly property bool cur: SettingsState.section === modelData.id
                         width: parent.width; height: Theme.hitMin - 2; radius: (Theme.hitMin - 2) / 2
                         color: cur ? Theme.fill : (sbm.containsMouse ? Theme.hover : "transparent")
-                        Behavior on color { ColorAnimation { duration: 140 } }
+                        Behavior on color { ColorAnimation { duration: Theme.durMicro } }
+                        activeFocusOnTab: true
+                        Keys.onReturnPressed: win.pickSection(modelData.id)
+                        Keys.onSpacePressed: win.pickSection(modelData.id)
+                        Rectangle { anchors.fill: parent; anchors.margins: -2; radius: parent.radius; color: "transparent"; border.width: 2; border.color: Theme.fill; visible: parent.activeFocus }
                         Row {
-                            x: 14; anchors.verticalCenter: parent.verticalCenter; spacing: 12
+                            x: Theme.space3 + 2; anchors.verticalCenter: parent.verticalCenter; spacing: Theme.space3
                             Icon { name: modelData.icon; size: Theme.iconSm + 4; tone: cur ? "white" : "dark"; anchors.verticalCenter: parent.verticalCenter }
                             Text { text: modelData.label; color: cur ? Theme.onAccent : Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontBody; font.weight: cur ? Font.DemiBold : Font.Normal; anchors.verticalCenter: parent.verticalCenter }
                         }
-                        MouseArea { id: sbm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: SettingsState.section = modelData.id }
+                        MouseArea { id: sbm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: win.pickSection(modelData.id) }
                     }
                 }
             }
@@ -105,7 +120,7 @@ PanelWindow {
 
             Text {
                 id: heading
-                x: 36; y: 26
+                x: Theme.space6 + Theme.space3; y: Theme.space6 + 2
                 text: SettingsState.section === "pantalla" ? I18n.tr("Pantalla") : SettingsState.section === "atajos" ? I18n.tr("Atajos de teclado") : SettingsState.section === "gestos" ? I18n.tr("Gestos de la isla dinámica") : SettingsState.section === "actualizaciones" ? I18n.tr("Actualizaciones") : SettingsState.section === "minimo" ? I18n.tr("Acerca de") : I18n.tr("Personalización")
                 color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontTitle - 4; font.weight: Font.DemiBold
             }
@@ -113,12 +128,23 @@ PanelWindow {
                 id: flick
                 anchors.top: heading.bottom; anchors.topMargin: 18
                 anchors.left: parent.left; anchors.right: parent.right; anchors.bottom: parent.bottom
-                anchors.leftMargin: 36; anchors.rightMargin: 36
+                anchors.leftMargin: Theme.space6 + Theme.space3; anchors.rightMargin: Theme.space6 + Theme.space3
                 contentHeight: (SettingsState.section === "pantalla" ? display.implicitHeight : SettingsState.section === "atajos" ? (shortcuts.item ? shortcuts.item.implicitHeight : 0) : SettingsState.section === "gestos" ? (gestures.item ? gestures.item.implicitHeight : 0) : SettingsState.section === "actualizaciones" ? (updates.item ? updates.item.implicitHeight : 0) : SettingsState.section === "minimo" ? (about.item ? about.item.implicitHeight : 0) : personal.implicitHeight) + Theme.space8
                 clip: true
                 boundsBehavior: Flickable.StopAtBounds
-                // Volver arriba solo al cambiar de sección (no cuando la página crece al cargar).
-                Connections { target: SettingsState; function onSectionChanged() { flick.contentY = 0 } }
+                // Conserva el scroll por sección al volver; refresca pantallas al mostrarlas.
+                property var scrollMem: ({})
+                Connections {
+                    target: SettingsState
+                    function onSectionChanged() {
+                        const prev = SettingsState.section  // ya cambió; guardamos al salir vía Binding abajo
+                        flick.contentY = flick.scrollMem[SettingsState.section] || 0
+                        if (SettingsState.section === "pantalla") display.refresh()
+                        if (SettingsState.section === "personalizacion") personal.refresh()
+                        if (SettingsState.section === "pantalla") display.closeLists()
+                    }
+                }
+                onContentYChanged: if (win.open) flick.scrollMem[SettingsState.section] = flick.contentY
 
                 // Personalización y Pantalla siempre montadas (diálogos / refresh al abrir).
                 PersonalizationPage {
@@ -181,21 +207,21 @@ PanelWindow {
             MouseArea { anchors.fill: parent }
             Rectangle {
                 anchors.centerIn: parent
-                width: 380; height: cc.implicitHeight + 48; radius: 28
+                width: 380; height: cc.implicitHeight + Theme.space8 + Theme.space4; radius: Theme.radiusCard
                 color: Theme.cardSolid
                 border.width: 1; border.color: Theme.track
                 Column {
                     id: cc
                     anchors.centerIn: parent
-                    width: parent.width - 48
-                    spacing: 10
-                    Icon { anchors.horizontalCenter: parent.horizontalCenter; name: "display"; size: 30 }
-                    Text { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: I18n.tr("¿Mantener esta configuración?"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 16; font.weight: Font.DemiBold }
-                    Text { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: I18n.tr("Se revierte en %1 s", display.countdown); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13; font.features: { "tnum": 1 } }
-                    Item { width: 1; height: 6 }
+                    width: parent.width - Theme.space8 - Theme.space4
+                    spacing: Theme.space3 - 2
+                    Icon { anchors.horizontalCenter: parent.horizontalCenter; name: "display"; size: Theme.iconLg + 2 }
+                    Text { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: I18n.tr("¿Mantener esta configuración?"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontHeading; font.weight: Font.DemiBold; wrapMode: Text.WordWrap }
+                    Text { width: parent.width; horizontalAlignment: Text.AlignHCenter; text: I18n.tr("Se revierte en %1 s", display.countdown); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontLabel; font.features: { "tnum": 1 } }
+                    Item { width: 1; height: Theme.space2 - 2 }
                     Row {
                         anchors.horizontalCenter: parent.horizontalCenter
-                        spacing: 10
+                        spacing: Theme.space3 - 2
                         PillButton { text: I18n.tr("Revertir"); outlined: true; onClicked: display.revert() }
                         PillButton { text: I18n.tr("Mantener"); primary: true; onClicked: display.keep() }
                     }

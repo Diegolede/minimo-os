@@ -11,12 +11,19 @@ Rectangle {
     property bool outlined: false
     property bool primary: false
     signal clicked()
+    property double lastClick: 0
+    function fire() {
+        const now = Date.now()
+        if (now - lastClick < 280) return
+        lastClick = now
+        clicked()
+    }
     width: r.implicitWidth + Theme.space8; height: Theme.controlH + 4; radius: (Theme.controlH + 4) / 2
     color: primary ? (m.containsMouse ? Theme.fillHover : Theme.fill) : (m.containsMouse ? Theme.hover : (outlined ? "transparent" : Theme.surface))
     border.width: 0
     activeFocusOnTab: true
-    Keys.onReturnPressed: b.clicked()
-    Keys.onSpacePressed: b.clicked()
+    Keys.onReturnPressed: b.fire()
+    Keys.onSpacePressed: b.fire()
     Rectangle {          // aro de foco por teclado (solo con foco, sin filete permanente)
         anchors.fill: parent; anchors.margins: -3; radius: height / 2
         color: "transparent"; border.width: 2; border.color: Theme.fill
@@ -30,5 +37,5 @@ Rectangle {
     }
     scale: m.pressed ? 0.97 : 1
     Behavior on scale { NumberAnimation { duration: Theme.durFast; easing.type: Easing.OutQuad } }
-    MouseArea { id: m; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: b.clicked() }
+    MouseArea { id: m; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: b.fire() }
 }
