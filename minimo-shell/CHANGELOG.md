@@ -4,6 +4,21 @@ Cada versión se divide en **Nuevas funciones**, **Correcciones** y **Optimizaci
 Ajustes › Actualizaciones muestra este archivo (y CHANGELOG.en.md en inglés). Al publicar una versión: renombrar
 «Próxima versión» con el número y la fecha, subir `minimo-shell/VERSION` y crear la etiqueta `vX.Y.Z`.
 
+## 1.2.5 beta — 2026-10-31
+
+### Correcciones
+- Escape, el foco del teclado y el clic fuera funcionan igual en menús, paneles y Ajustes.
+- Se evitan las dobles activaciones por clics rápidos.
+- Limpieza reforzada de la configuración antigua del tamagotchi.
+
+### Diseño
+- Espaciados, márgenes y tamaños unificados en Ajustes, la isla y el lanzador.
+- Menos sombra en Ajustes y en la isla, barra lateral de 200 px, sin separadores en Personalización y diálogo del monitor sin borde.
+- Entrada del menú más sutil.
+
+### Optimizaciones
+- Ajustes se carga al abrirlo, los sondeos son menos frecuentes y «Reducir animaciones» también detiene el vinilo y los pulsos.
+
 ## 1.2.4 beta — 2026-10-31
 
 ### Correcciones
