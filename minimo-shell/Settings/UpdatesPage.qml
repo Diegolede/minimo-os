@@ -86,13 +86,13 @@ Column {
 
     component Card: Rectangle {
         default property alias content: inner.data
-        width: root.width; height: inner.implicitHeight + 36; radius: 20
+        width: root.width; height: inner.implicitHeight + 36; radius: Theme.radiusSection
         color: Theme.surface
-        Column { id: inner; x: 18; y: 18; width: parent.width - 36; spacing: 6 }
+        Column { id: inner; x: Theme.padSection; y: 18; width: parent.width - Theme.padSection * 2; spacing: Theme.space2 - 2 }
     }
     component Line: Text {
         width: parent ? parent.width : 0; wrapMode: Text.WordWrap
-        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
+        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption
     }
 
     // Minimo OS.
@@ -103,8 +103,8 @@ Column {
                 id: head
                 anchors.left: parent.left; anchors.right: btn.left; anchors.rightMargin: 12
                 spacing: 2
-                Text { width: parent.width; wrapMode: Text.WordWrap; text: root.version ? I18n.tr("Minimo OS %1", root.version) : "Minimo OS"; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 18; font.weight: Font.DemiBold }
-                Text { width: parent.width; wrapMode: Text.WordWrap; text: root.minimoText(); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 14 }
+                Text { width: parent.width; wrapMode: Text.WordWrap; text: root.version ? I18n.tr("Minimo OS %1", root.version) : "Minimo OS"; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontTitle; font.weight: Font.DemiBold }
+                Text { width: parent.width; wrapMode: Text.WordWrap; text: root.minimoText(); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontBody }
             }
             PillButton {
                 id: btn
@@ -123,24 +123,24 @@ Column {
     // Versión nueva: novedades y botón "Actualizar".
     Card {
         visible: Updates.state === "available" && Updates.phase === "idle"
-        Text { width: parent.width; wrapMode: Text.WordWrap; text: root.m.remoteVersion ? I18n.tr("Novedades de %1", root.m.remoteVersion) : I18n.tr("Novedades de la versión nueva"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 15; font.weight: Font.DemiBold }
+        Text { width: parent.width; wrapMode: Text.WordWrap; text: root.m.remoteVersion ? I18n.tr("Novedades de %1", root.m.remoteVersion) : I18n.tr("Novedades de la versión nueva"); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontClock; font.weight: Font.DemiBold }
         Repeater {
             model: root.remoteNotes
             delegate: Column {
                 id: rv
                 required property var modelData
-                width: parent.width; spacing: 4
-                Text { visible: root.remoteNotes.length > 1; width: parent.width; text: I18n.tr("Versión %1", rv.modelData.version); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13; font.weight: Font.DemiBold; topPadding: 6 }
+                width: parent.width; spacing: Theme.space1
+                Text { visible: root.remoteNotes.length > 1; width: parent.width; text: I18n.tr("Versión %1", rv.modelData.version); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontLabel; font.weight: Font.DemiBold; topPadding: 6 }
                 Repeater {
                     model: rv.modelData.sections
                     delegate: Column {
                         id: rs
                         required property var modelData
                         width: rv.width; spacing: 3; topPadding: 6
-                        Text { width: parent.width; text: rs.modelData.title; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.DemiBold }
+                        Text { width: parent.width; text: rs.modelData.title; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption; font.weight: Font.DemiBold }
                         Repeater {
                             model: rs.modelData.items
-                            delegate: Text { required property string modelData; width: rs.width; wrapMode: Text.WordWrap; leftPadding: 12; text: "•  " + modelData; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13 }
+                            delegate: Text { required property string modelData; width: rs.width; wrapMode: Text.WordWrap; leftPadding: 12; text: "•  " + modelData; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontLabel }
                         }
                     }
                 }
@@ -152,7 +152,7 @@ Column {
         Line { text: I18n.tr("Se descarga la versión nueva y se vuelve a enlazar la configuración. No se cierra la sesión.") }
         Item { width: 1; height: 4 }
         Row {
-            spacing: 10
+            spacing: Theme.space3 - 2
             PillButton { icon: "update"; primary: true; text: I18n.tr("Actualizar"); onClicked: Updates.update() }
             PillButton {
                 icon: "clipboard"
@@ -171,7 +171,7 @@ Column {
                 : Updates.phase === "done" ? I18n.tr("Actualización lista")
                 : Updates.phase === "needsudo" ? I18n.tr("Faltan paquetes nuevos")
                 : I18n.tr("No se pudo actualizar")
-            color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 15; font.weight: Font.DemiBold
+            color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontClock; font.weight: Font.DemiBold
         }
         Rectangle {
             visible: Updates.phase === "running" || Updates.phase === "done"
@@ -183,9 +183,9 @@ Column {
             model: Updates.phase === "running" || Updates.phase === "done" ? Updates.steps : []
             delegate: Row {
                 required property string modelData
-                spacing: 6
+                spacing: Theme.space2 - 2
                 Icon { name: "check"; size: 14; tone: "gray"; anchors.verticalCenter: parent.verticalCenter }
-                Text { text: I18n.tr(parent.modelData); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12 }
+                Text { text: I18n.tr(parent.modelData); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption }
             }
         }
         Line { visible: Updates.phase === "done"; text: I18n.tr("Para ver los cambios, reiniciá la interfaz. Las ventanas abiertas no se cierran.") }
@@ -193,7 +193,7 @@ Column {
         Line { visible: Updates.phase === "needsudo"; text: I18n.tr("Esta versión necesita instalar: %1. El sistema te va a pedir la contraseña en su propia ventana; Minimo no la ve ni la guarda.", Updates.sudoPackages.join(", ")) }
         Item { width: 1; height: 4 }
         Row {
-            spacing: 10
+            spacing: Theme.space3 - 2
             PillButton { visible: Updates.phase === "done"; icon: "restart"; primary: true; text: I18n.tr("Reiniciar interfaz"); onClicked: Updates.restartShell() }
             PillButton { visible: Updates.phase === "needsudo"; primary: true; text: I18n.tr("Instalar paquetes"); onClicked: Updates.installPackages() }
             PillButton { visible: Updates.phase === "needsudo"; icon: "terminal"; text: I18n.tr("Abrir en terminal"); onClicked: Updates.openTerminal() }
@@ -205,13 +205,13 @@ Column {
 
     SectionTitle { text: I18n.tr("Sistema (paquetes de Arch)") }
     Card {
-        Text { width: parent.width; wrapMode: Text.WordWrap; text: root.systemText(); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 14 }
+        Text { width: parent.width; wrapMode: Text.WordWrap; text: root.systemText(); color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontBody }
         Line { text: root.systemDetail(); visible: text !== "" }
         Line { visible: Updates.systemCheck > 0; text: I18n.tr("Última comprobación: %1", root.when(Updates.systemCheck)) }
     }
 
     Rectangle {
-        width: parent.width; height: auto.implicitHeight; radius: 20; color: Theme.surface
+        width: parent.width; height: auto.implicitHeight; radius: Theme.radiusSection; color: Theme.surface
         SwitchRow {
             id: auto
             width: parent.width
@@ -231,22 +231,22 @@ Column {
             Text {
                 width: parent.width; wrapMode: Text.WordWrap
                 text: rel.modelData.next ? I18n.tr("Próxima versión (sin publicar)") : I18n.tr("Versión %1", rel.modelData.version) + (rel.modelData.date ? " · " + rel.modelData.date : "")
-                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 15; font.weight: Font.DemiBold
+                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontClock; font.weight: Font.DemiBold
             }
             Repeater {
                 model: rel.modelData.sections
                 delegate: Column {
                     id: sec
                     required property var modelData
-                    width: parent.width; spacing: 4; topPadding: 8
-                    Text { width: parent.width; text: sec.modelData.title; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.DemiBold }
+                    width: parent.width; spacing: Theme.space1; topPadding: 8
+                    Text { width: parent.width; text: sec.modelData.title; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption; font.weight: Font.DemiBold }
                     Repeater {
                         model: sec.modelData.items
                         delegate: Text {
                             required property string modelData
                             width: sec.width; wrapMode: Text.WordWrap; leftPadding: 12
                             text: "•  " + modelData
-                            color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13; lineHeight: 1.15
+                            color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontLabel; lineHeight: 1.15
                         }
                     }
                 }

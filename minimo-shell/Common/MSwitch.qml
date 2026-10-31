@@ -34,7 +34,7 @@ Item {
             width: 22; height: 22; radius: 11
             y: (parent.height - height) / 2
             x: sw.checked ? parent.width - width - 3 : 3
-            color: sw.checked ? Theme.onAccent : "#FFFFFF"
+            color: sw.checked ? Theme.onAccent : Theme.knob
             Behavior on x { NumberAnimation { duration: Theme.durFast; easing.type: Easing.OutCubic } }
         }
     }

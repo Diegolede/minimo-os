@@ -497,7 +497,6 @@ Item {
         function onTypingStopped() { squintRelax.stop(); c.squint = 0 }
         function onSquintFor(ms) {
             if (!c.active || c.asleep) return
-            console.info("minimo: squint", ms, "ms (personaje de", c.size, "px)")
             c.squint = 1; squintRelax.interval = ms; squintRelax.restart()
         }
     }

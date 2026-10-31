@@ -130,7 +130,7 @@ Item {
     property real txRate: -1
     property var lastNet: null
     function rate(b) { return b >= 1048576 ? (b / 1048576).toFixed(1).replace(".", ",") + " MB/s" : Math.round(b / 1024) + " KB/s" }
-    Timer { interval: 3000; repeat: true; triggeredOnStart: true; running: root.open && Network.hasWifi && Network.ssid !== ""; onTriggered: if (!netStat.running) netStat.running = true
+    Timer { interval: 5000; repeat: true; triggeredOnStart: true; running: root.open && Network.hasWifi && Network.ssid !== ""; onTriggered: if (!netStat.running) netStat.running = true
             onRunningChanged: if (!running) { root.lastNet = null; root.rxRate = -1; root.txRate = -1 } }
     Process {
         id: netStat
@@ -159,7 +159,7 @@ Item {
     property bool procWanted: false
     property var topCpu: []
     property var topMem: []
-    Timer { interval: 3500; repeat: true; triggeredOnStart: true; running: root.open && root.procWanted; onTriggered: if (!procs.running) procs.running = true }
+    Timer { interval: 5000; repeat: true; triggeredOnStart: true; running: root.open && root.procWanted; onTriggered: if (!procs.running) procs.running = true }
     Process {
         id: procs
         command: [Qt.resolvedUrl("../scripts/top-procs.sh").toString().replace("file://", "")]
@@ -212,7 +212,7 @@ Item {
     }
 
     component Title: Text {
-        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 11; font.weight: Font.DemiBold
+        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontTiny; font.weight: Font.DemiBold
         font.letterSpacing: 0.2; leftPadding: 16
     }
     component Row2: Item {
@@ -324,7 +324,7 @@ Item {
             opacity: text !== "" ? 1 : 0
             Behavior on opacity { NumberAnimation { duration: Theme.durNormal } }
             color: g.bad ? Theme.danger : Theme.textSecondary
-            font.family: Theme.font; font.pixelSize: 11; font.features: { "tnum": 1 }
+            font.family: Theme.font; font.pixelSize: Theme.fontTiny; font.features: { "tnum": 1 }
         }
         Rectangle {      // foco con teclado
             anchors.fill: ring; anchors.margins: -5; radius: width / 2
@@ -343,12 +343,12 @@ Item {
             Behavior on opacity { NumberAnimation { duration: Theme.durFast } }
             Column {
                 id: tipCol; x: 12; y: 8; spacing: 2
-                Text { text: g.tipTitle; color: Theme.onAccent; opacity: 0.7; font.family: Theme.font; font.pixelSize: 11 }
+                Text { text: g.tipTitle; color: Theme.onAccent; opacity: 0.7; font.family: Theme.font; font.pixelSize: Theme.fontTiny }
                 Repeater {
                     model: g.tipLines
                     Text { required property var modelData; text: modelData; color: Theme.onAccent; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.Medium; font.features: { "tnum": 1 } }
                 }
-                Text { text: I18n.tr("Clic: abrir monitor del sistema"); color: Theme.onAccent; opacity: 0.7; font.family: Theme.font; font.pixelSize: 11; topPadding: 2 }
+                Text { text: I18n.tr("Clic: abrir monitor del sistema"); color: Theme.onAccent; opacity: 0.7; font.family: Theme.font; font.pixelSize: Theme.fontTiny; topPadding: 2 }
             }
         }
         // Solo el anillo y sus textos cuentan como "encima": el globo no retiene el hover.
@@ -679,7 +679,7 @@ Item {
                 : preview ? seg.modes[seg.hoverIdx].label + ": " + seg.modes[seg.hoverIdx].desc
                 : ""
             color: root.ppApplied !== "" || preview ? Theme.textPrimary : Theme.textSecondary
-            font.family: Theme.font; font.pixelSize: 11; font.weight: root.ppApplied !== "" ? Font.DemiBold : Font.Normal
+            font.family: Theme.font; font.pixelSize: Theme.fontTiny; font.weight: root.ppApplied !== "" ? Font.DemiBold : Font.Normal
             Behavior on color { ColorAnimation { duration: Theme.durFast } }
         }
         // Deshacer: vuelve al modo anterior durante unos segundos.
@@ -688,7 +688,7 @@ Item {
             visible: root.ppApplied !== "" && root.ppPrev !== ""
             anchors.left: segDesc.right; anchors.leftMargin: 8
             text: I18n.tr("Deshacer"); color: Theme.textPrimary
-            font.family: Theme.font; font.pixelSize: 11; font.weight: Font.Bold; font.underline: um.containsMouse
+            font.family: Theme.font; font.pixelSize: Theme.fontTiny; font.weight: Font.Bold; font.underline: um.containsMouse
             MouseArea { id: um; anchors.fill: parent; anchors.margins: -6; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
                 onClicked: { const p = root.ppPrev; root.ppApplied = ""; root.setProfile(p, true) } }
         }
@@ -767,7 +767,7 @@ Item {
                             : !root.r ? "" : root.r.memUsed / root.r.memTotal > 0.9 ? I18n.tr("Memoria casi llena: conviene liberar") : ""
                         visible: text !== ""
                         color: freeBar.dark || freeFill.width > 50 + Math.min(width, implicitWidth) * 0.6 ? Theme.onAccent : Theme.textSecondary
-                        opacity: 0.8; font.family: Theme.font; font.pixelSize: 11; font.features: { "tnum": 1 }
+                        opacity: 0.8; font.family: Theme.font; font.pixelSize: Theme.fontTiny; font.features: { "tnum": 1 }
                     }
                 }
                 // Derecha: % de RAM en reposo; anillo con los segundos que quedan al armar.
@@ -797,7 +797,7 @@ Item {
                     }
                     Text {
                         anchors.centerIn: parent; text: Math.ceil(countdown.remain * 4)
-                        color: Theme.onAccent; font.family: Theme.font; font.pixelSize: 11; font.weight: Font.DemiBold
+                        color: Theme.onAccent; font.family: Theme.font; font.pixelSize: Theme.fontTiny; font.weight: Font.DemiBold
                     }
                 }
                 MouseArea {

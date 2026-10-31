@@ -297,6 +297,7 @@ var en = {
     "Silencio": "Mute",
     "Sin conexión": "Not connected",
     "Sin fondo": "No wallpaper",
+    "Todavía no hay fondos. Elegí una imagen o arrastrala sobre Minimo.": "No wallpapers yet. Choose an image or drag one onto Minimo.",
     "Sin internet": "No internet",
     "Sin internet (red limitada)": "No internet (limited network)",
     "Sin notas. Hacé clic en + para escribir una.": "No notes. Click + to write one.",

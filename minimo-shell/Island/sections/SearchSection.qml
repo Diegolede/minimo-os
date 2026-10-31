@@ -42,8 +42,8 @@ Column {
             border.color: Qt.rgba(Theme.textPrimary.r, Theme.textPrimary.g, Theme.textPrimary.b, 0.08)
             opacity: box.on ? 1 : 0
             scale: box.on ? 1 : 0.985
-            Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-            Behavior on scale { NumberAnimation { duration: 240; easing.type: Easing.OutCubic } }
+            Behavior on opacity { NumberAnimation { duration: Theme.durFast + 40; easing.type: Easing.OutCubic } }
+            Behavior on scale { NumberAnimation { duration: Theme.durFast + 80; easing.type: Easing.OutCubic } }
             antialiasing: true
         }
         // Toda la píldora es clicable: un clic en cualquier parte enfoca el campo.
@@ -105,7 +105,7 @@ Column {
                 anchors.verticalCenter: parent.verticalCenter
                 elide: Text.ElideRight
                 text: modelData.name
-                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13
+                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontLabel
             }
             MouseArea {
                 id: hov

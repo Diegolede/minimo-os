@@ -11,7 +11,7 @@ import "../Common"
 // pueden filtrar escribiendo.
 Column {
     id: root
-    spacing: 20
+    spacing: Theme.space5
     property bool shown: false
     property var groups: []
     property bool failed: false
@@ -48,7 +48,7 @@ Column {
 
     // Buscador.
     Rectangle {
-        width: parent.width; height: 40; radius: 20
+        width: parent.width; height: Theme.fieldH; radius: Theme.radiusSection
         color: Theme.field
         Icon { id: mag; name: "search"; size: 16; tone: "gray"; x: 14; anchors.verticalCenter: parent.verticalCenter }
         TextInput {
@@ -56,14 +56,14 @@ Column {
             anchors.left: mag.right; anchors.leftMargin: 10
             anchors.right: parent.right; anchors.rightMargin: 16
             anchors.verticalCenter: parent.verticalCenter
-            color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 14
+            color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontBody
             selectByMouse: true; clip: true
             Keys.onEscapePressed: event => { if (text) { text = ""; event.accepted = true } else event.accepted = false }
         }
         Text {
             anchors.fill: input; verticalAlignment: Text.AlignVCenter
             visible: !input.text
-            text: I18n.tr("Buscar atajo o tecla"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 14
+            text: I18n.tr("Buscar atajo o tecla"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontBody
         }
     }
 
@@ -71,14 +71,14 @@ Column {
     Text {
         visible: root.filter.trim() !== "" && root.shownCount > 0
         text: root.shownCount === 1 ? I18n.tr("1 atajo") : I18n.tr("%1 atajos", root.shownCount)
-        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
+        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption
     }
     Text {
         visible: root.failed || (root.groups.length > 0 && root.shownGroups.length === 0)
         width: parent.width
         wrapMode: Text.WordWrap
         text: root.failed ? I18n.tr("No se pudieron leer los atajos (hace falta lua y python).") : I18n.tr("Ningún atajo coincide.")
-        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13
+        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontLabel
     }
 
     Repeater {
@@ -87,12 +87,12 @@ Column {
             id: group
             required property var modelData
             width: root.width
-            spacing: 8
+            spacing: Theme.space2
             SectionTitle { text: group.modelData.name }
             Rectangle {
                 width: parent.width
                 height: list.implicitHeight
-                radius: 20
+                radius: Theme.radiusSection
                 color: Theme.surface
                 Column {
                     id: list
@@ -118,6 +118,6 @@ Column {
         width: parent.width
         wrapMode: Text.WordWrap
         text: I18n.tr("Se editan en ~/.config/hypr/minimo/atajos.lua. Los cambios se ven al volver a abrir esta página.")
-        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
+        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption
     }
 }

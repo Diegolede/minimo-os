@@ -34,7 +34,7 @@ Item {
         color: rbm.containsMouse ? Theme.hover : Theme.surface
         scale: rbm.pressed ? 0.9 : 1
         Behavior on color { ColorAnimation { duration: Theme.durFast } }
-        Behavior on scale { NumberAnimation { duration: 120; easing.type: Easing.OutQuad } }
+        Behavior on scale { NumberAnimation { duration: Theme.durMicro; easing.type: Easing.OutQuad } }
         Icon { anchors.centerIn: parent; name: rb.icon; size: 18; rotation: rb.iconRotation }
         MouseArea { id: rbm; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: rb.clicked() }
     }
@@ -50,7 +50,7 @@ Item {
             Text {
                 anchors.centerIn: parent
                 text: root.title
-                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 15; font.weight: Font.DemiBold
+                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontClock; font.weight: Font.DemiBold
             }
             Row {
                 anchors.right: parent.right
@@ -72,7 +72,7 @@ Item {
                     width: grid.cw; height: 24
                     horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
                     text: root.locale.dayName((root.firstDay + index) % 7, Locale.NarrowFormat).toUpperCase()
-                    color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 11; font.weight: Font.DemiBold
+                    color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontTiny; font.weight: Font.DemiBold
                 }
             }
             Repeater {
@@ -95,7 +95,7 @@ Item {
                         color: Theme.hover
                         opacity: dayHover.hovered && !cell.isToday ? 1 : 0
                         visible: opacity > 0
-                        Behavior on opacity { NumberAnimation { duration: 120 } }
+                        Behavior on opacity { NumberAnimation { duration: Theme.durMicro } }
                     }
                     HoverHandler { id: dayHover }
                     Text {
@@ -103,7 +103,7 @@ Item {
                         text: cell.modelData.d
                         color: cell.isToday ? Theme.onAccent : cell.modelData.inMonth ? Theme.textPrimary : Theme.textSecondary
                         opacity: cell.modelData.inMonth || cell.isToday ? 1 : 0.5
-                        font.family: Theme.font; font.pixelSize: 13
+                        font.family: Theme.font; font.pixelSize: Theme.fontLabel
                         font.weight: cell.isToday ? Font.DemiBold : Font.Normal
                         font.features: { "tnum": 1 }
                     }
@@ -117,7 +117,7 @@ Item {
             readonly property bool away: root.year !== root.today.getFullYear() || root.month !== root.today.getMonth()
             opacity: away ? 1 : 0
             text: I18n.tr("Hoy")
-            color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13; font.underline: hm.containsMouse
+            color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontLabel; font.underline: hm.containsMouse
             MouseArea { id: hm; anchors.fill: parent; anchors.margins: -6; enabled: parent.away; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: root.reset() }
         }
     }

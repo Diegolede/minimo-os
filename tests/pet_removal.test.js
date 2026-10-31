@@ -41,7 +41,7 @@ const ds = read("Common/DisplayState.qml")
 assert.ok(!/property bool petEnabled/.test(ds), "property petEnabled sigue definida")
 assert.ok(!/setPetEnabled/.test(ds), "setPetEnabled sigue definido")
 assert.ok(!/petEnabled: root\.petEnabled/.test(ds), "save aún escribe petEnabled")
-assert.ok(/Migración 1\.2\.4: se ignora petEnabled/.test(ds), "falta nota de migración")
+assert.ok(/Migración 1\.2\.[45].*petEnabled/.test(ds), "falta nota de migración")
 
 // 6. Island ya no instancia PetPanel; el gesto hacia abajo abre el menú.
 const island = read("Island/Island.qml")
@@ -72,4 +72,9 @@ assert.equal(cleaned.petEnabled, undefined)
 assert.equal(cleaned.theme, "light")
 assert.equal(cleaned.characterAnimated, true)
 
-console.log("pet_removal: 10 casos OK")
+// 11. Migración 1.2.5: si state.json traía petEnabled, se reescribe sin esa clave.
+const displayState = read("Common/DisplayState.qml")
+assert.ok(displayState.includes("hadPetKey"), "DisplayState debe detectar petEnabled residual")
+assert.ok(displayState.includes("if (hadPetKey) root.save()"), "DisplayState debe reescribir state.json sin petEnabled")
+
+console.log("pet_removal: 11 casos OK")

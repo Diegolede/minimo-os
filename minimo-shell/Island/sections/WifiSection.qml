@@ -21,7 +21,7 @@ Column {
     Rectangle {
         width: parent.width; height: 52; radius: root.radius
         color: rowMouse.containsMouse ? Theme.hover : Theme.surface
-        Behavior on color { ColorAnimation { duration: 140 } }
+        Behavior on color { ColorAnimation { duration: Theme.durMicro } }
         Rectangle {
             id: badge
             x: 8; anchors.verticalCenter: parent.verticalCenter
@@ -33,13 +33,13 @@ Column {
             anchors.left: badge.right; anchors.leftMargin: 12
             anchors.right: sw.left; anchors.rightMargin: 12
             anchors.verticalCenter: parent.verticalCenter
-            Text { width: parent.width; elide: Text.ElideRight; text: "Wi-Fi"; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13; font.weight: Font.DemiBold }
+            Text { width: parent.width; elide: Text.ElideRight; text: "Wi-Fi"; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontLabel; font.weight: Font.DemiBold }
             Text {
                 width: parent.width; elide: Text.ElideRight
                 text: !Network.wifiEnabled ? I18n.tr("Desactivado")
                     : Network.connecting ? I18n.tr("Conectando a %1…", Network.connecting)
                     : Network.ssid || I18n.tr("Sin conexión")
-                color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
+                color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption
             }
         }
         MouseArea {
@@ -69,7 +69,7 @@ Column {
                 Text {
                     visible: Network.networks.length === 0
                     x: 12; height: 36; verticalAlignment: Text.AlignVCenter
-                    text: I18n.tr("Buscando redes…"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12
+                    text: I18n.tr("Buscando redes…"); color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption
                 }
                 Repeater {
                     model: Network.networks.slice(0, 12)
@@ -84,7 +84,7 @@ Column {
                                 x: 14; anchors.verticalCenter: parent.verticalCenter
                                 width: parent.width - 100; elide: Text.ElideRight
                                 text: net.modelData.ssid
-                                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13
+                                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontLabel
                                 font.weight: net.modelData.active ? Font.DemiBold : Font.Normal
                             }
                             Row {
@@ -119,7 +119,7 @@ Column {
                                 anchors.right: go.left; anchors.rightMargin: 8
                                 anchors.verticalCenter: parent.verticalCenter
                                 echoMode: TextInput.Password
-                                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13
+                                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontLabel
                                 clip: true
                                 cursorDelegate: Rectangle { width: 2; radius: 1; color: Theme.textPrimary; visible: pass.activeFocus }
                                 Text { visible: !pass.text; text: I18n.tr("Contraseña"); color: Theme.textSecondary; font: pass.font }
@@ -131,7 +131,7 @@ Column {
                                 anchors.right: parent.right; anchors.rightMargin: 4; anchors.verticalCenter: parent.verticalCenter
                                 width: 76; height: 32; radius: 16
                                 color: pass.text.length > 0 ? Theme.fill : Theme.track
-                                Text { anchors.centerIn: parent; text: I18n.tr("Unirse"); color: pass.text.length > 0 ? Theme.onAccent : Theme.textSecondary; font.family: Theme.font; font.pixelSize: 12; font.weight: Font.DemiBold }
+                                Text { anchors.centerIn: parent; text: I18n.tr("Unirse"); color: pass.text.length > 0 ? Theme.onAccent : Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontCaption; font.weight: Font.DemiBold }
                                 MouseArea { anchors.fill: parent; cursorShape: Qt.PointingHandCursor; onClicked: go.submit() }
                             }
                         }
@@ -144,6 +144,6 @@ Column {
         visible: Network.error !== "" && root.expanded
         x: 14
         text: Network.error
-        color: Theme.danger; font.family: Theme.font; font.pixelSize: 12
+        color: Theme.danger; font.family: Theme.font; font.pixelSize: Theme.fontCaption
     }
 }

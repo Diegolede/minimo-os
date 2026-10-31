@@ -44,9 +44,9 @@ Column {
     }
     Column {
         anchors.horizontalCenter: parent.horizontalCenter
-        spacing: 4
-        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Minimo OS"; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 28; font.weight: Font.Bold }
-        Text { anchors.horizontalCenter: parent.horizontalCenter; text: root.version ? I18n.tr("Versión %1", root.version) : ""; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13 }
+        spacing: Theme.space1
+        Text { anchors.horizontalCenter: parent.horizontalCenter; text: "Minimo OS"; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontTitle + 2; font.weight: Font.Bold }
+        Text { anchors.horizontalCenter: parent.horizontalCenter; text: root.version ? I18n.tr("Versión %1", root.version) : ""; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontLabel }
     }
     Text {
         width: Math.min(parent.width, 440)
@@ -55,7 +55,7 @@ Column {
         wrapMode: Text.WordWrap
         lineHeight: 1.25
         text: I18n.tr("Minimo OS es una configuración minimalista de Hyprland: una isla flotante y un personaje feliz. Nada más de lo necesario.")
-        color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 14
+        color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontBody
     }
     PillButton {
         anchors.horizontalCenter: parent.horizontalCenter
@@ -66,7 +66,7 @@ Column {
     Rectangle {
         width: parent.width
         height: info.implicitHeight + 8
-        radius: 20
+        radius: Theme.radiusSection
         color: Theme.surface
         Column {
             id: info
@@ -83,9 +83,9 @@ Column {
                     required property var modelData
                     required property int index
                     width: info.width; height: 44
-                    Text { x: 18; anchors.verticalCenter: parent.verticalCenter; text: modelData.k; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 13 }
-                    Text { anchors.right: parent.right; anchors.rightMargin: 18; anchors.verticalCenter: parent.verticalCenter; text: modelData.v; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 13 }
-                    Rectangle { visible: index > 0; x: 18; width: parent.width - 36; height: 1; color: Theme.track }
+                    Text { x: Theme.padSection; anchors.verticalCenter: parent.verticalCenter; text: modelData.k; color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontLabel }
+                    Text { anchors.right: parent.right; anchors.rightMargin: Theme.padSection; anchors.verticalCenter: parent.verticalCenter; text: modelData.v; color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontLabel }
+                    Rectangle { visible: index > 0; x: Theme.padSection; width: parent.width - Theme.padSection * 2; height: 1; color: Theme.track }
                 }
             }
         }
@@ -93,6 +93,6 @@ Column {
     Text {
         anchors.horizontalCenter: parent.horizontalCenter
         text: I18n.tr("© 2026 Diego Ledesma (TRN1). Licencia MIT.")
-        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 11
+        color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontTiny
     }
 }

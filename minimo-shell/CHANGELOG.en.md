@@ -3,6 +3,21 @@
 Each version is split into **New features**, **Fixes** and **Optimizations**.
 Shown in Settings › Updates. The Spanish file (CHANGELOG.md) is the reference.
 
+## 1.2.5 beta — 2026-10-31
+
+### Fixes
+- Escape, keyboard focus and click-outside behave the same in menus, panels and Settings.
+- Rapid clicks no longer trigger actions twice.
+- Stronger cleanup of old tamagotchi settings.
+
+### Design
+- Unified spacing, margins and sizes in Settings, the island and the launcher.
+- Lighter shadows in Settings and the island, 200 px sidebar, no separators in Personalization and borderless monitor dialog.
+- Subtler menu entrance.
+
+### Optimizations
+- Settings loads when opened, less frequent polling, and Reduce motion also stops the vinyl and pulses.
+
 ## 1.2.4 beta — 2026-10-31
 
 ### Fixes

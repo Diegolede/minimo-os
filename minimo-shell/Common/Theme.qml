@@ -103,6 +103,18 @@ Singleton {
     readonly property real overshootOpen: 0.45
     readonly property real overshootClose: 0.35
 
+    // Tokens de la ronda 2 (aplicados en Ajustes / isla / tipografía compacta)
+    readonly property int sidebarW: 200       // barra lateral de Ajustes (ronda 2 P2)
+    readonly property color knob: "#FFFFFF"   // perilla del switch (siempre blanca, contraste en claro/oscuro)
+    readonly property int radiusSection: 20     // tarjetas de sección en Ajustes
+    readonly property int fontClock: 15         // reloj de la isla compacta
+    readonly property int fontLabel: 13         // etiquetas de filas / metadatos
+    readonly property int rowH: 56              // fila de ajustes con control a la derecha
+    readonly property int fieldH: 40            // campos y desplegables
+    readonly property int durColor: reduceMotion ? 0 : 250   // cambio de tema / color de superficie
+    readonly property int durMicro: reduceMotion ? 0 : 120   // microfeedback (hover corto)
+    readonly property int durStagger: reduceMotion ? 0 : 45  // escalonado de entrada del menú
+
     readonly property int compactW: 96
     readonly property int compactH: 36
     readonly property int expandedW: 400

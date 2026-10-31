@@ -18,6 +18,6 @@ Rectangle {
         anchors.centerIn: parent
         text: cap.text
         color: Theme.textPrimary
-        font.family: Theme.font; font.pixelSize: 12; font.weight: Font.Medium
+        font.family: Theme.font; font.pixelSize: Theme.fontCaption; font.weight: Font.Medium
     }
 }

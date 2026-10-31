@@ -8,6 +8,7 @@ import "Wallpaper"
 import "Launcher"
 import "Settings"
 import "Overview"
+import "Common"
 
 // Minimo OS shell root: fondo de pantalla e isla por monitor.
 ShellRoot {
@@ -26,6 +27,10 @@ ShellRoot {
         }
     }
     Launcher {}
-    SettingsWindow {}
+    // Ajustes se monta al primer open y se libera al cerrar (tras la animación).
+    Loader {
+        active: SettingsState.open || (item !== null && item.visible)
+        sourceComponent: SettingsWindow {}
+    }
     Overview {}
 }

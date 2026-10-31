@@ -24,19 +24,23 @@ Item {
     // Entrada escalonada: stage sube de a uno cada 45 ms al abrir.
     property int stage: 0
     Timer {
-        id: stagger; interval: 45; repeat: true
-        running: root.open && root.stage < 6
+        id: stagger; interval: Theme.durStagger || 1; repeat: true
+        running: root.open && root.stage < 6 && Theme.durStagger > 0
         onTriggered: root.stage++
     }
-    onOpenChanged: if (!open) { stage = 0; page = "menu"; actions.reset(); notes.reset(); emoji.reset() }
+    // Con reduceMotion, mostrar todo de golpe (sin escalonado).
+    onOpenChanged: {
+        if (open && Theme.durStagger === 0) stage = 6
+        if (!open) { stage = 0; page = "menu"; actions.reset(); notes.reset(); emoji.reset() }
+    }
 
     SystemClock { id: clock; precision: SystemClock.Minutes }
 
     component Reveal: Item {
         property int step: 0
         opacity: root.stage > step ? 1 : 0
-        transform: Translate { y: root.stage > step ? 0 : 8; Behavior on y { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } } }
-        Behavior on opacity { NumberAnimation { duration: 260 } }
+        transform: Translate { y: root.stage > step ? 0 : (Theme.durStagger === 0 ? 0 : 4); Behavior on y { NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutQuint } } }
+        Behavior on opacity { NumberAnimation { duration: Theme.durFast + 100 } }
     }
 
     Column {
@@ -46,8 +50,8 @@ Item {
         opacity: root.page === "menu" ? 1 : 0
         visible: opacity > 0
         enabled: root.page === "menu"
-        Behavior on x { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
-        Behavior on opacity { NumberAnimation { duration: 220 } }
+        Behavior on x { NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutQuint } }
+        Behavior on opacity { NumberAnimation { duration: Theme.durFast + 60 } }
         width: parent.width - Theme.padPanel * 2
         spacing: Theme.space6 - 2
 
@@ -100,13 +104,13 @@ Item {
     WorkspacesView {
         id: desks
         x: root.page === "desks" ? 20 : root.width * 0.3
-        y: 20
+        y: Theme.padPanel
         width: root.width - 40
         opacity: root.page === "desks" ? 1 : 0
         visible: opacity > 0
         enabled: root.page === "desks"
-        Behavior on x { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
-        Behavior on opacity { NumberAnimation { duration: 220 } }
+        Behavior on x { NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutQuint } }
+        Behavior on opacity { NumberAnimation { duration: Theme.durFast + 60 } }
         onBack: root.page = "menu"
         onPicked: root.done()
     }
@@ -114,13 +118,13 @@ Item {
     ClipboardView {
         id: clip
         x: root.page === "clip" ? 20 : root.width * 0.3
-        y: 20
+        y: Theme.padPanel
         width: root.width - 40
         opacity: root.page === "clip" ? 1 : 0
         visible: opacity > 0
         enabled: root.page === "clip"
-        Behavior on x { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
-        Behavior on opacity { NumberAnimation { duration: 220 } }
+        Behavior on x { NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutQuint } }
+        Behavior on opacity { NumberAnimation { duration: Theme.durFast + 60 } }
         onBack: root.page = "menu"
         onPicked: root.done()
     }
@@ -128,42 +132,42 @@ Item {
     CalendarView {
         id: cal
         x: root.page === "cal" ? 20 : root.width * 0.3
-        y: 20
+        y: Theme.padPanel
         width: root.width - 40
         today: clock.date
         locale: I18n.locale
         opacity: root.page === "cal" ? 1 : 0
         visible: opacity > 0
         enabled: root.page === "cal"
-        Behavior on x { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
-        Behavior on opacity { NumberAnimation { duration: 220 } }
+        Behavior on x { NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutQuint } }
+        Behavior on opacity { NumberAnimation { duration: Theme.durFast + 60 } }
         onBack: root.page = "menu"
     }
 
     NotesView {
         id: notes
         x: root.page === "notes" ? 20 : root.width * 0.3
-        y: 20
+        y: Theme.padPanel
         width: root.width - 40
         opacity: root.page === "notes" ? 1 : 0
         visible: opacity > 0
         enabled: root.page === "notes"
-        Behavior on x { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
-        Behavior on opacity { NumberAnimation { duration: 220 } }
+        Behavior on x { NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutQuint } }
+        Behavior on opacity { NumberAnimation { duration: Theme.durFast + 60 } }
         onBack: root.page = "menu"
     }
 
     EmojiView {
         id: emoji
         x: root.page === "emoji" ? 20 : root.width * 0.3
-        y: 20
+        y: Theme.padPanel
         width: root.width - 40
         active: root.open && root.page === "emoji"
         opacity: root.page === "emoji" ? 1 : 0
         visible: opacity > 0
         enabled: root.page === "emoji"
-        Behavior on x { NumberAnimation { duration: 320; easing.type: Easing.OutQuint } }
-        Behavior on opacity { NumberAnimation { duration: 220 } }
+        Behavior on x { NumberAnimation { duration: Theme.durNormal; easing.type: Easing.OutQuint } }
+        Behavior on opacity { NumberAnimation { duration: Theme.durFast + 60 } }
         onBack: root.page = "menu"
     }
 }

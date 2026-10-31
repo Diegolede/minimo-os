@@ -130,7 +130,7 @@ Item {
             Text {
                 anchors.centerIn: parent
                 text: I18n.tr("Escritorios")
-                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: 15; font.weight: Font.DemiBold
+                color: Theme.textPrimary; font.family: Theme.font; font.pixelSize: Theme.fontClock; font.weight: Font.DemiBold
             }
         }
 
@@ -181,13 +181,13 @@ Item {
                     opacity: root.windowDrag && modelData.id === root.dragFrom ? 0.6 : 1
                     border.width: active && !dropTarget ? 2 : 0
                     border.color: Theme.textPrimary
-                    Behavior on x { enabled: !tile.dragging && !root.snap; NumberAnimation { duration: 260; easing.type: Easing.OutQuint } }
-                    Behavior on y { enabled: !tile.dragging && !root.snap; NumberAnimation { duration: 260; easing.type: Easing.OutQuint } }
-                    Behavior on scale { NumberAnimation { duration: 160; easing.type: Easing.OutCubic } }
+                    Behavior on x { enabled: !tile.dragging && !root.snap; NumberAnimation { duration: Theme.durFast + 100; easing.type: Easing.OutQuint } }
+                    Behavior on y { enabled: !tile.dragging && !root.snap; NumberAnimation { duration: Theme.durFast + 100; easing.type: Easing.OutQuint } }
+                    Behavior on scale { NumberAnimation { duration: Theme.durFast; easing.type: Easing.OutCubic } }
                     Text {
                         x: 10; y: 8
                         text: tile.modelData.name || tile.modelData.id
-                        color: tile.dropTarget ? Theme.onAccent : Theme.textSecondary; font.family: Theme.font; font.pixelSize: 11; font.weight: Font.Medium
+                        color: tile.dropTarget ? Theme.onAccent : Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontTiny; font.weight: Font.Medium
                     }
                     MouseArea {
                         id: tileMouse
@@ -228,7 +228,7 @@ Item {
                                     source: winItem.icon
                                     opacity: winItem.lifted ? 0.25 : 1
                                     scale: wm.pressed && !winItem.lifted ? 0.9 : 1
-                                    Behavior on scale { NumberAnimation { duration: 120 } }
+                                    Behavior on scale { NumberAnimation { duration: Theme.durMicro } }
                                 }
                                 MouseArea {
                                     id: wm
@@ -271,7 +271,7 @@ Item {
                             visible: parent.wins.length > parent.shownN
                             anchors.verticalCenter: parent.verticalCenter
                             text: "+" + (parent.wins.length - parent.shownN)
-                            color: tile.dropTarget ? Theme.onAccent : Theme.textSecondary; font.family: Theme.font; font.pixelSize: 11
+                            color: tile.dropTarget ? Theme.onAccent : Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontTiny
                         }
                     }
                 }
@@ -279,8 +279,8 @@ Item {
             Rectangle {
                 x: grid.slotX(root.order.length); y: grid.slotY(root.order.length)
                 width: grid.tileW; height: grid.tileH; radius: 14
-                Behavior on x { NumberAnimation { duration: 260; easing.type: Easing.OutQuint } }
-                Behavior on y { NumberAnimation { duration: 260; easing.type: Easing.OutQuint } }
+                Behavior on x { NumberAnimation { duration: Theme.durFast + 100; easing.type: Easing.OutQuint } }
+                Behavior on y { NumberAnimation { duration: Theme.durFast + 100; easing.type: Easing.OutQuint } }
                 readonly property bool dropTarget: root.windowDrag && root.target === "new"
                 color: dropTarget ? Theme.fill : (root.windowDrag ? Theme.hover : "transparent")
                 border.width: root.windowDrag ? 0 : 1.5; border.color: plusMouse.containsMouse ? Theme.textSecondary : Theme.track
@@ -307,7 +307,7 @@ Item {
             text: root.notice !== "" ? root.notice
                 : root.windowDrag ? I18n.tr("Soltala en otro escritorio para moverla · Esc cancela")
                 : I18n.tr("Arrastrá un escritorio para reordenarlo, o una app para llevarla a otro")
-            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: 11
+            color: Theme.textSecondary; font.family: Theme.font; font.pixelSize: Theme.fontTiny
         }
     }
 }
