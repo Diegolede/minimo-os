@@ -22,6 +22,7 @@ Rectangle {
                   "--filename=" + Quickshell.env("HOME") + "/Vídeos/",
                   "--file-filter=" + I18n.tr("Videos y GIF") + " | *.mp4 *.webm *.mkv *.mov *.gif *.MP4 *.WEBM *.GIF"]
         stdout: SplitParser { onRead: line => { const p = line.trim(); if (p !== "" && LiveWallpaper.isAnimated(p)) DisplayState.setLiveWallpaper(p) } }
+        onRunningChanged: if (!running) SettingsState.pickers = Math.max(0, SettingsState.pickers - 1)
     }
 
     Column {
@@ -58,7 +59,7 @@ Rectangle {
                     text: root.file !== "" ? I18n.tr("Cambiar…") : I18n.tr("Elegir…")
                     opacity: LiveWallpaper.available ? 1 : 0.4
                     enabled: LiveWallpaper.available
-                    onClicked: if (!picker.running) { root.pickerOpened(); picker.running = true }
+                    onClicked: if (!picker.running) { SettingsState.pickers++; root.pickerOpened(); picker.running = true }
                 }
             }
         }

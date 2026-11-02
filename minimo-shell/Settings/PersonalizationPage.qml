@@ -50,6 +50,7 @@ Column {
                   "--filename=" + root.mainDir + "/",
                   "--file-filter=" + I18n.tr("Imágenes") + " | *.png *.jpg *.jpeg *.webp"]
         stdout: SplitParser { onRead: line => { if (line.trim() !== "") DisplayState.setWallpaper(line.trim()) } }
+        onRunningChanged: if (!running) SettingsState.pickers = Math.max(0, SettingsState.pickers - 1)
         onExited: root.refresh()
     }
 
@@ -83,7 +84,7 @@ Column {
 
     Row {
         spacing: Theme.space2
-        PillButton { icon: "folder"; text: I18n.tr("Elegir imagen…"); onClicked: if (!picker.running) { root.pickerOpened(); picker.running = true } }
+        PillButton { icon: "folder"; text: I18n.tr("Elegir imagen…"); onClicked: if (!picker.running) { SettingsState.pickers++; root.pickerOpened(); picker.running = true } }
         PillButton { text: I18n.tr("Sin fondo"); outlined: true; onClicked: DisplayState.setWallpaper("") }
     }
 

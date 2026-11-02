@@ -29,7 +29,7 @@ ShellRoot {
     Launcher {}
     // Ajustes se monta al primer open y se libera al cerrar (tras la animación).
     Loader {
-        active: SettingsState.open || (item !== null && item.visible)
+        active: SettingsState.open || SettingsState.pickers > 0 || (item !== null && item.visible)
         sourceComponent: SettingsWindow {}
     }
     Overview {}

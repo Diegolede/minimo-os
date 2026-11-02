@@ -11,6 +11,8 @@ import Quickshell.Io
 Singleton {
     id: root
     property bool open: false
+    // Selector de archivos abierto: mantiene Ajustes cargado (oculto) para no matar zenity.
+    property int pickers: 0
     property string section: "personalizacion"   // "personalizacion" | "pantalla" | "atajos" | "minimo"
     function toggle() { open = !open }
     function show() { open = true }
