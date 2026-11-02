@@ -4,6 +4,11 @@ Cada versión se divide en **Nuevas funciones**, **Correcciones** y **Optimizaci
 Ajustes › Actualizaciones muestra este archivo (y CHANGELOG.en.md en inglés). Al publicar una versión: renombrar
 «Próxima versión» con el número y la fecha, subir `minimo-shell/VERSION` y crear la etiqueta `vX.Y.Z`.
 
+## 1.2.6 beta — 2026-11-01
+
+### Correcciones
+- El selector de archivos para elegir fondo (imagen o animado) ya no se cierra solo al abrirse.
+
 ## 1.2.5 beta — 2026-10-31
 
 ### Correcciones
