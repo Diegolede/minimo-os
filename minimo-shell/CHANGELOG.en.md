@@ -3,6 +3,11 @@
 Each version is split into **New features**, **Fixes** and **Optimizations**.
 Shown in Settings › Updates. The Spanish file (CHANGELOG.md) is the reference.
 
+## 1.2.7 beta — 2026-11-05
+
+### Fixes
+- Fixed the "Your config has errors" warning in apariencia.lua: shadow render power set to 4, the maximum Hyprland accepts.
+
 ## 1.2.6 beta — 2026-11-01
 
 ### Fixes

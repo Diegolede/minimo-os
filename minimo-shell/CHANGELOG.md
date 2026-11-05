@@ -4,6 +4,11 @@ Cada versión se divide en **Nuevas funciones**, **Correcciones** y **Optimizaci
 Ajustes › Actualizaciones muestra este archivo (y CHANGELOG.en.md en inglés). Al publicar una versión: renombrar
 «Próxima versión» con el número y la fecha, subir `minimo-shell/VERSION` y crear la etiqueta `vX.Y.Z`.
 
+## 1.2.7 beta — 2026-11-05
+
+### Correcciones
+- Se corrigió el aviso «Your config has errors» en apariencia.lua: la potencia de la sombra pasa a 4, el máximo que acepta Hyprland.
+
 ## 1.2.6 beta — 2026-11-01
 
 ### Correcciones
