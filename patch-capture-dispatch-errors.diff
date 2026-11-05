@@ -1,0 +1,13 @@
+--- a/minimo-shell/Common/Workspaces.qml
++++ b/minimo-shell/Common/Workspaces.qml
+@@ -19,7 +19,9 @@ Singleton {
+ 
+     function dispatchWs(target) {
+         // Hyprland.dispatch() no entiende la sintaxis Lua: se usa hyprctl.
+-        Quickshell.execDetached(["sh", "-c", "hyprctl dispatch 'hl.dsp.focus({workspace=\"" + target + "\"})' >/dev/null 2>&1"])
++        const cmd = 'hyprctl dispatch \'hl.dsp.focus({workspace="' + target + '"})\' 2>&1 | tee -a /tmp/minimo-dispatch-debug.log'
++        console.log("[DISPATCH] Executing for target:", target, "at", new Date().toISOString())
++        Quickshell.execDetached(["sh", "-c", cmd])
+         lastSwitch = Date.now()
+     }
+     // Una muesca de rueda = un workspace (con enfriamiento).
