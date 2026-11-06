@@ -4,6 +4,11 @@ Cada versión se divide en **Nuevas funciones**, **Correcciones** y **Optimizaci
 Ajustes › Actualizaciones muestra este archivo (y CHANGELOG.en.md en inglés). Al publicar una versión: renombrar
 «Próxima versión» con el número y la fecha, subir `minimo-shell/VERSION` y crear la etiqueta `vX.Y.Z`.
 
+## 1.2.8 beta — 2026-11-05
+
+### Correcciones
+- El scroll y el clic en la isla vuelven a cambiar de escritorio con Hyprland 0.57 y Quickshell 0.3.2.
+
 ## 1.2.7 beta — 2026-11-05
 
 ### Correcciones

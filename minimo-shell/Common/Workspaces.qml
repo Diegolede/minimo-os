@@ -18,7 +18,10 @@ Singleton {
 
     function dispatchWs(target) {
         // Hyprland.dispatch() no entiende la sintaxis Lua: se usa hyprctl.
-        Quickshell.execDetached(["sh", "-c", "hyprctl dispatch 'hl.dsp.focus({workspace=\"" + target + "\"})' >/dev/null 2>&1"])
+        // Quickshell 0.3.2: execDetached no lanzaba el proceso; se usa un Process propio.
+        wsProc.running = false
+        wsProc.command = ["hyprctl", "dispatch", "hl.dsp.focus({workspace=\"" + target + "\"})"]
+        wsProc.running = true
         lastSwitch = Date.now()
     }
     // Una muesca de rueda = un workspace (con enfriamiento).
@@ -44,6 +47,7 @@ Singleton {
         reorderProc.running = true
         lastSwitch = Date.now()
     }
+    Process { id: wsProc }
     signal reordered()
     Process { id: reorderProc; onExited: { Hyprland.refreshWorkspaces(); Hyprland.refreshToplevels(); root.reordered() } }
     // Compactar: al quedar vacío un escritorio (ventana cerrada o movida, o al salir de uno
